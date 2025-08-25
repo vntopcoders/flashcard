@@ -2,6 +2,8 @@
 
 Ứng dụng học tiếng Anh với flashcard được xây dựng bằng Next.js, TypeScript và SQLite.
 
+🚀 **Demo**: [Live on Vercel](https://your-app-url.vercel.app)
+
 ## Tính năng
 
 - 🔄 **Flashcard với hiệu ứng flip**: Lật thẻ để xem nghĩa tiếng Việt

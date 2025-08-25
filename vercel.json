@@ -1,9 +1,7 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "outputDirectory": ".next",
+  "buildCommand": "prisma generate && npm run build",
+  "installCommand": "npm install && prisma generate",
+  "framework": "nextjs",
   "env": {
     "DATABASE_URL": "file:./dev.db"
   }

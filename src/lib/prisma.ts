@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { memoryDb } from './memory-db'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -7,6 +8,71 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+// Fallback database interface
+export const db = {
+  flashcard: {
+    findMany: async (options?: { orderBy?: { createdAt: 'desc' | 'asc' } }) => {
+      try {
+        await prisma.$connect()
+        return await prisma.flashcard.findMany(options)
+      } catch (error) {
+        console.log('Falling back to memory DB:', error)
+        return await memoryDb.flashcard.findMany(options)
+      }
+    },
+    
+    findUnique: async (options: { where: { id: string } }) => {
+      try {
+        await prisma.$connect()
+        return await prisma.flashcard.findUnique(options)
+      } catch (error) {
+        console.log('Falling back to memory DB:', error)
+        return await memoryDb.flashcard.findUnique(options)
+      }
+    },
+    
+    create: async (options: any) => {
+      try {
+        await prisma.$connect()
+        return await prisma.flashcard.create(options)
+      } catch (error) {
+        console.log('Falling back to memory DB:', error)
+        return await memoryDb.flashcard.create(options)
+      }
+    },
+    
+    update: async (options: any) => {
+      try {
+        await prisma.$connect()
+        return await prisma.flashcard.update(options)
+      } catch (error) {
+        console.log('Falling back to memory DB:', error)
+        return await memoryDb.flashcard.update(options)
+      }
+    },
+    
+    delete: async (options: { where: { id: string } }) => {
+      try {
+        await prisma.$connect()
+        return await prisma.flashcard.delete(options)
+      } catch (error) {
+        console.log('Falling back to memory DB:', error)
+        return await memoryDb.flashcard.delete(options)
+      }
+    },
+    
+    count: async () => {
+      try {
+        await prisma.$connect()
+        return await prisma.flashcard.count()
+      } catch (error) {
+        console.log('Falling back to memory DB:', error)
+        return await memoryDb.flashcard.count()
+      }
+    }
+  }
+}
 
 // Initialize database with basic setup
 export async function initializeDatabase() {
@@ -20,7 +86,8 @@ export async function initializeDatabase() {
       await seedDatabase()
     }
   } catch (error) {
-    console.error('Database initialization error:', error)
+    console.log('Database initialization using fallback memory DB:', error)
+    // Memory DB already has sample data
   }
 }
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { flashcardDb } from '@/lib/supabase'
 
 export async function GET(
   request: NextRequest,
@@ -7,9 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const flashcard = await prisma.flashcard.findUnique({
-      where: { id }
-    })
+    const flashcard = await flashcardDb.getById(id)
 
     if (!flashcard) {
       return NextResponse.json(
@@ -36,14 +34,11 @@ export async function PUT(
     const body = await request.json()
     const { english, vietnamese, category, difficulty } = body
 
-    const flashcard = await prisma.flashcard.update({
-      where: { id },
-      data: {
-        english,
-        vietnamese,
-        category,
-        difficulty
-      }
+    const flashcard = await flashcardDb.update(id, {
+      english,
+      vietnamese,
+      category,
+      difficulty
     })
 
     return NextResponse.json(flashcard)
@@ -61,9 +56,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    await prisma.flashcard.delete({
-      where: { id }
-    })
+    await flashcardDb.delete(id)
 
     return NextResponse.json({ success: true })
   } catch (_error) {

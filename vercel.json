@@ -1,8 +1,7 @@
 {
-  "buildCommand": "prisma generate && npm run build",
-  "installCommand": "npm install && prisma generate",
   "framework": "nextjs",
   "env": {
-    "DATABASE_URL": "file:./dev.db"
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key"
   }
 }

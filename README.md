@@ -1,6 +1,6 @@
 # English Flashcards App
 
-Ứng dụng học tiếng Anh với flashcard được xây dựng bằng Next.js, TypeScript và SQLite.
+Ứng dụng học tiếng Anh với flashcard được xây dựng bằng Next.js, TypeScript và Supabase.
 
 🚀 **Demo**: [Live on Vercel](https://your-app-url.vercel.app)
 
@@ -16,9 +16,21 @@
 
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS 4
-- **Database**: SQLite với Prisma ORM
+- **Database**: Supabase (PostgreSQL)
 - **Icons**: Lucide React
 - **Deployment**: Vercel
+
+## Setup Supabase
+
+1. **Tạo project mới trên [Supabase](https://supabase.com/)**
+
+2. **Chạy SQL script**:
+   - Vào Supabase Dashboard > SQL Editor
+   - Copy nội dung file `supabase-setup.sql` và chạy
+
+3. **Lấy API credentials**:
+   - Vào Settings > API
+   - Copy `Project URL` và `anon public key`
 
 ## Cài đặt và chạy
 
@@ -33,23 +45,22 @@
    npm install
    ```
 
-3. Setup database:
+3. Setup environment variables:
    ```bash
-   npx prisma migrate dev
-   npx prisma generate
+   cp .env.example .env
+   ```
+   Cập nhật `.env` với Supabase credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
    ```
 
-4. Seed dữ liệu mẫu (optional):
-   ```bash
-   npm run db:seed
-   ```
-
-5. Chạy development server:
+4. Chạy development server:
    ```bash
    npm run dev
    ```
 
-6. Mở trình duyệt tại [http://localhost:3000](http://localhost:3000)
+5. Mở trình duyệt tại [http://localhost:3000](http://localhost:3000)
 
 ## API Endpoints
 

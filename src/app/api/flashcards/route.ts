@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma, initializeDatabase } from '@/lib/prisma'
+import { flashcardDb } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    await initializeDatabase()
-    const flashcards = await prisma.flashcard.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
-    })
+    const flashcards = await flashcardDb.getAll()
     return NextResponse.json(flashcards)
   } catch (_error) {
     return NextResponse.json(
@@ -20,7 +15,6 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    await initializeDatabase()
     const body = await request.json()
     const { english, vietnamese, category, difficulty } = body
 
@@ -31,13 +25,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const flashcard = await prisma.flashcard.create({
-      data: {
-        english,
-        vietnamese,
-        category: category || 'general',
-        difficulty: difficulty || 1
-      }
+    const flashcard = await flashcardDb.create({
+      english,
+      vietnamese,
+      category: category || 'general',
+      difficulty: difficulty || 1
     })
 
     return NextResponse.json(flashcard, { status: 201 })

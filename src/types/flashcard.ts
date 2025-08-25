@@ -4,6 +4,6 @@ export interface Flashcard {
   vietnamese: string
   difficulty: number
   category: string
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }

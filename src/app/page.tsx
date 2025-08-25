@@ -1,103 +1,194 @@
-import Image from "next/image";
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Plus, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react'
+import FlashcardComponent from '@/components/FlashcardComponent'
+import AddFlashcardForm from '@/components/AddFlashcardForm'
+import { Flashcard } from '@/types/flashcard'
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Fetch flashcards from API
+  useEffect(() => {
+    fetchFlashcards()
+  }, [])
+
+  const fetchFlashcards = async () => {
+    try {
+      const response = await fetch('/api/flashcards')
+      if (response.ok) {
+        const data = await response.json()
+        setFlashcards(data)
+      }
+    } catch (error) {
+      console.error('Error fetching flashcards:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleAddFlashcard = async (newFlashcard: {
+    english: string
+    vietnamese: string
+    category: string
+    difficulty: number
+  }) => {
+    try {
+      const response = await fetch('/api/flashcards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFlashcard),
+      })
+
+      if (response.ok) {
+        const flashcard = await response.json()
+        setFlashcards([flashcard, ...flashcards])
+      }
+    } catch (error) {
+      console.error('Error adding flashcard:', error)
+      throw error
+    }
+  }
+
+  const nextCard = () => {
+    if (flashcards.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % flashcards.length)
+    }
+  }
+
+  const prevCard = () => {
+    if (flashcards.length > 0) {
+      setCurrentIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length)
+    }
+  }
+
+  const resetProgress = () => {
+    setCurrentIndex(0)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải flashcards...</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </div>
+    )
+  }
+
+  if (flashcards.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="mb-8">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Chưa có flashcard nào
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Hãy thêm từ vựng đầu tiên để bắt đầu học!
+          </p>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Thêm từ đầu tiên
+          </button>
+        </div>
+
+        {showAddForm && (
+          <AddFlashcardForm
+            onAdd={handleAddFlashcard}
+            onClose={() => setShowAddForm(false)}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        )}
+      </div>
+    )
+  }
+
+  const currentCard = flashcards[currentIndex]
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          Học Tiếng Anh với Flashcards
+        </h1>
+        <p className="text-gray-600">
+          Thẻ {currentIndex + 1} / {flashcards.length}
+        </p>
+      </div>
+
+      {/* Controls */}
+      <div className="flex justify-center gap-4 mb-8">
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          <Plus className="w-4 h-4" />
+          Thêm từ mới
+        </button>
+        <button
+          onClick={resetProgress}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
         >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <RotateCcw className="w-4 h-4" />
+          Bắt đầu lại
+        </button>
+      </div>
+
+      {/* Flashcard */}
+      <div className="mb-8">
+        <FlashcardComponent flashcard={currentCard} />
+      </div>
+
+      {/* Navigation */}
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={prevCard}
+          disabled={flashcards.length <= 1}
+          className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Trước
+        </button>
+        <button
+          onClick={nextCard}
+          disabled={flashcards.length <= 1}
+          className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Tiếp
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Progress bar */}
+      <div className="mt-8">
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            style={{
+              width: `${((currentIndex + 1) / flashcards.length) * 100}%`
+            }}
+          ></div>
+        </div>
+      </div>
+
+      {/* Add form modal */}
+      {showAddForm && (
+        <AddFlashcardForm
+          onAdd={handleAddFlashcard}
+          onClose={() => setShowAddForm(false)}
+        />
+      )}
     </div>
-  );
+  )
 }

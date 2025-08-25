@@ -19,6 +19,15 @@
   }
 }
 
+/* Flashcard flip animation styles */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

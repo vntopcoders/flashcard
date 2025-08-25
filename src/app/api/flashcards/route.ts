@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { prisma, initializeDatabase } from '@/lib/prisma'
 
 export async function GET() {
   try {
+    await initializeDatabase()
     const flashcards = await prisma.flashcard.findMany({
       orderBy: {
         createdAt: 'desc'
@@ -19,6 +20,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    await initializeDatabase()
     const body = await request.json()
     const { english, vietnamese, category, difficulty } = body
 

@@ -26,7 +26,8 @@ export async function GET(
       ...lesson,
       flashcard_count: flashcardCount
     })
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to fetch lesson:', error)
     return NextResponse.json(
       { error: 'Failed to fetch lesson' },
       { status: 500 }

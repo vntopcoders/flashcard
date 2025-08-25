@@ -11,7 +11,8 @@ export async function GET(request: NextRequest) {
       : await flashcardDb.getAll()
       
     return NextResponse.json(flashcards)
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to fetch flashcards:', error)
     return NextResponse.json(
       { error: 'Failed to fetch flashcards' },
       { status: 500 }
@@ -40,7 +41,8 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(flashcard, { status: 201 })
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to create flashcard:', error)
     return NextResponse.json(
       { error: 'Failed to create flashcard' },
       { status: 500 }

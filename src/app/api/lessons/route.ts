@@ -17,7 +17,8 @@ export async function GET() {
     )
     
     return NextResponse.json(lessonsWithCount)
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to fetch lessons:', error)
     return NextResponse.json(
       { error: 'Failed to fetch lessons' },
       { status: 500 }
@@ -47,7 +48,8 @@ export async function POST(request: NextRequest) {
       ...lesson,
       flashcard_count: 0
     }, { status: 201 })
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to create lesson:', error)
     return NextResponse.json(
       { error: 'Failed to create lesson' },
       { status: 500 }

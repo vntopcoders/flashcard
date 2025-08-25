@@ -9,7 +9,7 @@ export async function GET() {
       }
     })
     return NextResponse.json(flashcards)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to fetch flashcards' },
       { status: 500 }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(flashcard, { status: 201 })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to create flashcard' },
       { status: 500 }

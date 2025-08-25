@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const flashcard = await prisma.flashcard.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!flashcard) {
@@ -18,7 +19,7 @@ export async function GET(
     }
 
     return NextResponse.json(flashcard)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to fetch flashcard' },
       { status: 500 }
@@ -28,14 +29,15 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { english, vietnamese, category, difficulty } = body
 
     const flashcard = await prisma.flashcard.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         english,
         vietnamese,
@@ -45,7 +47,7 @@ export async function PUT(
     })
 
     return NextResponse.json(flashcard)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to update flashcard' },
       { status: 500 }
@@ -55,15 +57,16 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.flashcard.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to delete flashcard' },
       { status: 500 }

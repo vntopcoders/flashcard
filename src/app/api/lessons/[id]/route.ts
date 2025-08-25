@@ -70,7 +70,8 @@ export async function PUT(
       ...lesson,
       flashcard_count: flashcardCount
     })
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to update lesson:', error)
     return NextResponse.json(
       { error: 'Failed to update lesson' },
       { status: 500 }
@@ -104,7 +105,8 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true })
-  } catch (_error) {
+  } catch (error) {
+    console.error('Failed to delete lesson:', error)
     return NextResponse.json(
       { error: 'Failed to delete lesson' },
       { status: 500 }

@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Plus, RotateCcw, ArrowLeft, ArrowRight, BookOpen, Settings } from 'lucide-react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
+import { Plus, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react'
 import FlashcardComponent from '@/components/FlashcardComponent'
 import AddFlashcardForm from '@/components/AddFlashcardForm'
 import WelcomeDashboard from '@/components/WelcomeDashboard'
 import { Flashcard, Lesson } from '@/types/flashcard'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-export default function Home() {
+function FlashcardApp() {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -45,22 +44,8 @@ export default function Home() {
     }
   }
 
-  // Fetch flashcards from API
-  useEffect(() => {
-    fetchFlashcards()
-  }, [selectedLessonId])
-
-  // Update selected lesson info when selectedLessonId changes
-  useEffect(() => {
-    if (selectedLessonId && lessons.length > 0) {
-      const lesson = lessons.find(l => l.id === selectedLessonId)
-      setSelectedLesson(lesson || null)
-    } else {
-      setSelectedLesson(null)
-    }
-  }, [selectedLessonId, lessons])
-
-  const fetchFlashcards = async () => {
+  // Fetch flashcards from API  
+  const fetchFlashcards = useCallback(async () => {
     try {
       const url = selectedLessonId 
         ? `/api/flashcards?lesson=${selectedLessonId}`
@@ -77,7 +62,22 @@ export default function Home() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [selectedLessonId])
+
+  // Call fetchFlashcards when component mounts or selectedLessonId changes
+  useEffect(() => {
+    fetchFlashcards()
+  }, [selectedLessonId, fetchFlashcards])
+
+  // Update selected lesson info when selectedLessonId changes
+  useEffect(() => {
+    if (selectedLessonId && lessons.length > 0) {
+      const lesson = lessons.find(l => l.id === selectedLessonId)
+      setSelectedLesson(lesson || null)
+    } else {
+      setSelectedLesson(null)
+    }
+  }, [selectedLessonId, lessons])
 
   const handleAddFlashcard = async (newFlashcard: {
     english: string
@@ -298,5 +298,17 @@ export default function Home() {
       )}
       </div>
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-lg text-gray-600">Loading...</div>
+      </div>
+    }>
+      <FlashcardApp />
+    </Suspense>
   )
 }

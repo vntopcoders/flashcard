@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Book, X, ArrowLeft } from 'lucide-react'
+import { Plus, Edit, Trash2, Book, X } from 'lucide-react'
 import { Lesson } from '@/types/flashcard'
 import Link from 'next/link'
 

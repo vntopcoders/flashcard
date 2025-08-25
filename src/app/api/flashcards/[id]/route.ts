@@ -32,13 +32,14 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { english, vietnamese, category, difficulty } = body
+    const { english, vietnamese, category, difficulty, lesson_id } = body
 
     const flashcard = await flashcardDb.update(id, {
       english,
       vietnamese,
       category,
-      difficulty
+      difficulty,
+      lesson_id: lesson_id || null
     })
 
     return NextResponse.json(flashcard)

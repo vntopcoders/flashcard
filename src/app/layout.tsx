@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Ứng dụng flashcard học tiếng Anh hiệu quả",
 };
 
+import Navigation from '@/components/Navigation'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,18 +29,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
       >
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-bold text-blue-600">
-                  📚 English Flashcards
-                </h1>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <Navigation />
+        <main>
           {children}
         </main>
       </body>

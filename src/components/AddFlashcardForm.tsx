@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
+import { Lesson } from '@/types/flashcard'
 
 interface AddFlashcardFormProps {
   onAdd: (flashcard: {
@@ -9,16 +10,40 @@ interface AddFlashcardFormProps {
     vietnamese: string
     category: string
     difficulty: number
+    lesson_id: string | null
   }) => void
   onClose: () => void
+  selectedLessonId?: string | null
 }
 
-export default function AddFlashcardForm({ onAdd, onClose }: AddFlashcardFormProps) {
+export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: AddFlashcardFormProps) {
   const [english, setEnglish] = useState('')
   const [vietnamese, setVietnamese] = useState('')
   const [category, setCategory] = useState('general')
   const [difficulty, setDifficulty] = useState(1)
+  const [lessonId, setLessonId] = useState<string | null>(selectedLessonId || null)
+  const [lessons, setLessons] = useState<Lesson[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    fetchLessons()
+  }, [])
+
+  useEffect(() => {
+    setLessonId(selectedLessonId || null)
+  }, [selectedLessonId])
+
+  const fetchLessons = async () => {
+    try {
+      const response = await fetch('/api/lessons')
+      if (response.ok) {
+        const data = await response.json()
+        setLessons(data)
+      }
+    } catch (error) {
+      console.error('Error fetching lessons:', error)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,7 +60,8 @@ export default function AddFlashcardForm({ onAdd, onClose }: AddFlashcardFormPro
         english: english.trim(),
         vietnamese: vietnamese.trim(),
         category,
-        difficulty
+        difficulty,
+        lesson_id: lessonId
       })
       
       // Reset form
@@ -43,6 +69,7 @@ export default function AddFlashcardForm({ onAdd, onClose }: AddFlashcardFormPro
       setVietnamese('')
       setCategory('general')
       setDifficulty(1)
+      setLessonId(selectedLessonId || null)
       onClose()
     } catch (error) {
       console.error('Error adding flashcard:', error)
@@ -105,6 +132,25 @@ export default function AddFlashcardForm({ onAdd, onClose }: AddFlashcardFormPro
               placeholder="Nhập nghĩa tiếng Việt..."
               required
             />
+          </div>
+
+          <div>
+            <label htmlFor="lesson" className="block text-sm font-medium text-gray-700 mb-1">
+              Bài học
+            </label>
+            <select
+              id="lesson"
+              value={lessonId || ''}
+              onChange={(e) => setLessonId(e.target.value || null)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Không chọn bài học</option>
+              {lessons.map((lesson) => (
+                <option key={lesson.id} value={lesson.id}>
+                  {lesson.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { flashcardDb } from '@/lib/supabase'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const flashcards = await flashcardDb.getAll()
+    const { searchParams } = new URL(request.url)
+    const lessonId = searchParams.get('lesson')
+    
+    const flashcards = lessonId 
+      ? await flashcardDb.getByLessonId(lessonId)
+      : await flashcardDb.getAll()
+      
     return NextResponse.json(flashcards)
   } catch (_error) {
     return NextResponse.json(
@@ -16,7 +22,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { english, vietnamese, category, difficulty } = body
+    const { english, vietnamese, category, difficulty, lesson_id } = body
 
     if (!english || !vietnamese) {
       return NextResponse.json(
@@ -29,7 +35,8 @@ export async function POST(request: NextRequest) {
       english,
       vietnamese,
       category: category || 'general',
-      difficulty: difficulty || 1
+      difficulty: difficulty || 1,
+      lesson_id: lesson_id || null
     })
 
     return NextResponse.json(flashcard, { status: 201 })

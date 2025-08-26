@@ -332,7 +332,7 @@ export default function LessonsPage() {
                   <Trash2 className="h-6 w-6 text-red-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  ⚠️ Xóa bài học "{deletingLesson.name}"
+                  ⚠️ Xóa bài học &quot;{deletingLesson.name}&quot;
                 </h3>
                 <div className="text-sm text-gray-600 mb-4">
                   {deletingLesson.flashcard_count > 0 ? (

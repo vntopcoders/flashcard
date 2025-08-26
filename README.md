@@ -6,7 +6,7 @@
 
 ## Tính năng
 
-- 🔄 **Flashcard với hiệu ứng flip**: Lật thẻ để xem nghĩa tiếng Việt
+- 🔄 **Flashcard với hiệu ứng flip**: Lật thẻ để xem nghĩa
 - ➕ **Thêm từ mới**: Form dễ sử dụng để thêm từ vựng
 - 📊 **Phân loại và độ khó**: Chia từ theo danh mục và mức độ khó
 - 🎯 **Theo dõi tiến độ**: Progress bar và điều hướng thẻ

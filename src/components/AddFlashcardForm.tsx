@@ -51,7 +51,7 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
     e.preventDefault()
     
     if (!english.trim() || !vietnamese.trim()) {
-      alert('Vui lòng nhập cả từ tiếng Anh và tiếng Việt')
+      alert('Vui lòng nhập cả từ tiếng Anh và nghĩa')
       return
     }
 
@@ -132,7 +132,7 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
 
           <div>
             <label htmlFor="vietnamese" className="block text-sm font-medium text-gray-700 mb-1">
-              Tiếng Việt *
+              Nghĩa *
             </label>
             <input
               type="text"
@@ -140,7 +140,7 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
               value={vietnamese}
               onChange={(e) => setVietnamese(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 text-gray-900"
-              placeholder="Nhập nghĩa tiếng Việt..."
+              placeholder="Nhập nghĩa..."
               required
             />
           </div>

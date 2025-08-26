@@ -83,9 +83,6 @@ export default function FlashcardComponent({ flashcard }: FlashcardComponentProp
           <h2 className="text-2xl font-bold text-green-600 text-center mb-2">
             {flashcard.vietnamese}
           </h2>
-          <p className="text-sm text-gray-500 text-center">
-            Tiếng Việt
-          </p>
           <div className="absolute bottom-4 text-xs text-gray-400">
             Click to flip back
           </div>

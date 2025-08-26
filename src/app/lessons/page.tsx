@@ -67,32 +67,44 @@ export default function LessonsPage() {
   }
 
   const handleDelete = async (lesson: LessonWithCount) => {
-    console.log('Attempting to delete lesson:', lesson.name, 'with', lesson.flashcard_count, 'flashcards')
+    console.log('🗑️ Attempting to delete lesson:', lesson.name, 'with', lesson.flashcard_count, 'flashcards')
     
     if (lesson.flashcard_count > 0) {
-      alert(`Không thể xóa bài học "${lesson.name}" vì còn ${lesson.flashcard_count} flashcard(s). Hãy xóa tất cả flashcards trước.`)
+      const message = `❌ Không thể xóa bài học "${lesson.name}"!\n\n` +
+                     `Bài học này còn ${lesson.flashcard_count} flashcard(s).\n` +
+                     `Vui lòng xóa tất cả flashcards trước khi xóa bài học.`
+      alert(message)
       return
     }
 
-    if (confirm(`Bạn có chắc muốn xóa bài học "${lesson.name}"? Hành động này không thể hoàn tác.`)) {
+    const confirmMessage = `⚠️ Xác nhận xóa bài học\n\n` +
+                          `Bạn có chắc muốn xóa bài học "${lesson.name}"?\n` +
+                          `Hành động này không thể hoàn tác!`
+    
+    if (confirm(confirmMessage)) {
       try {
-        console.log('Sending DELETE request for lesson:', lesson.id)
+        console.log('🔄 Sending DELETE request for lesson:', lesson.id)
         const response = await fetch(`/api/lessons/${lesson.id}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
 
+        const responseData = await response.json()
+        console.log('📡 Server response:', responseData)
+
         if (response.ok) {
-          console.log('Delete successful, refreshing lessons')
+          console.log('✅ Delete successful, refreshing lessons')
           await fetchLessons()
-          alert(`Đã xóa bài học "${lesson.name}" thành công!`)
+          alert(`✅ Đã xóa bài học "${lesson.name}" thành công!`)
         } else {
-          const errorData = await response.json()
-          console.error('Delete failed:', errorData)
-          alert(`Lỗi khi xóa bài học: ${errorData.error || 'Unknown error'}`)
+          console.error('❌ Delete failed:', responseData)
+          alert(`❌ Lỗi khi xóa bài học: ${responseData.error || 'Unknown error'}`)
         }
       } catch (error) {
-        console.error('Error deleting lesson:', error)
-        alert('Có lỗi xảy ra khi xóa bài học. Vui lòng thử lại.')
+        console.error('💥 Network error deleting lesson:', error)
+        alert('💥 Có lỗi mạng xảy ra khi xóa bài học. Vui lòng kiểm tra kết nối và thử lại.')
       }
     }
   }
@@ -170,8 +182,17 @@ export default function LessonsPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(lesson)}
-                    className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded"
-                    disabled={lesson.flashcard_count > 0}
+                    className={`
+                      p-1.5 rounded transition-colors
+                      ${lesson.flashcard_count > 0 
+                        ? 'text-gray-400 hover:text-red-500 hover:bg-red-50' 
+                        : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                      }
+                    `}
+                    title={lesson.flashcard_count > 0 
+                      ? `Không thể xóa - còn ${lesson.flashcard_count} flashcard(s)` 
+                      : 'Xóa bài học này'
+                    }
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

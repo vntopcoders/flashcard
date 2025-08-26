@@ -24,9 +24,9 @@ export default function WordImage({
   const { getImageForWord, isLoading } = useImage()
 
   const sizeClasses = {
-    sm: 'w-20 h-20',     // 80px (was 64px)
-    md: 'w-32 h-32',     // 128px (was 96px) 
-    lg: 'w-40 h-40'      // 160px (was 128px)
+    sm: 'w-24 h-24',     // 96px (was 80px)
+    md: 'w-40 h-40',     // 160px (was 128px) 
+    lg: 'w-48 h-48'      // 192px (was 160px)
   }
 
   // Load image when word changes
@@ -99,8 +99,8 @@ export default function WordImage({
         <Image
           src={currentImageUrl}
           alt={alt || `Image for ${word}`}
-          width={160}
-          height={160}
+          width={192}
+          height={192}
           className={`
             w-full h-full object-cover rounded-lg border border-gray-200
             transition-opacity duration-300

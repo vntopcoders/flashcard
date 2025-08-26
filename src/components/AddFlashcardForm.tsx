@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import { Lesson } from '@/types/flashcard'
 import AudioButton from '@/components/AudioButton'
+import WordImage from '@/components/WordImage'
 
 interface AddFlashcardFormProps {
   onAdd: (flashcard: {
@@ -143,6 +144,26 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
               required
             />
           </div>
+
+          {/* Image Preview */}
+          {english && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Hình ảnh minh họa
+              </label>
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
+                <WordImage 
+                  word={english} 
+                  alt={`Preview image for ${english}`}
+                  size="sm"
+                />
+                <div className="text-sm text-gray-600">
+                  <p className="font-medium">Preview cho: &ldquo;{english}&rdquo;</p>
+                  <p className="text-xs text-gray-500">Hình ảnh sẽ hiển thị khi lật thẻ</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div>
             <label htmlFor="lesson" className="block text-sm font-medium text-gray-700 mb-1">

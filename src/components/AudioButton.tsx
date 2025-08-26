@@ -5,14 +5,12 @@ interface AudioButtonProps {
   word: string
   size?: 'sm' | 'md' | 'lg'
   className?: string
-  autoPlay?: boolean
 }
 
 export default function AudioButton({ 
   word, 
   size = 'md', 
-  className = '',
-  autoPlay = false
+  className = ''
 }: AudioButtonProps) {
   const { isPlaying, isLoading, error, playWord } = useAudio()
 

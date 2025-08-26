@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Flashcard } from '@/types/flashcard'
 import AudioButton from '@/components/AudioButton'
+import WordImage from '@/components/WordImage'
 
 interface FlashcardComponentProps {
   flashcard: Flashcard
@@ -29,7 +30,7 @@ export default function FlashcardComponent({ flashcard }: FlashcardComponentProp
   return (
     <div className="w-full max-w-md mx-auto">
       <div 
-        className="relative w-full h-64 cursor-pointer preserve-3d transition-transform duration-700"
+        className="relative w-full h-80 cursor-pointer preserve-3d transition-transform duration-700"
         style={{
           transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
           transformStyle: 'preserve-3d'
@@ -66,9 +67,19 @@ export default function FlashcardComponent({ flashcard }: FlashcardComponentProp
           className="absolute inset-0 w-full h-full bg-white border-2 border-green-200 rounded-xl shadow-lg flex flex-col justify-center items-center p-6 backface-hidden"
           style={{ transform: 'rotateY(180deg)' }}
         >
-          <div className="px-3 py-1 rounded-full text-xs font-medium mb-4 bg-green-100 text-green-800">
+          <div className="px-3 py-1 rounded-full text-xs font-medium mb-3 bg-green-100 text-green-800">
             {flashcard.category}
           </div>
+          
+          {/* Image for the word */}
+          <div className="mb-3">
+            <WordImage 
+              word={flashcard.english} 
+              alt={`Image for ${flashcard.english}`}
+              size="md"
+            />
+          </div>
+          
           <h2 className="text-2xl font-bold text-green-600 text-center mb-2">
             {flashcard.vietnamese}
           </h2>

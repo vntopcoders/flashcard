@@ -107,6 +107,17 @@ export const lessonDb = {
     
     if (error) throw error
     return count || 0
+  },
+
+  // Delete all flashcards in a lesson
+  async deleteAllFlashcards(id: string) {
+    const { error } = await supabase
+      .from('flashcards')
+      .delete()
+      .eq('lesson_id', id)
+    
+    if (error) throw error
+    return { success: true }
   }
 }
 

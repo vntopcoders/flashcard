@@ -13,6 +13,8 @@ export default function LessonsPage() {
   const [lessons, setLessons] = useState<LessonWithCount[]>([])
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [editingLesson, setEditingLesson] = useState<LessonWithCount | null>(null)
+  const [deletingLesson, setDeletingLesson] = useState<LessonWithCount | null>(null)
+  const [confirmCode, setConfirmCode] = useState('')
   const [loading, setLoading] = useState(true)
 
   const [formData, setFormData] = useState({
@@ -67,45 +69,46 @@ export default function LessonsPage() {
   }
 
   const handleDelete = async (lesson: LessonWithCount) => {
-    console.log('🗑️ Attempting to delete lesson:', lesson.name, 'with', lesson.flashcard_count, 'flashcards')
+    setDeletingLesson(lesson)
+    setConfirmCode('')
+  }
+
+  const handleForceDelete = async () => {
+    if (!deletingLesson) return
     
-    if (lesson.flashcard_count > 0) {
-      const message = `❌ Không thể xóa bài học "${lesson.name}"!\n\n` +
-                     `Bài học này còn ${lesson.flashcard_count} flashcard(s).\n` +
-                     `Vui lòng xóa tất cả flashcards trước khi xóa bài học.`
-      alert(message)
+    // Generate expected confirmation code (lesson name in uppercase)
+    const expectedCode = deletingLesson.name.toUpperCase()
+    
+    if (confirmCode !== expectedCode) {
+      alert(`❌ Mã xác nhận không đúng!\n\nVui lòng nhập: ${expectedCode}`)
       return
     }
 
-    const confirmMessage = `⚠️ Xác nhận xóa bài học\n\n` +
-                          `Bạn có chắc muốn xóa bài học "${lesson.name}"?\n` +
-                          `Hành động này không thể hoàn tác!`
-    
-    if (confirm(confirmMessage)) {
-      try {
-        console.log('🔄 Sending DELETE request for lesson:', lesson.id)
-        const response = await fetch(`/api/lessons/${lesson.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+    try {
+      console.log('🔄 Force deleting lesson:', deletingLesson.name)
+      const response = await fetch(`/api/lessons/${deletingLesson.id}?force=true`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-        const responseData = await response.json()
-        console.log('📡 Server response:', responseData)
+      const responseData = await response.json()
+      console.log('📡 Server response:', responseData)
 
-        if (response.ok) {
-          console.log('✅ Delete successful, refreshing lessons')
-          await fetchLessons()
-          alert(`✅ Đã xóa bài học "${lesson.name}" thành công!`)
-        } else {
-          console.error('❌ Delete failed:', responseData)
-          alert(`❌ Lỗi khi xóa bài học: ${responseData.error || 'Unknown error'}`)
-        }
-      } catch (error) {
-        console.error('💥 Network error deleting lesson:', error)
-        alert('💥 Có lỗi mạng xảy ra khi xóa bài học. Vui lòng kiểm tra kết nối và thử lại.')
+      if (response.ok) {
+        console.log('✅ Force delete successful')
+        await fetchLessons()
+        alert(`✅ Đã xóa bài học "${deletingLesson.name}" và tất cả flashcards thành công!`)
+        setDeletingLesson(null)
+        setConfirmCode('')
+      } else {
+        console.error('❌ Force delete failed:', responseData)
+        alert(`❌ Lỗi: ${responseData.error || 'Không thể xóa bài học'}`)
       }
+    } catch (error) {
+      console.error('❌ Force delete error:', error)
+      alert('❌ Có lỗi xảy ra khi xóa bài học')
     }
   }
 
@@ -316,6 +319,71 @@ export default function LessonsPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deletingLesson && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <div className="text-center mb-6">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                  <Trash2 className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  ⚠️ Xóa bài học "{deletingLesson.name}"
+                </h3>
+                <div className="text-sm text-gray-600 mb-4">
+                  {deletingLesson.flashcard_count > 0 ? (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <p className="text-yellow-800 font-medium">
+                        ⚠️ Bài học này có {deletingLesson.flashcard_count} flashcard(s)
+                      </p>
+                      <p className="text-yellow-700 mt-1">
+                        Tất cả flashcards sẽ bị xóa cùng với bài học!
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-600">Bài học này không có flashcards nào.</p>
+                  )}
+                </div>
+                <div className="text-left">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Để xác nhận, vui lòng nhập tên bài học:
+                  </label>
+                  <div className="bg-gray-100 px-3 py-2 rounded mb-2 font-mono text-sm">
+                    {deletingLesson.name.toUpperCase()}
+                  </div>
+                  <input
+                    type="text"
+                    value={confirmCode}
+                    onChange={(e) => setConfirmCode(e.target.value)}
+                    placeholder="Nhập mã xác nhận..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    autoFocus
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setDeletingLesson(null)
+                    setConfirmCode('')
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleForceDelete}
+                  disabled={confirmCode !== deletingLesson.name.toUpperCase()}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  🗑️ Xóa ngay
+                </button>
+              </div>
             </div>
           </div>
         )}

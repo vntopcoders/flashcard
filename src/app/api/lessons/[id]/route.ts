@@ -80,19 +80,28 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   props: { params: Promise<Params> }
 ) {
   try {
     const params = await props.params
+    const url = new URL(request.url)
+    const force = url.searchParams.get('force') === 'true'
     
     // Check if lesson has flashcards
     const flashcardCount = await lessonDb.getFlashcardCount(params.id)
-    if (flashcardCount > 0) {
+    
+    if (flashcardCount > 0 && !force) {
       return NextResponse.json(
         { error: 'Cannot delete lesson that contains flashcards' },
         { status: 400 }
       )
+    }
+
+    // If force delete, delete all flashcards first
+    if (force && flashcardCount > 0) {
+      console.log(`🔥 Force deleting lesson ${params.id} with ${flashcardCount} flashcards`)
+      await lessonDb.deleteAllFlashcards(params.id)
     }
 
     const success = await lessonDb.delete(params.id)
@@ -104,7 +113,10 @@ export async function DELETE(
       )
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ 
+      success: true, 
+      deletedFlashcards: force ? flashcardCount : 0 
+    })
   } catch (error) {
     console.error('Failed to delete lesson:', error)
     return NextResponse.json(

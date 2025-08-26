@@ -67,22 +67,32 @@ export default function LessonsPage() {
   }
 
   const handleDelete = async (lesson: LessonWithCount) => {
+    console.log('Attempting to delete lesson:', lesson.name, 'with', lesson.flashcard_count, 'flashcards')
+    
     if (lesson.flashcard_count > 0) {
-      alert('Không thể xóa bài học có chứa flashcards')
+      alert(`Không thể xóa bài học "${lesson.name}" vì còn ${lesson.flashcard_count} flashcard(s). Hãy xóa tất cả flashcards trước.`)
       return
     }
 
-    if (confirm(`Bạn có chắc muốn xóa bài học "${lesson.name}"?`)) {
+    if (confirm(`Bạn có chắc muốn xóa bài học "${lesson.name}"? Hành động này không thể hoàn tác.`)) {
       try {
+        console.log('Sending DELETE request for lesson:', lesson.id)
         const response = await fetch(`/api/lessons/${lesson.id}`, {
           method: 'DELETE'
         })
 
         if (response.ok) {
+          console.log('Delete successful, refreshing lessons')
           await fetchLessons()
+          alert(`Đã xóa bài học "${lesson.name}" thành công!`)
+        } else {
+          const errorData = await response.json()
+          console.error('Delete failed:', errorData)
+          alert(`Lỗi khi xóa bài học: ${errorData.error || 'Unknown error'}`)
         }
       } catch (error) {
         console.error('Error deleting lesson:', error)
+        alert('Có lỗi xảy ra khi xóa bài học. Vui lòng thử lại.')
       }
     }
   }

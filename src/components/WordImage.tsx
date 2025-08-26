@@ -24,9 +24,9 @@ export default function WordImage({
   const { getImageForWord, isLoading } = useImage()
 
   const sizeClasses = {
-    sm: 'w-16 h-16',
-    md: 'w-24 h-24',
-    lg: 'w-32 h-32'
+    sm: 'w-20 h-20',     // 80px (was 64px)
+    md: 'w-32 h-32',     // 128px (was 96px) 
+    lg: 'w-40 h-40'      // 160px (was 128px)
   }
 
   // Load image when word changes
@@ -68,7 +68,7 @@ export default function WordImage({
   if (!word && showPlaceholder) {
     return (
       <div className={`${sizeClasses[size]} bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center ${className}`}>
-        <ImageIcon className="w-6 h-6 text-gray-400" />
+        <ImageIcon className="w-8 h-8 text-gray-400" />
       </div>
     )
   }
@@ -82,14 +82,14 @@ export default function WordImage({
       {/* Loading spinner */}
       {(isLoading || (!imageLoaded && !imageError && currentImageUrl)) && (
         <div className="absolute inset-0 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
-          <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-gray-400 animate-spin" />
         </div>
       )}
 
       {/* Error placeholder */}
       {imageError && showPlaceholder && (
         <div className="absolute inset-0 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
-          <ImageIcon className="w-6 h-6 text-gray-400" />
+          <ImageIcon className="w-8 h-8 text-gray-400" />
           <span className="sr-only">No image available</span>
         </div>
       )}
@@ -99,8 +99,8 @@ export default function WordImage({
         <Image
           src={currentImageUrl}
           alt={alt || `Image for ${word}`}
-          width={96}
-          height={96}
+          width={160}
+          height={160}
           className={`
             w-full h-full object-cover rounded-lg border border-gray-200
             transition-opacity duration-300

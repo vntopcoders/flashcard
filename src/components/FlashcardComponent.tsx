@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Flashcard } from '@/types/flashcard'
+import AudioButton from '@/components/AudioButton'
 
 interface FlashcardComponentProps {
   flashcard: Flashcard
@@ -40,9 +41,18 @@ export default function FlashcardComponent({ flashcard }: FlashcardComponentProp
           <div className={`px-3 py-1 rounded-full text-xs font-medium mb-4 ${getDifficultyColor(flashcard.difficulty)}`}>
             Level {flashcard.difficulty}
           </div>
-          <h2 className="text-2xl font-bold text-blue-600 text-center mb-2">
-            {flashcard.english}
-          </h2>
+          
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-2xl font-bold text-blue-600 text-center">
+              {flashcard.english}
+            </h2>
+            <AudioButton 
+              word={flashcard.english} 
+              size="md"
+              className="flex-shrink-0"
+            />
+          </div>
+          
           <p className="text-sm text-gray-500 text-center">
             English
           </p>

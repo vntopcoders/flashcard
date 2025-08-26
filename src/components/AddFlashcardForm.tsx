@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import { Lesson } from '@/types/flashcard'
+import AudioButton from '@/components/AudioButton'
 
 interface AddFlashcardFormProps {
   onAdd: (flashcard: {
@@ -108,15 +109,24 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
             <label htmlFor="english" className="block text-sm font-medium text-gray-700 mb-1">
               Tiếng Anh *
             </label>
-            <input
-              type="text"
-              id="english"
-              value={english}
-              onChange={(e) => setEnglish(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Nhập từ tiếng Anh..."
-              required
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                id="english"
+                value={english}
+                onChange={(e) => setEnglish(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 text-gray-900"
+                placeholder="Nhập từ tiếng Anh..."
+                required
+              />
+              {english && (
+                <AudioButton 
+                  word={english} 
+                  size="md"
+                  className="flex-shrink-0"
+                />
+              )}
+            </div>
           </div>
 
           <div>
@@ -128,7 +138,7 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
               id="vietnamese"
               value={vietnamese}
               onChange={(e) => setVietnamese(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 text-gray-900"
               placeholder="Nhập nghĩa tiếng Việt..."
               required
             />

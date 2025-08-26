@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ImageIcon, Loader2 } from 'lucide-react'
 import { useImage } from '@/hooks/useImage'
@@ -20,7 +20,8 @@ export default function WordImage({
 }: WordImageProps) {
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
-  const { getImageForWord } = useImage()
+  const [currentImageUrl, setCurrentImageUrl] = useState('')
+  const { getImageForWord, isLoading } = useImage()
 
   const sizeClasses = {
     sm: 'w-16 h-16',
@@ -28,7 +29,31 @@ export default function WordImage({
     lg: 'w-32 h-32'
   }
 
-  const imageUrl = getImageForWord(word)
+  // Load image when word changes
+  useEffect(() => {
+    if (!word) {
+      setCurrentImageUrl('')
+      setImageLoaded(false)
+      setImageError(false)
+      return
+    }
+
+    const loadImage = async () => {
+      try {
+        setImageLoaded(false)
+        setImageError(false)
+        const url = await getImageForWord(word)
+        if (url) {
+          setCurrentImageUrl(url)
+        }
+      } catch (error) {
+        console.error('Failed to load image:', error)
+        setImageError(true)
+      }
+    }
+
+    loadImage()
+  }, [word, getImageForWord])
 
   const handleImageLoad = () => {
     setImageLoaded(true)
@@ -55,7 +80,7 @@ export default function WordImage({
   return (
     <div className={`relative ${sizeClasses[size]} ${className}`}>
       {/* Loading spinner */}
-      {!imageLoaded && !imageError && (
+      {(isLoading || (!imageLoaded && !imageError && currentImageUrl)) && (
         <div className="absolute inset-0 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
           <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
         </div>
@@ -70,9 +95,9 @@ export default function WordImage({
       )}
 
       {/* Actual image */}
-      {imageUrl && (
+      {currentImageUrl && !isLoading && (
         <Image
-          src={imageUrl}
+          src={currentImageUrl}
           alt={alt || `Image for ${word}`}
           width={96}
           height={96}

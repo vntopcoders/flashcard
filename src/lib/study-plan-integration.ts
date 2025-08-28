@@ -137,7 +137,11 @@ export class StudyPlanIntegrationService {
       newCards: recommendedNew,
       vocabularyTarget: dailyVocabTarget,
       dueCardsCount: totalDue,
-      studySchedule
+      studySchedule: {
+        totalDue: studySchedule.dueToday || 0,
+        newCardsToday: studySchedule.newAvailable || 0,
+        reviewsToday: studySchedule.reviewsCompleted || 0
+      }
     })
 
     return {

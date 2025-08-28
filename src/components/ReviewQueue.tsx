@@ -56,6 +56,12 @@ export default function ReviewQueue() {
     totalDue: number;
     newCardsToday: number;
     reviewsToday: number;
+    newAvailable: number;
+    reviewsCompleted: number;
+    streak: number;
+    recommendedSession: {
+      reason: string;
+    };
   } | null>(null)
 
   // Load study schedule on mount
@@ -434,7 +440,7 @@ export default function ReviewQueue() {
               <h3 className="font-semibold text-gray-800">Due Today</h3>
             </div>
             <div className="text-2xl font-bold text-blue-600">
-              {studySchedule.dueToday}
+              {studySchedule.totalDue}
             </div>
             <p className="text-sm text-gray-600">Cards ready for review</p>
           </div>

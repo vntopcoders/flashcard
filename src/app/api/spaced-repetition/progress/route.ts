@@ -9,7 +9,7 @@ export async function GET() {
       success: true,
       progress,
       summary: {
-        total_cards: progress.cardStates.reduce((sum, state) => sum + (state.count || 0), 0),
+        total_cards: progress.cardStates.reduce((sum: number, state: { count?: number }) => sum + (state.count || 0), 0),
         cards_due_today: progress.dueToday,
         recent_activity: progress.recentStats.length
       }

@@ -438,7 +438,7 @@ export class SpacedRepetitionService {
    */
   static async getStudySchedule() {
     const now = new Date()
-    const today = now.toISOString().split('T')[0]
+    // const today = now.toISOString().split('T')[0] // Commented out as not used
     
     // Get cards due today
     const dueTodayPromise = this.getCardsDueForReview(50)

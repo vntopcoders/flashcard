@@ -162,11 +162,15 @@ export class StudyPlanIntegrationService {
       newCards: number
       vocabularyTarget: number
       dueCardsCount: number
-      studySchedule: any
+      studySchedule: {
+        totalDue: number;
+        newCardsToday: number;
+        reviewsToday: number;
+      }
     }
   ): StudySession[] {
     const sessions: StudySession[] = []
-    const dailyMinutes = weekConfig.dailyHours * 60
+    // const dailyMinutes = weekConfig.dailyHours * 60 // Commented out as not used
 
     // Morning vocabulary session (always first)
     sessions.push({
@@ -469,7 +473,7 @@ export const formatWeekPhase = (week: number): { phase: string; color: string } 
   return { phase: 'Final Prep', color: 'bg-orange-100 text-orange-800' }
 }
 
-export const getSkillPriority = (phase: string, week: number): string[] => {
+export const getSkillPriority = (phase: string): string[] => {
   switch (phase) {
     case 'Foundation':
       return ['vocabulary', 'grammar', 'reading', 'listening']

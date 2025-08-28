@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Clock, 
   CheckCircle, 
-  XCircle, 
   RotateCcw, 
   Brain, 
   Target,
@@ -53,7 +52,11 @@ export default function ReviewQueue() {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [reviewStartTime, setReviewStartTime] = useState<Date | null>(null)
-  const [studySchedule, setStudySchedule] = useState<any>(null)
+  const [studySchedule, setStudySchedule] = useState<{
+    totalDue: number;
+    newCardsToday: number;
+    reviewsToday: number;
+  } | null>(null)
 
   // Load study schedule on mount
   useEffect(() => {
@@ -450,7 +453,7 @@ export default function ReviewQueue() {
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <Target className="w-5 h-5 text-yellow-600" />
-              <h3 className="font-semibold text-gray-800">Today's Progress</h3>
+              <h3 className="font-semibold text-gray-800">Today&apos;s Progress</h3>
             </div>
             <div className="text-2xl font-bold text-yellow-600">
               {studySchedule.reviewsCompleted}

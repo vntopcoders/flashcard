@@ -3,18 +3,13 @@
 import { useState, useEffect } from 'react'
 import { 
   BarChart3, 
-  TrendingUp, 
-  Calendar, 
   Target, 
-  Award,
   Clock,
   Brain,
-  Zap,
   BookOpen,
   CheckCircle,
-  Star,
-  Trophy,
-  Flame
+  Flame,
+  RotateCcw
 } from 'lucide-react'
 
 interface DashboardData {

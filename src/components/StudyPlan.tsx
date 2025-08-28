@@ -7,18 +7,14 @@ import {
   CheckCircle, 
   Clock, 
   BookOpen,
-  TrendingUp,
-  Award,
   Flame,
-  ChevronRight,
   Play,
   Pause,
   BarChart3,
   Brain,
   Edit3,
   Headphones,
-  MessageSquare,
-  Star
+  MessageSquare
 } from 'lucide-react'
 import AchievementHeader from './AchievementHeader'
 import AchievementPanel from './AchievementPanel'
@@ -504,7 +500,7 @@ export default function StudyPlan() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-800">
-                Today's Study Schedule - Day {studyData.currentDay}
+                Today&apos;s Study Schedule - Day {studyData.currentDay}
               </h2>
               <div className="text-sm text-gray-600">
                 Total: {studyData.todaysTasks.reduce((sum, task) => sum + task.duration, 0)} minutes
@@ -744,7 +740,7 @@ export default function StudyPlan() {
             <div className="relative">
               <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
               <div className="space-y-6">
-                {studyData.weeklyPlans.map((week, index) => {
+                {studyData.weeklyPlans.map((week) => {
                   const phase = getWeekPhase(week.week)
                   return (
                     <div key={week.week} className="relative flex items-start gap-4">

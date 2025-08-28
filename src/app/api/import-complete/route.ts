@@ -313,15 +313,19 @@ export async function POST(request: NextRequest) {
     
     const { importType = 'all' } = body
 
-    console.log(`Starting import for type: ${importType}`)
+    console.log(`Starting complete import for type: ${importType}`)
 
-    let importedLessons = 0
-    let importedFlashcards = 0
+    let totalImportedLessons = 0
+    let totalImportedFlashcards = 0
+    const importResults: any = {}
 
-    // Import IELTS Complete Levels
+    // Step 1: Import IELTS Complete Levels (base data from this file)
     if (importType === 'all' || importType === 'ielts') {
-      console.log('Importing IELTS Complete Academic Wordlist...')
+      console.log('Step 1: Importing IELTS Complete Academic Wordlist...')
       
+      let importedLessons = 0
+      let importedFlashcards = 0
+
       const ieltsLevels = [
         { level: 1, data: ieltsCompleteData.level1, color: '#10B981' },
         { level: 2, data: ieltsCompleteData.level2, color: '#3B82F6' },
@@ -364,10 +368,8 @@ export async function POST(request: NextRequest) {
                   lesson_id: lesson.id
                 })
                 importedFlashcards++
-                console.log(`Added word: ${word.english} to lesson: ${lesson.name}`)
               } catch (error) {
                 console.error(`Failed to add word ${word.english}:`, error)
-                // Continue without incrementing counter
               }
             }
           } catch {
@@ -375,12 +377,8 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    }
 
-    // Import Topic-based Vocabulary
-    if (importType === 'all' || importType === 'topics') {
-      console.log('Importing Topic-based Vocabulary...')
-      
+      // Import Topic-based Vocabulary
       const topics = [
         { name: 'Business & Economics', data: topicBasedData.business, color: '#059669', category: 'business' },
         { name: 'Technology & Innovation', data: topicBasedData.technology, color: '#7C3AED', category: 'technology' },
@@ -412,7 +410,6 @@ export async function POST(request: NextRequest) {
                 lesson_id: lesson.id
               })
               importedFlashcards++
-              console.log(`Added word: ${word.english} to topic lesson: ${lesson.name}`)
             } catch (error) {
               console.error(`Failed to add word ${word.english} to topic:`, error)
             }
@@ -421,19 +418,88 @@ export async function POST(request: NextRequest) {
           console.log(`Topic lesson ${topic.name} might already exist, skipping...`)
         }
       }
+
+      totalImportedLessons += importedLessons
+      totalImportedFlashcards += importedFlashcards
+      importResults.ielts_complete = { lessons: importedLessons, flashcards: importedFlashcards }
     }
+
+    // Step 2: Call Academic Word List API
+    console.log('Step 2: Importing Academic Word List (300 words)...')
+    try {
+      const awlResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/api/import-awl`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const awlResult = await awlResponse.json()
+      if (awlResult.success) {
+        totalImportedLessons += awlResult.total_lessons || 0
+        totalImportedFlashcards += awlResult.total_flashcards || 0
+        importResults.awl = { lessons: awlResult.total_lessons || 0, flashcards: awlResult.total_flashcards || 0 }
+        console.log(`AWL imported: ${awlResult.total_flashcards} words`)
+      } else {
+        console.error('AWL import failed:', awlResult)
+      }
+    } catch (error) {
+      console.error('Error calling AWL import:', error)
+    }
+
+    // Step 3: Call IELTS Liz API
+    console.log('Step 3: Importing IELTS Liz vocabulary (360 words)...')
+    try {
+      const ieltsLizResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/api/import-ielts-liz`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const ieltsLizResult = await ieltsLizResponse.json()
+      if (ieltsLizResult.success) {
+        totalImportedLessons += ieltsLizResult.total_lessons || 0
+        totalImportedFlashcards += ieltsLizResult.total_flashcards || 0
+        importResults.ielts_liz = { lessons: ieltsLizResult.total_lessons || 0, flashcards: ieltsLizResult.total_flashcards || 0 }
+        console.log(`IELTS Liz imported: ${ieltsLizResult.total_flashcards} words`)
+      } else {
+        console.error('IELTS Liz import failed:', ieltsLizResult)
+      }
+    } catch (error) {
+      console.error('Error calling IELTS Liz import:', error)
+    }
+
+    // Step 4: Call IELTS 4000 Words API
+    console.log('Step 4: Importing IELTS 4000 Words (240 words)...')
+    try {
+      const ielts4000Response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/api/import-4000-words`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const ielts4000Result = await ielts4000Response.json()
+      if (ielts4000Result.success) {
+        totalImportedLessons += ielts4000Result.total_lessons || 0
+        totalImportedFlashcards += ielts4000Result.total_flashcards || 0
+        importResults.ielts_4000 = { lessons: ielts4000Result.total_lessons || 0, flashcards: ielts4000Result.total_flashcards || 0 }
+        console.log(`IELTS 4000 imported: ${ielts4000Result.total_flashcards} words`)
+      } else {
+        console.error('IELTS 4000 import failed:', ielts4000Result)
+      }
+    } catch (error) {
+      console.error('Error calling IELTS 4000 import:', error)
+    }
+
+    console.log(`Complete import finished! Total: ${totalImportedFlashcards} words, ${totalImportedLessons} lessons`)
 
     return NextResponse.json({
       success: true,
-      message: 'Complete vocabulary import finished successfully!',
+      message: `🎉 Import toàn bộ hệ thống từ vựng IELTS thành công! Đã import ${totalImportedFlashcards} từ vựng trong ${totalImportedLessons} bài học.`,
       imported: {
-        lessons: importedLessons,
-        flashcards: importedFlashcards
+        lessons: totalImportedLessons,
+        flashcards: totalImportedFlashcards
       },
+      breakdown: importResults,
       details: {
-        ielts_levels: importType === 'all' || importType === 'ielts' ? '5 levels (500 words)' : 'skipped',
-        topic_based: importType === 'all' || importType === 'topics' ? '5 topics (100 words)' : 'skipped',
-        total_words: importedFlashcards
+        ielts_complete: importResults.ielts_complete?.flashcards || 0,
+        academic_word_list: importResults.awl?.flashcards || 0,
+        ielts_liz_method: importResults.ielts_liz?.flashcards || 0,
+        ielts_4000_words: importResults.ielts_4000?.flashcards || 0,
+        total_words: totalImportedFlashcards
       }
     })
 

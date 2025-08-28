@@ -5,13 +5,23 @@ ALTER TABLE flashcards ADD COLUMN ipa TEXT;
 DELETE FROM flashcards;
 DELETE FROM lessons;
 
--- Create IELTS lessons
+-- Create IELTS lessons with more comprehensive coverage
 INSERT INTO lessons (name, description, color) VALUES
 ('IELTS Level 1 (1-20)', 'IELTS Academic Wordlist - Level 1: Từ cơ bản nhất (1-20)', '#10B981'),
 ('IELTS Level 1 (21-40)', 'IELTS Academic Wordlist - Level 1: Từ cơ bản nhất (21-40)', '#059669'),
 ('IELTS Level 1 (41-60)', 'IELTS Academic Wordlist - Level 1: Từ cơ bản nhất (41-60)', '#047857'),
 ('IELTS Level 1 (61-80)', 'IELTS Academic Wordlist - Level 1: Từ cơ bản nhất (61-80)', '#065F46'),
-('IELTS Level 1 (81-100)', 'IELTS Academic Wordlist - Level 1: Từ cơ bản nhất (81-100)', '#064E3B');
+('IELTS Level 1 (81-100)', 'IELTS Academic Wordlist - Level 1: Từ cơ bản nhất (81-100)', '#064E3B'),
+('IELTS Level 2 (101-150)', 'IELTS Academic Wordlist - Level 2: Từ trung cấp (101-150)', '#3B82F6'),
+('IELTS Level 2 (151-200)', 'IELTS Academic Wordlist - Level 2: Từ trung cấp (151-200)', '#2563EB'),
+('IELTS Level 2 (201-250)', 'IELTS Academic Wordlist - Level 2: Từ trung cấp (201-250)', '#1D4ED8'),
+('IELTS Level 3 (251-300)', 'IELTS Academic Wordlist - Level 3: Từ nâng cao (251-300)', '#7C2D12'),
+('IELTS Level 3 (301-350)', 'IELTS Academic Wordlist - Level 3: Từ nâng cao (301-350)', '#92400E'),
+('IELTS Level 4 (351-400)', 'IELTS Academic Wordlist - Level 4: Từ cao cấp (351-400)', '#BE185D'),
+('IELTS Level 4 (401-450)', 'IELTS Academic Wordlist - Level 4: Từ cao cấp (401-450)', '#C2410C'),
+('IELTS Level 5 (451-500)', 'IELTS Academic Wordlist - Level 5: Từ chuyên sâu (451-500)', '#7E22CE'),
+('AWL Sublist 1', 'Academic Word List - Sublist 1: Từ học thuật quan trọng nhất', '#DC2626'),
+('AWL Sublist 2', 'Academic Word List - Sublist 2: Từ học thuật cần thiết', '#EA580C');
 
 -- Insert IELTS Level 1 vocabulary (1-20)
 INSERT INTO flashcards (english, vietnamese, ipa, category, difficulty, lesson_id) VALUES

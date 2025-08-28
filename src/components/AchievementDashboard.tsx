@@ -46,7 +46,11 @@ export default function AchievementDashboard() {
 
   const recentAchievements = achievements
     .filter(a => a.isUnlocked)
-    .sort((a, b) => (b.unlockedAt?.getTime() || 0) - (a.unlockedAt?.getTime() || 0))
+    .sort((a, b) => {
+      const aTime = a.unlockedAt ? (a.unlockedAt instanceof Date ? a.unlockedAt.getTime() : new Date(a.unlockedAt).getTime()) : 0
+      const bTime = b.unlockedAt ? (b.unlockedAt instanceof Date ? b.unlockedAt.getTime() : new Date(b.unlockedAt).getTime()) : 0
+      return bTime - aTime
+    })
     .slice(0, 5)
 
   const nextAchievements = achievements

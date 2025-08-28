@@ -11,7 +11,7 @@ export interface Achievement {
   requirement: number
   progress: number
   isUnlocked: boolean
-  unlockedAt?: Date
+  unlockedAt?: Date | string
   rarity: 'bronze' | 'silver' | 'gold' | 'platinum'
   points: number
 }
@@ -143,7 +143,10 @@ export default function AchievementBadge({
 
       {/* New Achievement Glow */}
       {isUnlocked && achievement.unlockedAt && 
-       new Date().getTime() - achievement.unlockedAt.getTime() < 5000 && (
+       (() => {
+         const unlockedTime = achievement.unlockedAt instanceof Date ? achievement.unlockedAt.getTime() : new Date(achievement.unlockedAt).getTime()
+         return new Date().getTime() - unlockedTime < 5000
+       })() && (
         <div className={`
           absolute inset-0 rounded-full animate-ping
           ${colors.bg} opacity-75

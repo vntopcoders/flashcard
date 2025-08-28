@@ -32,7 +32,9 @@ export default function AchievementPanel({
   const sortedAchievements = [...filteredAchievements].sort((a, b) => {
     if (sortBy === 'recent') {
       if (a.isUnlocked && b.isUnlocked) {
-        return (b.unlockedAt?.getTime() || 0) - (a.unlockedAt?.getTime() || 0)
+        const aTime = a.unlockedAt ? (a.unlockedAt instanceof Date ? a.unlockedAt.getTime() : new Date(a.unlockedAt).getTime()) : 0
+        const bTime = b.unlockedAt ? (b.unlockedAt instanceof Date ? b.unlockedAt.getTime() : new Date(b.unlockedAt).getTime()) : 0
+        return bTime - aTime
       }
       return (b.isUnlocked ? 1 : 0) - (a.isUnlocked ? 1 : 0)
     }

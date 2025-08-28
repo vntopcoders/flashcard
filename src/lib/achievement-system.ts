@@ -402,8 +402,16 @@ export class AchievementSystem {
     cutoff.setDate(cutoff.getDate() - days)
     
     return this.achievements
-      .filter(a => a.isUnlocked && a.unlockedAt && a.unlockedAt > cutoff)
-      .sort((a, b) => (b.unlockedAt?.getTime() || 0) - (a.unlockedAt?.getTime() || 0))
+      .filter(a => {
+        if (!a.isUnlocked || !a.unlockedAt) return false
+        const unlockedDate = a.unlockedAt instanceof Date ? a.unlockedAt : new Date(a.unlockedAt)
+        return unlockedDate > cutoff
+      })
+      .sort((a, b) => {
+        const aTime = a.unlockedAt instanceof Date ? a.unlockedAt.getTime() : new Date(a.unlockedAt!).getTime()
+        const bTime = b.unlockedAt instanceof Date ? b.unlockedAt.getTime() : new Date(b.unlockedAt!).getTime()
+        return bTime - aTime
+      })
   }
 
   static getNextAchievements(limit: number = 3): Achievement[] {
@@ -446,6 +454,8 @@ export class AchievementSystem {
       achievement.isUnlocked = achievement.progress >= achievement.requirement
       if (achievement.isUnlocked && !achievement.unlockedAt) {
         achievement.unlockedAt = new Date()
+      } else if (achievement.unlockedAt && typeof achievement.unlockedAt === 'string') {
+        achievement.unlockedAt = new Date(achievement.unlockedAt)
       }
     })
 

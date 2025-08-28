@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Calendar
 } from 'lucide-react'
+import PronunciationPlayer from './PronunciationPlayer'
 
 interface ReviewCard {
   id: string
@@ -349,12 +350,21 @@ export default function ReviewQueue() {
             {!isFlipped ? (
               // Front side - English word
               <div className="text-center">
-                <div className="text-4xl font-bold text-gray-800 mb-4">
-                  {currentCard.english}
+                <div className="flex items-center justify-center gap-4 mb-4">
+                  <div className="text-4xl font-bold text-gray-800">
+                    {currentCard.english}
+                  </div>
+                  <PronunciationPlayer 
+                    text={currentCard.english}
+                    type="word"
+                    size="large"
+                    showAccentSelector={true}
+                    className="mt-2"
+                  />
                 </div>
                 {currentCard.ipa && (
                   <div className="text-lg text-gray-600 mb-4">
-                    {currentCard.ipa}
+                    /{currentCard.ipa}/
                   </div>
                 )}
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">
@@ -370,12 +380,20 @@ export default function ReviewQueue() {
                 <div className="text-3xl font-bold text-blue-600 mb-4">
                   {currentCard.vietnamese}
                 </div>
-                <div className="text-xl text-gray-700 mb-4">
-                  {currentCard.english}
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="text-xl text-gray-700">
+                    {currentCard.english}
+                  </div>
+                  <PronunciationPlayer 
+                    text={currentCard.english}
+                    type="word"
+                    size="medium"
+                    accent="US"
+                  />
                 </div>
                 {currentCard.ipa && (
                   <div className="text-lg text-gray-600 mb-4">
-                    {currentCard.ipa}
+                    /{currentCard.ipa}/
                   </div>
                 )}
                 {currentCard.lesson && (

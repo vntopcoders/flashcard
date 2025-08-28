@@ -300,7 +300,7 @@ const topicBasedData = {
 
 export async function POST(request: NextRequest) {
   try {
-    let body: any = {}
+    let body: { importType?: string } = {}
     
     // Safely parse JSON body
     try {

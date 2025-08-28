@@ -10,7 +10,7 @@ export interface Flashcard {
 }
 
 // In-memory storage
-let flashcards: Flashcard[] = [
+const flashcards: Flashcard[] = [
     {
         id: '1',
         english: 'Hello',

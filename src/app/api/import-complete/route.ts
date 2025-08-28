@@ -300,7 +300,17 @@ const topicBasedData = {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    let body: any = {}
+    
+    // Safely parse JSON body
+    try {
+      const text = await request.text()
+      body = text ? JSON.parse(text) : {}
+    } catch {
+      // If no body or invalid JSON, use empty object
+      body = {}
+    }
+    
     const { importType = 'all' } = body
 
     console.log(`Starting import for type: ${importType}`)

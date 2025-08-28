@@ -317,7 +317,7 @@ export async function POST(request: NextRequest) {
 
     let totalImportedLessons = 0
     let totalImportedFlashcards = 0
-    const importResults: any = {}
+    const importResults: Record<string, { lessons: number; flashcards: number }> = {}
 
     // Step 1: Import IELTS Complete Levels (base data from this file)
     if (importType === 'all' || importType === 'ielts') {

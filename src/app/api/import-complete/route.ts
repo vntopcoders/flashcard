@@ -364,8 +364,10 @@ export async function POST(request: NextRequest) {
                   lesson_id: lesson.id
                 })
                 importedFlashcards++
-              } catch {
-                console.log(`Word ${word.english} might already exist, skipping...`)
+                console.log(`Added word: ${word.english} to lesson: ${lesson.name}`)
+              } catch (error) {
+                console.error(`Failed to add word ${word.english}:`, error)
+                // Continue without incrementing counter
               }
             }
           } catch {
@@ -410,8 +412,9 @@ export async function POST(request: NextRequest) {
                 lesson_id: lesson.id
               })
               importedFlashcards++
-            } catch {
-              console.log(`Word ${word.english} might already exist, skipping...`)
+              console.log(`Added word: ${word.english} to topic lesson: ${lesson.name}`)
+            } catch (error) {
+              console.error(`Failed to add word ${word.english} to topic:`, error)
             }
           }
         } catch {

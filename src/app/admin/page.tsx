@@ -197,6 +197,41 @@ export default function AdminPage() {
                       )}
                     </button>
 
+                    {/* New IELTS Package Imports */}
+                    <div className="w-full border-t border-gray-300 my-4"></div>
+                    <h3 className="w-full text-lg font-medium text-gray-700 mb-2">📦 Import từng gói từ vựng (3000+ từ mới):</h3>
+                    
+                    <button
+                      onClick={() => handleImport('/api/import-ielts-core')}
+                      disabled={isImporting}
+                      className="inline-flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      IELTS Core 1000 Words (Band 4.0-6.0)
+                    </button>
+
+                    <button
+                      onClick={() => handleImport('/api/import-ielts-academic')}
+                      disabled={isImporting}
+                      className="inline-flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      IELTS Academic 1000 Words (Band 6.0-7.0)
+                    </button>
+
+                    <button
+                      onClick={() => handleImport('/api/import-ielts-advanced')}
+                      disabled={isImporting}
+                      className="inline-flex items-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      IELTS Advanced 1000 Words (Band 7.0-9.0)
+                    </button>
+
+                    {/* Existing imports separator */}
+                    <div className="w-full border-t border-gray-300 my-4"></div>
+                    <h3 className="w-full text-lg font-medium text-gray-700 mb-2">📚 Import từ nguồn cũ:</h3>
+
                     <button
                       onClick={() => handleImport('/api/import-awl')}
                       disabled={isImporting}

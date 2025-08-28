@@ -354,11 +354,11 @@ export async function POST(request: NextRequest) {
                   lesson_id: lesson.id
                 })
                 importedFlashcards++
-              } catch (error) {
+              } catch {
                 console.log(`Word ${word.english} might already exist, skipping...`)
               }
             }
-          } catch (error) {
+          } catch {
             console.log(`Lesson ${lessonName} might already exist, skipping...`)
           }
         }
@@ -400,11 +400,11 @@ export async function POST(request: NextRequest) {
                 lesson_id: lesson.id
               })
               importedFlashcards++
-            } catch (error) {
+            } catch {
               console.log(`Word ${word.english} might already exist, skipping...`)
             }
           }
-        } catch (error) {
+        } catch {
           console.log(`Topic lesson ${topic.name} might already exist, skipping...`)
         }
       }

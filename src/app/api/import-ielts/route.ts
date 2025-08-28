@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { lessonDb, flashcardDb } from '@/lib/supabase'
 
 // IELTS Level 1 data with Vietnamese meanings and IPA pronunciation
@@ -114,7 +114,7 @@ const ieltsLevel1Data = [
   { english: 'transport', vietnamese: 'vận chuyển', ipa: '/ˈtrænspɔːrt/' }
 ]
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('Starting IELTS data import...')
 
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
         const createdLesson = await lessonDb.create(lesson)
         createdLessons.push(createdLesson)
         console.log(`Created lesson: ${createdLesson.name}`)
-      } catch (error) {
+      } catch {
         console.log(`Lesson ${lesson.name} might already exist, skipping...`)
         // Try to find existing lesson
         const existingLessons = await lessonDb.getAll()
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
             lesson_id: lesson.id
           })
           importedCount++
-        } catch (error) {
+        } catch {
           console.log(`Word ${word.english} might already exist, skipping...`)
         }
       }

@@ -10,7 +10,7 @@ export interface Flashcard {
 }
 
 // In-memory storage
-let flashcards: Flashcard[] = [
+const flashcards: Flashcard[] = [
     {
         id: '1',
         english: 'Hello',
@@ -61,7 +61,7 @@ let flashcards: Flashcard[] = [
 export const memoryDb = {
     flashcard: {
         findMany: (options?: { orderBy?: { createdAt: 'desc' | 'asc' } }) => {
-            let result = [...flashcards]
+            const result = [...flashcards]
             if (options?.orderBy?.createdAt === 'desc') {
                 result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             }

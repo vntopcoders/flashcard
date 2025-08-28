@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Download, Upload, CheckCircle, AlertCircle, BookOpen, Globe, BarChart3 } from 'lucide-react'
+import { Download, CheckCircle, AlertCircle, BookOpen, Globe, BarChart3 } from 'lucide-react'
 
 export default function AdminPage() {
   const [isImporting, setIsImporting] = useState(false)
@@ -12,8 +12,26 @@ export default function AdminPage() {
       lessons: number
       flashcards: number
     }
-    details?: any
-    data?: any
+    details?: {
+      ielts_levels: number
+      topic_based: number
+      total_words: number
+    }
+    data?: {
+      overview: {
+        total_flashcards: number
+        total_lessons: number
+        total_categories: number
+        average_cards_per_lesson: number
+      }
+      ielts_progress: Record<string, number>
+      top_lessons: Array<{
+        id: string
+        name: string
+        flashcard_count: number
+        difficulty_level: string
+      }>
+    }
   } | null>(null)
 
   const handleImport = async (endpoint: string) => {
@@ -30,10 +48,10 @@ export default function AdminPage() {
 
       const result = await response.json()
       setImportResult(result)
-    } catch (error) {
+    } catch (err) {
       setImportResult({
         success: false,
-        message: 'Có lỗi xảy ra khi import dữ liệu'
+        message: err instanceof Error ? err.message : 'Có lỗi xảy ra khi import'
       })
     } finally {
       setIsImporting(false)
@@ -330,7 +348,7 @@ export default function AdminPage() {
                             <div className="mt-4">
                               <h5 className="font-medium text-gray-800 mb-3">🏆 Top 5 bài học phong phú nhất:</h5>
                               <div className="space-y-2">
-                                {importResult.data.top_lessons.slice(0, 5).map((lesson: any, index: number) => (
+                                {importResult.data.top_lessons.slice(0, 5).map((lesson, index: number) => (
                                   <div key={lesson.id} className="flex justify-between items-center bg-white p-3 rounded border border-gray-200 hover:bg-gray-50">
                                     <div className="flex items-center gap-3">
                                       <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">

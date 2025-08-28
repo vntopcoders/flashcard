@@ -32,7 +32,16 @@ export const db = {
             }
         },
 
-        create: async (options: any) => {
+        create: async (options: { 
+            data: { 
+                english: string; 
+                vietnamese: string; 
+                ipa?: string; 
+                difficulty: number; 
+                category: string; 
+                lesson_id?: string 
+            } 
+        }) => {
             try {
                 await prisma.$connect()
                 return await prisma.flashcard.create(options)
@@ -42,7 +51,17 @@ export const db = {
             }
         },
 
-        update: async (options: any) => {
+        update: async (options: { 
+            where: { id: string }; 
+            data: { 
+                english?: string; 
+                vietnamese?: string; 
+                ipa?: string; 
+                difficulty?: number; 
+                category?: string; 
+                lesson_id?: string 
+            } 
+        }) => {
             try {
                 await prisma.$connect()
                 return await prisma.flashcard.update(options)

@@ -9,23 +9,26 @@ import { Flashcard, Lesson } from '@/types/flashcard'
 import { useSearchParams } from 'next/navigation'
 
 function FlashcardApp() {
+  const searchParams = useSearchParams()
+  
   const [flashcards, setFlashcards] = useState<Flashcard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAddForm, setShowAddForm] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null)
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(
+    searchParams.get('lesson')
+  )
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [lessons, setLessons] = useState<Lesson[]>([])
-
-  const searchParams = useSearchParams()
 
   // Get lesson from URL params
   useEffect(() => {
     const lessonParam = searchParams.get('lesson')
-    if (lessonParam) {
+    console.log('🔗 URL lesson param:', lessonParam)
+    if (lessonParam !== selectedLessonId) {
       setSelectedLessonId(lessonParam)
     }
-  }, [searchParams])
+  }, [searchParams, selectedLessonId])
 
   // Fetch lessons
   useEffect(() => {
@@ -51,9 +54,12 @@ function FlashcardApp() {
         ? `/api/flashcards?lesson=${selectedLessonId}`
         : '/api/flashcards'
 
+      console.log('🔍 Fetching flashcards:', { url, selectedLessonId })
+
       const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ Received flashcards:', { count: data.length, lessonId: selectedLessonId })
         setFlashcards(data)
         setCurrentIndex(0) // Reset to first card when changing lessons
       }
@@ -67,7 +73,7 @@ function FlashcardApp() {
   // Call fetchFlashcards when component mounts or selectedLessonId changes
   useEffect(() => {
     fetchFlashcards()
-  }, [selectedLessonId, fetchFlashcards])
+  }, [fetchFlashcards])
 
   // Update selected lesson info when selectedLessonId changes
   useEffect(() => {

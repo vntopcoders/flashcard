@@ -48,11 +48,11 @@ export default function LessonsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const method = editingLesson ? 'PUT' : 'POST'
       const url = editingLesson ? `/api/lessons/${editingLesson.id}` : '/api/lessons'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -75,10 +75,10 @@ export default function LessonsPage() {
 
   const handleForceDelete = async () => {
     if (!deletingLesson) return
-    
+
     // Generate expected confirmation code (lesson name in uppercase)
     const expectedCode = deletingLesson.name.toUpperCase()
-    
+
     if (confirmCode !== expectedCode) {
       alert(`❌ Mã xác nhận không đúng!\n\nVui lòng nhập: ${expectedCode}`)
       return
@@ -170,7 +170,7 @@ export default function LessonsPage() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div 
+                  <div
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: lesson.color }}
                   />
@@ -187,13 +187,13 @@ export default function LessonsPage() {
                     onClick={() => handleDelete(lesson)}
                     className={`
                       p-1.5 rounded transition-colors
-                      ${lesson.flashcard_count > 0 
-                        ? 'text-gray-400 hover:text-red-500 hover:bg-red-50' 
+                      ${lesson.flashcard_count > 0
+                        ? 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                         : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
                       }
                     `}
-                    title={lesson.flashcard_count > 0 
-                      ? `Không thể xóa - còn ${lesson.flashcard_count} flashcard(s)` 
+                    title={lesson.flashcard_count > 0
+                      ? `Không thể xóa - còn ${lesson.flashcard_count} flashcard(s)`
                       : 'Xóa bài học này'
                     }
                   >
@@ -201,11 +201,11 @@ export default function LessonsPage() {
                   </button>
                 </div>
               </div>
-              
+
               {lesson.description && (
                 <p className="text-gray-600 text-sm mb-4">{lesson.description}</p>
               )}
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">
                   {lesson.flashcard_count} flashcard{lesson.flashcard_count !== 1 ? 's' : ''}
@@ -294,9 +294,8 @@ export default function LessonsPage() {
                         key={color}
                         type="button"
                         onClick={() => setFormData({ ...formData, color })}
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          formData.color === color ? 'border-gray-900' : 'border-gray-300'
-                        }`}
+                        className={`w-8 h-8 rounded-full border-2 ${formData.color === color ? 'border-gray-900' : 'border-gray-300'
+                          }`}
                         style={{ backgroundColor: color }}
                       />
                     ))}
@@ -365,7 +364,7 @@ export default function LessonsPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-3">
                 <button
                   onClick={() => {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, Settings, Home } from 'lucide-react'
+import { BookOpen, Settings, Home, Database } from 'lucide-react'
 
 export default function Navigation() {
   const pathname = usePathname()
@@ -19,6 +19,12 @@ export default function Navigation() {
       label: 'Quản lý Bài học',
       icon: Settings,
       active: pathname === '/lessons'
+    },
+    {
+      href: '/admin',
+      label: 'Quản lý Dữ liệu',
+      icon: Database,
+      active: pathname === '/admin'
     }
   ]
 
@@ -30,7 +36,7 @@ export default function Navigation() {
             <BookOpen className="w-6 h-6 text-blue-600" />
             <span className="text-xl font-bold text-gray-900">English Flashcards</span>
           </div>
-          
+
           <div className="flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon
@@ -38,11 +44,10 @@ export default function Navigation() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    item.active
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${item.active
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   {item.label}

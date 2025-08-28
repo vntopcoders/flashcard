@@ -10,12 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Lesson {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  color       String      @default("#3B82F6")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  flashcards  Flashcard[]
+  
+  @@map("lessons")
+}
+
 model Flashcard {
   id          String   @id @default(cuid())
   english     String
   vietnamese  String
+  ipa         String?  // IPA pronunciation
   difficulty  Int      @default(1) // 1-5 difficulty level
   category    String   @default("general")
+  lessonId    String?
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

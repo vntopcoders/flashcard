@@ -50,11 +50,11 @@ export default function LessonManager({ selectedLessonId, onLessonSelect }: Less
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const method = editingLesson ? 'PUT' : 'POST'
       const url = editingLesson ? `/api/lessons/${editingLesson.id}` : '/api/lessons'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -135,11 +135,10 @@ export default function LessonManager({ selectedLessonId, onLessonSelect }: Less
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => onLessonSelect(null)}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              selectedLessonId === null
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedLessonId === null
                 ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+              }`}
           >
             All Lessons
           </button>
@@ -147,16 +146,15 @@ export default function LessonManager({ selectedLessonId, onLessonSelect }: Less
             <button
               key={lesson.id}
               onClick={() => onLessonSelect(lesson.id)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                selectedLessonId === lesson.id
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${selectedLessonId === lesson.id
                   ? 'text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
               style={{
                 backgroundColor: selectedLessonId === lesson.id ? lesson.color : undefined
               }}
             >
-              <div 
+              <div
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: lesson.color }}
               />
@@ -175,7 +173,7 @@ export default function LessonManager({ selectedLessonId, onLessonSelect }: Less
             className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
           >
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: lesson.color }}
               />
@@ -258,9 +256,8 @@ export default function LessonManager({ selectedLessonId, onLessonSelect }: Less
                       key={color}
                       type="button"
                       onClick={() => setFormData({ ...formData, color })}
-                      className={`w-8 h-8 rounded-full border-2 ${
-                        formData.color === color ? 'border-gray-900' : 'border-gray-300'
-                      }`}
+                      className={`w-8 h-8 rounded-full border-2 ${formData.color === color ? 'border-gray-900' : 'border-gray-300'
+                        }`}
                       style={{ backgroundColor: color }}
                     />
                   ))}

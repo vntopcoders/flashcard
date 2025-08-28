@@ -12,7 +12,7 @@ export async function GET(
   try {
     const params = await props.params
     const lesson = await lessonDb.getById(params.id)
-    
+
     if (!lesson) {
       return NextResponse.json(
         { error: 'Lesson not found' },
@@ -21,7 +21,7 @@ export async function GET(
     }
 
     const flashcardCount = await lessonDb.getFlashcardCount(lesson.id)
-    
+
     return NextResponse.json({
       ...lesson,
       flashcard_count: flashcardCount
@@ -87,10 +87,10 @@ export async function DELETE(
     const params = await props.params
     const url = new URL(request.url)
     const force = url.searchParams.get('force') === 'true'
-    
+
     // Check if lesson has flashcards
     const flashcardCount = await lessonDb.getFlashcardCount(params.id)
-    
+
     if (flashcardCount > 0 && !force) {
       return NextResponse.json(
         { error: 'Cannot delete lesson that contains flashcards' },
@@ -105,7 +105,7 @@ export async function DELETE(
     }
 
     const success = await lessonDb.delete(params.id)
-    
+
     if (!success) {
       return NextResponse.json(
         { error: 'Lesson not found' },
@@ -113,9 +113,9 @@ export async function DELETE(
       )
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      deletedFlashcards: force ? flashcardCount : 0 
+    return NextResponse.json({
+      success: true,
+      deletedFlashcards: force ? flashcardCount : 0
     })
   } catch (error) {
     console.error('Failed to delete lesson:', error)

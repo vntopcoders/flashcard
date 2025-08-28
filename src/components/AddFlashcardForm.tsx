@@ -10,6 +10,7 @@ interface AddFlashcardFormProps {
   onAdd: (flashcard: {
     english: string
     vietnamese: string
+    ipa?: string
     category: string
     difficulty: number
     lesson_id: string | null
@@ -21,6 +22,7 @@ interface AddFlashcardFormProps {
 export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: AddFlashcardFormProps) {
   const [english, setEnglish] = useState('')
   const [vietnamese, setVietnamese] = useState('')
+  const [ipa, setIpa] = useState('')
   const [category, setCategory] = useState('general')
   const [difficulty, setDifficulty] = useState(1)
   const [lessonId, setLessonId] = useState<string | null>(selectedLessonId || null)
@@ -49,26 +51,28 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!english.trim() || !vietnamese.trim()) {
       alert('Vui lòng nhập cả từ tiếng Anh và nghĩa')
       return
     }
 
     setIsSubmitting(true)
-    
+
     try {
       await onAdd({
         english: english.trim(),
         vietnamese: vietnamese.trim(),
+        ipa: ipa.trim() || undefined,
         category,
         difficulty,
         lesson_id: lessonId
       })
-      
+
       // Reset form
       setEnglish('')
       setVietnamese('')
+      setIpa('')
       setCategory('general')
       setDifficulty(1)
       setLessonId(selectedLessonId || null)
@@ -121,8 +125,8 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
                 required
               />
               {english && (
-                <AudioButton 
-                  word={english} 
+                <AudioButton
+                  word={english}
                   size="md"
                   className="flex-shrink-0"
                 />
@@ -145,6 +149,23 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
             />
           </div>
 
+          <div>
+            <label htmlFor="ipa" className="block text-sm font-medium text-gray-700 mb-1">
+              Phiên âm IPA
+            </label>
+            <input
+              type="text"
+              id="ipa"
+              value={ipa}
+              onChange={(e) => setIpa(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-500 text-gray-900 font-mono"
+              placeholder="Ví dụ: /əˈtʃiːv/"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Tùy chọn - Nhập phiên âm theo chuẩn IPA
+            </p>
+          </div>
+
           {/* Image Preview */}
           {english && (
             <div>
@@ -152,8 +173,8 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
                 Hình ảnh minh họa
               </label>
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
-                <WordImage 
-                  word={english} 
+                <WordImage
+                  word={english}
                   alt={`Preview image for ${english}`}
                   size="sm"
                 />

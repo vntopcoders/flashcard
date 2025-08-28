@@ -18,6 +18,7 @@ export interface Flashcard {
   id: string
   english: string
   vietnamese: string
+  ipa?: string | null
   difficulty: number
   category: string
   lesson_id: string | null
@@ -37,7 +38,7 @@ export const lessonDb = {
       .from('lessons')
       .select('*')
       .order('created_at', { ascending: true })
-    
+
     if (error) throw error
     return data as Lesson[]
   },
@@ -49,7 +50,7 @@ export const lessonDb = {
       .select('*')
       .eq('id', id)
       .single()
-    
+
     if (error) throw error
     return data as Lesson
   },
@@ -65,7 +66,7 @@ export const lessonDb = {
       .insert([lesson])
       .select()
       .single()
-    
+
     if (error) throw error
     return data as Lesson
   },
@@ -82,7 +83,7 @@ export const lessonDb = {
       .eq('id', id)
       .select()
       .single()
-    
+
     if (error) throw error
     return data as Lesson
   },
@@ -93,7 +94,7 @@ export const lessonDb = {
       .from('lessons')
       .delete()
       .eq('id', id)
-    
+
     if (error) throw error
     return { success: true }
   },
@@ -104,7 +105,7 @@ export const lessonDb = {
       .from('flashcards')
       .select('*', { count: 'exact', head: true })
       .eq('lesson_id', id)
-    
+
     if (error) throw error
     return count || 0
   },
@@ -115,7 +116,7 @@ export const lessonDb = {
       .from('flashcards')
       .delete()
       .eq('lesson_id', id)
-    
+
     if (error) throw error
     return { success: true }
   }
@@ -132,7 +133,7 @@ export const flashcardDb = {
         lesson:lessons(*)
       `)
       .order('created_at', { ascending: false })
-    
+
     if (error) throw error
     return data as FlashcardWithLesson[]
   },
@@ -147,7 +148,7 @@ export const flashcardDb = {
       `)
       .eq('lesson_id', lessonId)
       .order('created_at', { ascending: false })
-    
+
     if (error) throw error
     return data as FlashcardWithLesson[]
   },
@@ -162,7 +163,7 @@ export const flashcardDb = {
       `)
       .eq('id', id)
       .single()
-    
+
     if (error) throw error
     return data as FlashcardWithLesson
   },
@@ -171,6 +172,7 @@ export const flashcardDb = {
   async create(flashcard: {
     english: string
     vietnamese: string
+    ipa?: string | null
     category: string
     difficulty: number
     lesson_id?: string
@@ -183,7 +185,7 @@ export const flashcardDb = {
         lesson:lessons(*)
       `)
       .single()
-    
+
     if (error) throw error
     return data as FlashcardWithLesson
   },
@@ -192,6 +194,7 @@ export const flashcardDb = {
   async update(id: string, updates: {
     english?: string
     vietnamese?: string
+    ipa?: string | null
     category?: string
     difficulty?: number
     lesson_id?: string
@@ -205,7 +208,7 @@ export const flashcardDb = {
         lesson:lessons(*)
       `)
       .single()
-    
+
     if (error) throw error
     return data as FlashcardWithLesson
   },
@@ -216,7 +219,7 @@ export const flashcardDb = {
       .from('flashcards')
       .delete()
       .eq('id', id)
-    
+
     if (error) throw error
     return { success: true }
   },
@@ -226,7 +229,7 @@ export const flashcardDb = {
     const { count, error } = await supabase
       .from('flashcards')
       .select('*', { count: 'exact', head: true })
-    
+
     if (error) throw error
     return count || 0
   }

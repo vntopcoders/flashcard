@@ -7,16 +7,16 @@ interface AudioButtonProps {
   className?: string
 }
 
-export default function AudioButton({ 
-  word, 
-  size = 'md', 
+export default function AudioButton({
+  word,
+  size = 'md',
   className = ''
 }: AudioButtonProps) {
   const { isPlaying, isLoading, error, playWord } = useAudio()
 
   const sizeClasses = {
     sm: 'w-5 h-5',
-    md: 'w-6 h-6', 
+    md: 'w-6 h-6',
     lg: 'w-8 h-8'
   }
 
@@ -47,12 +47,12 @@ export default function AudioButton({
         {isLoading ? (
           <Loader2 className={`${sizeClasses[size]} animate-spin`} />
         ) : (
-          <Volume2 
-            className={`${sizeClasses[size]} ${isPlaying ? 'animate-pulse' : ''}`} 
+          <Volume2
+            className={`${sizeClasses[size]} ${isPlaying ? 'animate-pulse' : ''}`}
           />
         )}
       </button>
-      
+
       {error && (
         <span className="text-xs text-red-500 max-w-24 truncate" title={error}>
           No audio

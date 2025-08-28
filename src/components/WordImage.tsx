@@ -11,8 +11,8 @@ interface WordImageProps {
   showPlaceholder?: boolean
 }
 
-export default function WordImage({ 
-  word, 
+export default function WordImage({
+  word,
   alt,
   size = 'md',
   className = '',

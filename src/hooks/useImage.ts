@@ -53,12 +53,12 @@ export const useImage = (): UseImageReturn => {
 
   const getImageForWord = useCallback(async (englishWord: string): Promise<string> => {
     if (!englishWord) return ''
-    
+
     // Clean word for search
     const cleanWord = englishWord.toLowerCase()
       .replace(/[^a-z\s]/g, '') // Remove special chars but keep spaces
       .trim()
-    
+
     if (!cleanWord) return ''
 
     try {
@@ -67,7 +67,7 @@ export const useImage = (): UseImageReturn => {
 
       // Try Unsplash API first
       const images = await searchImages(cleanWord)
-      
+
       if (images.length > 0) {
         const imageUrl = images[0].urls.small
         setImageUrl(imageUrl)
@@ -83,7 +83,7 @@ export const useImage = (): UseImageReturn => {
     } catch (err) {
       console.error('Image loading error:', err)
       setError('Failed to load image')
-      
+
       // Use Picsum as ultimate fallback
       const seed = cleanWord.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
       const fallbackUrl = `https://picsum.photos/400/300?random=${seed}`

@@ -56,7 +56,7 @@ async function main() {
   ]
 
   console.log('Seeding database...')
-  
+
   for (const card of sampleCards) {
     await prisma.flashcard.create({
       data: card

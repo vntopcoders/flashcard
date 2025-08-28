@@ -33,16 +33,16 @@ export default function WelcomeDashboard({ onAddFlashcard, selectedLessonId, sel
       <div className="mb-12">
         <div className="text-6xl mb-6">🎯</div>
         <h2 className="text-3xl font-bold text-gray-800 mb-4">
-          {selectedLessonId 
-            ? `Bài học "${selectedLessonName}" chưa có flashcard nào` 
+          {selectedLessonId
+            ? `Bài học "${selectedLessonName}" chưa có flashcard nào`
             : 'Chào mừng đến với English Flashcards!'}
         </h2>
         <p className="text-gray-600 mb-8 text-lg max-w-2xl mx-auto">
-          {selectedLessonId 
+          {selectedLessonId
             ? 'Hãy thêm flashcard đầu tiên cho bài học này để bắt đầu học'
             : 'Bắt đầu hành trình học tiếng Anh hiệu quả với hệ thống flashcard thông minh'}
         </p>
-        
+
         <div className="flex justify-center gap-4 flex-wrap">
           <button
             onClick={onAddFlashcard}
@@ -51,7 +51,7 @@ export default function WelcomeDashboard({ onAddFlashcard, selectedLessonId, sel
             <Plus className="w-5 h-5" />
             {selectedLessonId ? 'Thêm flashcard cho bài này' : 'Thêm flashcard đầu tiên'}
           </button>
-          
+
           {!selectedLessonId && (
             <Link
               href="/lessons"
@@ -92,7 +92,7 @@ export default function WelcomeDashboard({ onAddFlashcard, selectedLessonId, sel
           💡 Mẹo học hiệu quả
         </h3>
         <p className="text-blue-700">
-          Học 10-15 từ mỗi ngày và ôn tập thường xuyên. 
+          Học 10-15 từ mỗi ngày và ôn tập thường xuyên.
           Flashcard giúp não bộ ghi nhớ từ vựng tốt hơn thông qua việc lặp lại có khoảng cách.
         </p>
       </div>

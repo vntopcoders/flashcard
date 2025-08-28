@@ -16,7 +16,7 @@ function FlashcardApp() {
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null)
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [lessons, setLessons] = useState<Lesson[]>([])
-  
+
   const searchParams = useSearchParams()
 
   // Get lesson from URL params
@@ -47,10 +47,10 @@ function FlashcardApp() {
   // Fetch flashcards from API  
   const fetchFlashcards = useCallback(async () => {
     try {
-      const url = selectedLessonId 
+      const url = selectedLessonId
         ? `/api/flashcards?lesson=${selectedLessonId}`
         : '/api/flashcards'
-      
+
       const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
@@ -175,8 +175,8 @@ function FlashcardApp() {
                 Học Flashcards
               </h2>
               {selectedLesson && (
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full text-sm" 
-                     style={{ backgroundColor: selectedLesson.color + '20', color: selectedLesson.color }}>
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full text-sm"
+                  style={{ backgroundColor: selectedLesson.color + '20', color: selectedLesson.color }}>
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedLesson.color }} />
                   {selectedLesson.name}
                 </div>
@@ -214,88 +214,88 @@ function FlashcardApp() {
 
       <div className="max-w-4xl mx-auto p-4">
         {flashcards.length === 0 ? (
-          <WelcomeDashboard 
+          <WelcomeDashboard
             onAddFlashcard={() => setShowAddForm(true)}
             selectedLessonId={selectedLessonId}
             selectedLessonName={selectedLesson?.name}
           />
-      ) : (
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Học Tiếng Anh với Flashcards
-            </h1>
-            <p className="text-gray-600">
-              Thẻ {currentIndex + 1} / {flashcards.length}
-            </p>
-          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Học Tiếng Anh với Flashcards
+              </h1>
+              <p className="text-gray-600">
+                Thẻ {currentIndex + 1} / {flashcards.length}
+              </p>
+            </div>
 
-          {/* Controls */}
-          <div className="flex justify-center gap-4 mb-8">
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Thêm từ mới
-            </button>
-            <button
-              onClick={resetProgress}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Bắt đầu lại
-            </button>
-          </div>
+            {/* Controls */}
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                onClick={() => setShowAddForm(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Thêm từ mới
+              </button>
+              <button
+                onClick={resetProgress}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Bắt đầu lại
+              </button>
+            </div>
 
-          {/* Flashcard */}
-          <div className="mb-8">
-            <FlashcardComponent flashcard={currentCard} />
-          </div>
+            {/* Flashcard */}
+            <div className="mb-8">
+              <FlashcardComponent flashcard={currentCard} />
+            </div>
 
-          {/* Navigation */}
-          <div className="flex justify-center gap-4">
-            <button
-              onClick={prevCard}
-              disabled={flashcards.length <= 1}
-              className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Trước
-            </button>
-            <button
-              onClick={nextCard}
-              disabled={flashcards.length <= 1}
-              className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Tiếp
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+            {/* Navigation */}
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={prevCard}
+                disabled={flashcards.length <= 1}
+                className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Trước
+              </button>
+              <button
+                onClick={nextCard}
+                disabled={flashcards.length <= 1}
+                className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Tiếp
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-          {/* Progress bar */}
-          <div className="mt-8">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${((currentIndex + 1) / flashcards.length) * 100}%`
-                }}
-              ></div>
+            {/* Progress bar */}
+            <div className="mt-8">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${((currentIndex + 1) / flashcards.length) * 100}%`
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Add form modal */}
-      {showAddForm && (
-        <AddFlashcardForm
-          onAdd={handleAddFlashcard}
-          onClose={() => setShowAddForm(false)}
-          selectedLessonId={selectedLessonId}
-        />
-      )}
+        {/* Add form modal */}
+        {showAddForm && (
+          <AddFlashcardForm
+            onAdd={handleAddFlashcard}
+            onClose={() => setShowAddForm(false)}
+            selectedLessonId={selectedLessonId}
+          />
+        )}
       </div>
     </div>
   )

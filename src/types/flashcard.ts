@@ -3,19 +3,20 @@ export interface Lesson {
   name: string
   description: string | null
   color: string
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Flashcard {
   id: string
   english: string
   vietnamese: string
+  ipa?: string | null
   difficulty: number
   category: string
-  lesson_id: string | null
-  created_at: string
-  updated_at: string
+  lessonId: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export interface FlashcardWithLesson extends Flashcard {

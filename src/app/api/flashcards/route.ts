@@ -5,11 +5,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const lessonId = searchParams.get('lesson')
-    
-    const flashcards = lessonId 
+
+    const flashcards = lessonId
       ? await flashcardDb.getByLessonId(lessonId)
       : await flashcardDb.getAll()
-      
+
     return NextResponse.json(flashcards)
   } catch (error) {
     console.error('Failed to fetch flashcards:', error)
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { english, vietnamese, category, difficulty, lesson_id } = body
+    const { english, vietnamese, ipa, category, difficulty, lesson_id } = body
 
     if (!english || !vietnamese) {
       return NextResponse.json(
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     const flashcard = await flashcardDb.create({
       english,
       vietnamese,
+      ipa: ipa || null,
       category: category || 'general',
       difficulty: difficulty || 1,
       lesson_id: lesson_id || null

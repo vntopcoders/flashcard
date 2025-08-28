@@ -4,7 +4,7 @@ import { lessonDb } from '@/lib/supabase'
 export async function GET() {
   try {
     const lessons = await lessonDb.getAll()
-    
+
     // Get flashcard count for each lesson
     const lessonsWithCount = await Promise.all(
       lessons.map(async (lesson) => {
@@ -15,7 +15,7 @@ export async function GET() {
         }
       })
     )
-    
+
     return NextResponse.json(lessonsWithCount)
   } catch (error) {
     console.error('Failed to fetch lessons:', error)

@@ -5,6 +5,7 @@ import { Plus, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react'
 import FlashcardComponent from '@/components/FlashcardComponent'
 import AddFlashcardForm from '@/components/AddFlashcardForm'
 import WelcomeDashboard from '@/components/WelcomeDashboard'
+import LessonChunksSelector from '@/components/LessonChunksSelector'
 import { Flashcard, Lesson } from '@/types/flashcard'
 import { useSearchParams } from 'next/navigation'
 
@@ -20,6 +21,8 @@ function FlashcardApp() {
   )
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [lessons, setLessons] = useState<Lesson[]>([])
+  const [showChunkSelector, setShowChunkSelector] = useState(false)
+  const [lessonTotalWords, setLessonTotalWords] = useState(0)
 
   // Get lesson from URL params
   useEffect(() => {
@@ -50,9 +53,36 @@ function FlashcardApp() {
   // Fetch flashcards from API  
   const fetchFlashcards = useCallback(async () => {
     try {
-      const url = selectedLessonId
-        ? `/api/flashcards?lesson=${selectedLessonId}`
-        : '/api/flashcards'
+      let url = '/api/flashcards'
+      
+      if (selectedLessonId) {
+        // Check if it's a chunk ID
+        if (selectedLessonId.includes('-chunk-')) {
+          url = `/api/flashcards/chunk?id=${selectedLessonId}`
+          setShowChunkSelector(false)
+        } else {
+          // First check lesson size to decide if we need chunk selector
+          const countResponse = await fetch(`/api/flashcards?lesson=${selectedLessonId}`)
+          if (countResponse.ok) {
+            const allFlashcards = await countResponse.json()
+            const wordCount = allFlashcards.length
+            setLessonTotalWords(wordCount)
+            
+            // If lesson has more than 50 words, show chunk selector instead of loading all
+            if (wordCount > 50) {
+              setShowChunkSelector(true)
+              setFlashcards([])
+              setIsLoading(false)
+              return
+            }
+          }
+          
+          url = `/api/flashcards?lesson=${selectedLessonId}`
+          setShowChunkSelector(false)
+        }
+      } else {
+        setShowChunkSelector(false)
+      }
 
       console.log('🔍 Fetching flashcards:', { url, selectedLessonId })
 
@@ -127,6 +157,14 @@ function FlashcardApp() {
     setCurrentIndex(0)
   }
 
+  const handleChunkSelect = (chunkId: string) => {
+    // Update URL with chunk ID and trigger flashcard fetch
+    const url = new URL(window.location.href)
+    url.searchParams.set('lesson', chunkId)
+    window.history.pushState({}, '', url.toString())
+    setSelectedLessonId(chunkId)
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -187,6 +225,26 @@ function FlashcardApp() {
                   {selectedLesson.name}
                 </div>
               )}
+              <div className="flex items-center gap-2">
+                <a
+                  href="/lessons"
+                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors"
+                >
+                  📚 Browse All Lessons
+                </a>
+                <a
+                  href="/grammar"
+                  className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium hover:bg-green-200 transition-colors"
+                >
+                  📝 Grammar Practice
+                </a>
+                <a
+                  href="/study-plan"
+                  className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium hover:bg-purple-200 transition-colors"
+                >
+                  📅 Study Plan
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               {/* Lesson Selector */}
@@ -219,7 +277,12 @@ function FlashcardApp() {
       </div>
 
       <div className="max-w-4xl mx-auto p-4">
-        {flashcards.length === 0 ? (
+        {showChunkSelector && selectedLessonId ? (
+          <LessonChunksSelector
+            lessonId={selectedLessonId}
+            onChunkSelect={handleChunkSelect}
+          />
+        ) : flashcards.length === 0 && !showChunkSelector ? (
           <WelcomeDashboard
             onAddFlashcard={() => setShowAddForm(true)}
             selectedLessonId={selectedLessonId}

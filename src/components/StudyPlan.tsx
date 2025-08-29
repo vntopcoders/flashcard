@@ -23,6 +23,7 @@ import AchievementHeader from './AchievementHeader'
 import AchievementPanel from './AchievementPanel'
 import AchievementToast from './AchievementToast'
 import { Achievement } from './AchievementBadge'
+import GrammarWeekContent from './GrammarWeekContent'
 
 interface StudyWeek {
   week: number
@@ -30,6 +31,10 @@ interface StudyWeek {
   targetBand: string
   vocabularyGoal: number
   grammarUnits: string
+  grammarTheory?: string
+  grammarKeyPoints?: string[]
+  lessonLinks?: string[]
+  grammarLinks?: string[]
   focusSkills: string[]
   milestones: string[]
   dailyHours: number
@@ -74,6 +79,7 @@ export default function StudyPlan() {
   const [selectedWeek, setSelectedWeek] = useState<number>(1)
   const [showDailyView, setShowDailyView] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [initialized, setInitialized] = useState(false)
   
   // Achievement system state
   const [achievements, setAchievements] = useState<Achievement[]>([])
@@ -84,11 +90,12 @@ export default function StudyPlan() {
   const [pointsForNext, setPointsForNext] = useState(100)
 
   useEffect(() => {
-    if (!userLoading) {
+    if (!userLoading && !initialized) {
+      setInitialized(true)
       loadStudyPlan()
       loadAchievements()
     }
-  }, [user, userLoading])
+  }, [userLoading, initialized])
 
   const loadAchievements = async () => {
     try {
@@ -106,14 +113,35 @@ export default function StudyPlan() {
     }
   }
 
+  const resetProgress = async () => {
+    try {
+      const response = await fetch('/api/user-progress/reset', {
+        method: 'POST',
+      })
+      const result = await response.json()
+      
+      if (result.success) {
+        // Reload study plan with reset data
+        loadStudyPlan()
+        loadAchievements()
+        alert('Progress đã được reset về tuần 1!')
+      } else {
+        alert('Có lỗi khi reset progress')
+      }
+    } catch (error) {
+      console.error('Failed to reset progress:', error)
+      alert('Có lỗi khi reset progress')
+    }
+  }
+
   const loadStudyPlan = async () => {
     try {
       setIsLoading(true)
       
       // Mock data based on the 24-week IELTS plan
       const mockData: StudyPlanData = {
-        currentWeek: 3,
-        currentDay: 15,
+        currentWeek: 1,
+        currentDay: 1,
         totalWeeks: 24,
         startDate: new Date('2025-08-01'),
         targetScore: 7.0,
@@ -135,6 +163,15 @@ export default function StudyPlan() {
             targetBand: '4.0-4.5',
             vocabularyGoal: 300,
             grammarUnits: 'Units 1-12 (Tenses)',
+            grammarTheory: 'Thì hiện tại đơn và hiện tại tiếp diễn là nền tảng cơ bản nhất trong tiếng Anh. Thì hiện tại đơn diễn tả thói quen, sự thật hiển nhiên. Thì hiện tại tiếp diễn diễn tả hành động đang xảy ra tại thời điểm nói.',
+            grammarKeyPoints: [
+              'Present Simple: S + V/V-s/es (thói quen, sự thật)',
+              'Present Continuous: S + am/is/are + V-ing (hành động đang diễn ra)',
+              'Cách sử dụng adverbs of frequency với Present Simple',
+              'Time expressions: now, at the moment, usually, always'
+            ],
+            lessonLinks: ['/lessons?level=Foundation', '/?lesson=2ed7cd0a-b814-416c-a187-3cf4de2481fd-chunk-1', '/?lesson=41a70e26-5fa3-4d2b-98d3-a5d3a806467b-chunk-1'],
+            grammarLinks: ['/grammar/present-simple', '/grammar/present-continuous'],
             focusSkills: ['Vocabulary', 'Basic Grammar', 'Assessment'],
             milestones: ['Complete mock test', 'Setup Anki', 'Learn 300 words'],
             dailyHours: 2.5,
@@ -147,6 +184,15 @@ export default function StudyPlan() {
             targetBand: '4.5-5.0',
             vocabularyGoal: 600,
             grammarUnits: 'Units 13-25 (Modal verbs)',
+            grammarTheory: 'Động từ khuyết thiếu (Modal verbs) là những động từ đặc biệt diễn tả khả năng, sự cho phép, nghĩa vụ, lời khuyên. Chúng không chia theo ngôi và luôn đi với động từ nguyên mẫu không "to".',
+            grammarKeyPoints: [
+              'Can/Could: khả năng, sự cho phép (có thể)',
+              'May/Might: khả năng, sự cho phép lịch sự (có lẽ)',
+              'Must/Have to: nghĩa vụ, sự cần thiết (phải)',
+              'Should/Ought to: lời khuyên (nên)'
+            ],
+            lessonLinks: ['/lessons?level=Foundation', '/?lesson=41488c34-dada-4a3b-ba67-a6352c05ce21-chunk-1', '/?lesson=2ed7cd0a-b814-416c-a187-3cf4de2481fd-chunk-2'],
+            grammarLinks: ['/grammar/modal-verbs'],
             focusSkills: ['Vocabulary Building', 'Present/Past Tenses', 'Reading Basics'],
             milestones: ['600 words total', 'Speaking Part 1 confidence', 'Reading 180+ wpm'],
             dailyHours: 2.5,
@@ -159,6 +205,15 @@ export default function StudyPlan() {
             targetBand: '5.0',
             vocabularyGoal: 900,
             grammarUnits: 'Units 26-35 (Perfect tenses)',
+            grammarTheory: 'Thì hoàn thành diễn tả hành động đã xảy ra trong quá khứ và có liên quan đến hiện tại, hoặc hành động xảy ra trong một khoảng thời gian kéo dài đến hiện tại.',
+            grammarKeyPoints: [
+              'Present Perfect: S + have/has + V3 (kinh nghiệm, kết quả)',
+              'Past Perfect: S + had + V3 (hành động xảy ra trước hành động khác trong quá khứ)',
+              'Phân biệt Present Perfect vs Past Simple',
+              'Time expressions: already, yet, just, since, for'
+            ],
+            lessonLinks: ['/lessons?level=Intermediate', '/?lesson=0ec9d9e5-d4e1-4b51-856d-1668f1e70f65-chunk-1', '/?lesson=254ba12e-766f-46ef-aaea-e1a381a5fcb4-chunk-1'],
+            grammarLinks: ['/grammar/present-perfect'],
             focusSkills: ['Reading Strategies', 'Writing Task 1', 'Listening Basics'],
             milestones: ['Writing Task 1 structure', 'Skimming/Scanning skills', '900 words'],
             dailyHours: 3.0,
@@ -171,6 +226,8 @@ export default function StudyPlan() {
             targetBand: '5.0-5.5',
             vocabularyGoal: 1200,
             grammarUnits: 'Units 36-45 (Conditionals)',
+            lessonLinks: ['/lessons?level=Intermediate', '/?lesson=a2c42066-9712-4066-a8ab-4f8918ce14de-chunk-1', '/?lesson=29684d22-bc94-42a4-b6df-b6dc9b21e82a-chunk-1'],
+            grammarLinks: ['/grammar/conditional-types'],
             focusSkills: ['Speaking Fluency', 'Listening Techniques', 'Writing Task 2'],
             milestones: ['Month 1 complete', '1200 words', 'Speaking confidence', 'Target 5.0-5.5'],
             dailyHours: 3.0,
@@ -184,6 +241,8 @@ export default function StudyPlan() {
             targetBand: '5.5-6.0',
             vocabularyGoal: 2400,
             grammarUnits: 'Units 60-80',
+            lessonLinks: ['/lessons?level=Intermediate', '/?lesson=9344a13e-4468-44e0-86b6-222251186092-chunk-1', '/?lesson=6b0cd49d-2100-4b57-82fc-b2a9bb76c930-chunk-1'],
+            grammarLinks: ['/grammar/passive-voice', '/grammar/reported-speech'],
             focusSkills: ['All Skills Integration', 'Exam Techniques'],
             milestones: ['2400 words', 'Reading 200+ wpm', 'Coherent writing', 'Target 5.5-6.0'],
             dailyHours: 3.0,
@@ -196,6 +255,8 @@ export default function StudyPlan() {
             targetBand: '6.0-6.5',
             vocabularyGoal: 3200,
             grammarUnits: 'Units 80-100',
+            lessonLinks: ['/lessons?level=Advanced', '/?lesson=ed8bf3ea-f09d-45e5-9984-04c1e5328cd0-chunk-1', '/?lesson=5b2f05c6-7b0f-49a0-8b39-4bb21f40375f-chunk-1'],
+            grammarLinks: ['/grammar/relative-clauses', '/grammar/subjunctive-mood'],
             focusSkills: ['Advanced Techniques', 'Speed Building'],
             milestones: ['3200 words', 'All question types', 'Speaking 3+ minutes', 'Target 6.0-6.5'],
             dailyHours: 3.0,
@@ -209,6 +270,8 @@ export default function StudyPlan() {
             targetBand: '6.5+',
             vocabularyGoal: 3600,
             grammarUnits: 'Units 100-120',
+            lessonLinks: ['/lessons?level=Advanced', '/?lesson=457ec6a9-fbfd-4a1c-8e13-9da749828249-chunk-1', '/?lesson=d0f38a8f-c205-4120-906c-5dee0fb80d75-chunk-1'],
+            grammarLinks: ['/grammar/inversion', '/grammar/cleft-sentences'],
             focusSkills: ['Complex Structures', 'Band 7 Techniques'],
             milestones: ['3600 words', 'Reading 220+ wpm', 'Writing under 40 min', 'Target 6.5+'],
             dailyHours: 3.5,
@@ -221,6 +284,8 @@ export default function StudyPlan() {
             targetBand: '7.0-',
             vocabularyGoal: 4000,
             grammarUnits: 'Units 120-145',
+            lessonLinks: ['/lessons?level=Expert', '/?lesson=70b5b987-1e9b-4903-a651-d2b14bc29485-chunk-1', '/?lesson=ed8bf3ea-f09d-45e5-9984-04c1e5328cd0-chunk-2'],
+            grammarLinks: ['/grammar/mixed-conditionals', '/grammar/advanced-passive'],
             focusSkills: ['Sophistication', 'Speed Mastery'],
             milestones: ['4000 words', 'Reading 250+ wpm', 'Band 7 writing', 'Target 7.0'],
             dailyHours: 3.5,
@@ -234,6 +299,8 @@ export default function StudyPlan() {
             targetBand: '7.0+',
             vocabularyGoal: 4000,
             grammarUnits: 'Review & Polish',
+            lessonLinks: ['/lessons?level=Expert', '/lessons?level=Topic-Specific', '/?lesson=7302db71-188d-4079-b9cb-ec9dd42bf8c4-chunk-1'],
+            grammarLinks: ['/grammar/academic-writing-grammar', '/grammar/complex-sentence-structures', '/grammar/error-correction'],
             focusSkills: ['Exam Strategies', 'Confidence Building'],
             milestones: ['Consistent 7.0+', 'Exam readiness', 'Final review complete'],
             dailyHours: 3.0,
@@ -434,6 +501,12 @@ export default function StudyPlan() {
             }`}
           >
             {showDailyView ? 'Week View' : 'Daily View'}
+          </button>
+          <button
+            onClick={resetProgress}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+          >
+            🔄 Reset về tuần 1
           </button>
         </div>
       </div>
@@ -738,6 +811,82 @@ export default function StudyPlan() {
                           <span className="text-sm text-gray-700">{milestone}</span>
                         </div>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Study Materials & Links */}
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium text-gray-800 mb-3">📚 Vocabulary Lessons</h4>
+                      {selectedWeekData.lessonLinks && selectedWeekData.lessonLinks.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedWeekData.lessonLinks.map((link, index) => (
+                            <a
+                              key={index}
+                              href={link}
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors"
+                            >
+                              <BookOpen className="w-3 h-3" />
+                              {(() => {
+                                if (link.includes('level=')) return `${link.split('level=')[1]} Level`
+                                
+                                const getLessonName = (lessonId: string) => {
+                                  if (lessonId.includes('2ed7cd0a-b814-416c-a187-3cf4de2481fd')) return 'IELTS Core 1000'
+                                  if (lessonId.includes('41a70e26-5fa3-4d2b-98d3-a5d3a806467b')) return 'Band 5.0-5.5 Essential'
+                                  if (lessonId.includes('41488c34-dada-4a3b-ba67-a6352c05ce21')) return 'IELTS Level 1'
+                                  if (lessonId.includes('0ec9d9e5-d4e1-4b51-856d-1668f1e70f65')) return 'Academic 1000'
+                                  if (lessonId.includes('254ba12e-766f-46ef-aaea-e1a381a5fcb4')) return 'AWL Sublist 1'
+                                  if (lessonId.includes('a2c42066-9712-4066-a8ab-4f8918ce14de')) return 'IELTS Level 2'
+                                  if (lessonId.includes('29684d22-bc94-42a4-b6df-b6dc9b21e82a')) return 'AWL Sublist 2'
+                                  if (lessonId.includes('9344a13e-4468-44e0-86b6-222251186092')) return 'IELTS Level 3'
+                                  if (lessonId.includes('6b0cd49d-2100-4b57-82fc-b2a9bb76c930')) return 'AWL Sublist 3'
+                                  if (lessonId.includes('ed8bf3ea-f09d-45e5-9984-04c1e5328cd0')) return 'Advanced 1000'
+                                  if (lessonId.includes('5b2f05c6-7b0f-49a0-8b39-4bb21f40375f')) return 'IELTS Level 4'
+                                  if (lessonId.includes('457ec6a9-fbfd-4a1c-8e13-9da749828249')) return 'AWL Sublist 4'
+                                  if (lessonId.includes('d0f38a8f-c205-4120-906c-5dee0fb80d75')) return 'AWL Sublist 5'
+                                  if (lessonId.includes('70b5b987-1e9b-4903-a651-d2b14bc29485')) return 'Band 8.0+ Expert'
+                                  if (lessonId.includes('7302db71-188d-4079-b9cb-ec9dd42bf8c4')) return 'Education & Knowledge'
+                                  return `Lesson ${index + 1}`
+                                }
+                                
+                                const lessonId = link.split('lesson=')[1] || ''
+                                const baseName = getLessonName(lessonId)
+                                
+                                // Extract chunk number if present
+                                const chunkMatch = lessonId.match(/-chunk-(\d+)$/)
+                                if (chunkMatch) {
+                                  return `${baseName} (Part ${chunkMatch[1]})`
+                                }
+                                
+                                return baseName
+                              })()}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-gray-800 mb-3">📝 Grammar Practice</h4>
+                      {selectedWeekData.grammarLinks && selectedWeekData.grammarLinks.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedWeekData.grammarLinks.map((link, index) => (
+                            <a
+                              key={index}
+                              href={link}
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium hover:bg-green-200 transition-colors"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                              {link.split('/grammar/')[1]?.replace(/-/g, ' ') || `Grammar ${index + 1}`}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-gray-800 mb-3">🧠 Grammar Theory & Examples</h4>
+                      <GrammarWeekContent weekNumber={selectedWeekData.week} />
                     </div>
                   </div>
                 </div>

@@ -18,22 +18,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user profile from next_auth.users table
+    // Get user profile from users table (NextAuth default schema)
     const { data: user, error: userError } = await supabase
-      .from('next_auth.users')
+      .from('users')
       .select(`
         id,
         name,
         email,
         image,
         created_at,
-        updated_at,
-        current_level,
-        target_band_score,
-        study_streak,
-        total_study_time,
-        preferred_study_time,
-        timezone
+        updated_at
       `)
       .eq('email', session.user.email)
       .single()
@@ -43,31 +37,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Get user preferences
-    const { data: preferences, error: prefsError } = await supabase
-      .from('next_auth.user_preferences')
-      .select('*')
-      .eq('user_id', user.id)
-      .single()
-
-    if (prefsError) {
-      console.warn('Preferences fetch error:', prefsError)
-      // Create default preferences if they don't exist
-      const { data: newPrefs } = await supabase
-        .from('next_auth.user_preferences')
-        .insert({ user_id: user.id })
-        .select('*')
-        .single()
-      
-      return NextResponse.json({
-        user,
-        preferences: newPrefs || {}
-      })
-    }
+    // For now, return basic user data without preferences
+    // TODO: Create user_preferences table if needed for extended features
 
     return NextResponse.json({
       user,
-      preferences
+      preferences: {}
     })
 
   } catch (error) {
@@ -93,7 +68,7 @@ export async function PUT(request: NextRequest) {
 
     // Get current user ID
     const { data: currentUser } = await supabase
-      .from('next_auth.users')
+      .from('users')
       .select('id')
       .eq('email', session.user.email)
       .single()
@@ -122,7 +97,7 @@ export async function PUT(request: NextRequest) {
 
       if (Object.keys(filteredUpdates).length > 0) {
         const { error: userUpdateError } = await supabase
-          .from('next_auth.users')
+          .from('users')
           .update(filteredUpdates)
           .eq('id', currentUser.id)
 
@@ -177,20 +152,14 @@ export async function PUT(request: NextRequest) {
 
     // Fetch updated profile
     const { data: updatedUser } = await supabase
-      .from('next_auth.users')
+      .from('users')
       .select('*')
       .eq('id', currentUser.id)
       .single()
 
-    const { data: updatedPreferences } = await supabase
-      .from('next_auth.user_preferences')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .single()
-
     return NextResponse.json({
       user: updatedUser,
-      preferences: updatedPreferences
+      preferences: {}
     })
 
   } catch (error) {

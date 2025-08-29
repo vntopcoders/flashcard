@@ -1,6 +1,12 @@
 import NextAuth from 'next-auth/next'
 import GoogleProvider from 'next-auth/providers/google'
 import { createClient } from '@supabase/supabase-js'
+import type { 
+  Adapter, 
+  AdapterUser, 
+  AdapterAccount, 
+  AdapterSession 
+} from 'next-auth/adapters'
 
 // Create custom Supabase client with proper configuration
 const supabase = createClient(
@@ -14,8 +20,8 @@ const supabase = createClient(
 )
 
 // Custom database adapter
-const customAdapter = {
-  async createUser(user: any) {
+const customAdapter: Adapter = {
+  async createUser(user: Omit<AdapterUser, 'id'>) {
     const { data, error } = await supabase
       .from('users')
       .insert({
@@ -53,7 +59,7 @@ const customAdapter = {
     return data
   },
 
-  async getUserByAccount({ provider, providerAccountId }: any) {
+  async getUserByAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }) {
     const { data, error } = await supabase
       .from('accounts')
       .select('*, users(*)')
@@ -65,7 +71,7 @@ const customAdapter = {
     return data?.users
   },
 
-  async updateUser(user: any) {
+  async updateUser(user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>) {
     const { data, error } = await supabase
       .from('users')
       .update(user)
@@ -77,7 +83,7 @@ const customAdapter = {
     return data
   },
 
-  async linkAccount(account: any) {
+  async linkAccount(account: AdapterAccount) {
     const { data, error } = await supabase
       .from('accounts')
       .insert({
@@ -100,7 +106,7 @@ const customAdapter = {
     return data
   },
 
-  async createSession(session: any) {
+  async createSession(session: { sessionToken: string; userId: string; expires: Date }) {
     const { data, error } = await supabase
       .from('sessions')
       .insert({
@@ -138,10 +144,10 @@ const customAdapter = {
     }
   },
 
-  async updateSession(session: any) {
+  async updateSession(session: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>) {
     const { data, error } = await supabase
       .from('sessions')
-      .update({ expires: session.expires.toISOString() })
+      .update({ expires: session.expires?.toISOString() })
       .eq('sessionToken', session.sessionToken)
       .select()
       .single()

@@ -6,10 +6,59 @@
  */
 
 import { supabase } from './supabase'
-import { SpacedRepetitionService, ReviewResult, CardSchedule, StudySession, DailyStats } from './spaced-repetition'
+import { ReviewResult, CardSchedule, StudySession, DailyStats } from './spaced-repetition'
 
-export class UserSpacedRepetitionService extends SpacedRepetitionService {
+export class UserSpacedRepetitionService {
   
+  /**
+   * Calculate SM-2 algorithm parameters for next review
+   */
+  static calculateSM2(
+    quality: number,
+    currentEF: number,
+    currentInterval: number,
+    repetitionNumber: number
+  ) {
+    // Calculate new Easiness Factor using SM-2 formula
+    let newEF = currentEF + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+    
+    // EF should be at least 1.3
+    if (newEF < 1.3) {
+      newEF = 1.3
+    }
+    
+    let newInterval: number
+    let newRepetition: number
+    
+    // If quality < 3, the card was recalled incorrectly (failed)
+    if (quality < 3) {
+      newRepetition = 0
+      newInterval = 1
+    } else {
+      newRepetition = repetitionNumber + 1
+      
+      // Calculate new interval based on SM-2 algorithm
+      if (newRepetition === 1) {
+        newInterval = 1
+      } else if (newRepetition === 2) {
+        newInterval = 6
+      } else {
+        newInterval = Math.ceil(currentInterval * newEF)
+      }
+    }
+    
+    // Calculate next review date
+    const nextReviewDate = new Date()
+    nextReviewDate.setDate(nextReviewDate.getDate() + newInterval)
+    
+    return {
+      newEF,
+      newInterval,
+      newRepetition,
+      nextReviewDate
+    }
+  }
+
   /**
    * Get cards due for review today for a specific user
    */
@@ -408,6 +457,51 @@ export class UserSpacedRepetitionService extends SpacedRepetitionService {
       accuracy: dailyStats?.accuracy_rate || 0,
       streak: dailyStats?.daily_streak || 0,
       recommendedSession: this.getRecommendedSession(dueToday.length, newCards.length, dailyStats)
+    }
+  }
+
+  /**
+   * Get recommended study session based on current state
+   */
+  private static getRecommendedSession(
+    dueCount: number, 
+    newCount: number, 
+    stats?: DailyStats | null
+  ) {
+    const reviewsToday = stats?.cards_reviewed || 0
+    
+    // If user hasn't studied today and has many due cards, focus on reviews
+    if (reviewsToday === 0 && dueCount > 20) {
+      return {
+        type: 'reviews',
+        cardCount: Math.min(30, dueCount),
+        reason: 'You have many cards due for review. Let\'s catch up!'
+      }
+    }
+    
+    // If user has done some reviews but has new cards, mix them
+    if (reviewsToday > 0 && reviewsToday < 20 && newCount > 0) {
+      return {
+        type: 'mixed',
+        cardCount: 20,
+        reason: 'Perfect time to learn new words and review old ones!'
+      }
+    }
+    
+    // If user has done many reviews, focus on new cards
+    if (reviewsToday >= 20 && newCount > 10) {
+      return {
+        type: 'new_cards',
+        cardCount: 15,
+        reason: 'Great progress today! Ready to learn some new vocabulary?'
+      }
+    }
+    
+    // Default mixed session
+    return {
+      type: 'mixed',
+      cardCount: 25,
+      reason: 'A balanced session of new and review cards'
     }
   }
 

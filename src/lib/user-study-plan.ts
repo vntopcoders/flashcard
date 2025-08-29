@@ -425,7 +425,7 @@ export class UserStudyPlanService {
       .eq('id', studyPlanId)
       .single()
 
-    if (!studyPlan) return
+    if (!studyPlan || !studyPlan.data) return
 
     const startDate = new Date(studyPlan.data.start_date)
     const weekStartDate = new Date(startDate)
@@ -530,11 +530,10 @@ export class UserStudyPlanService {
     const updateData = {
       ...progress,
       is_completed: progress.completion_percentage === 100,
-      last_reviewed_at: new Date().toISOString()
-    }
-
-    if (progress.completion_percentage === 100) {
-      updateData.completed_at = new Date().toISOString()
+      last_reviewed_at: new Date().toISOString(),
+      ...(progress.completion_percentage === 100 && {
+        completed_at: new Date().toISOString()
+      })
     }
 
     const { data, error } = await supabase

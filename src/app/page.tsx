@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
+import Link from 'next/link'
 import { Plus, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react'
 import FlashcardComponent from '@/components/FlashcardComponent'
 import AddFlashcardForm from '@/components/AddFlashcardForm'
@@ -232,12 +233,12 @@ function FlashcardApp() {
                 >
                   📚 Browse All Lessons
                 </a>
-                <a
+                <Link
                   href="/grammar"
                   className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium hover:bg-green-200 transition-colors"
                 >
                   📝 Grammar Practice
-                </a>
+                </Link>
                 <a
                   href="/study-plan"
                   className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium hover:bg-purple-200 transition-colors"

@@ -302,7 +302,7 @@ export async function POST(request: Request) {
     const { dataset = 'all', overwrite = false } = body
 
     let totalInserted = 0
-    let errors: string[] = []
+    const errors: string[] = []
 
     // Get or create categories
     const categoryMap: Record<string, string> = {}

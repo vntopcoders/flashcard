@@ -1,17 +1,14 @@
-import { Suspense } from 'react'
-import GrammarExercise from '@/components/GrammarExercise'
+import dynamic from 'next/dynamic'
+
+const GrammarLessonsList = dynamic(() => import('@/components/GrammarLessonsList'), {
+  loading: () => <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading grammar lessons...</div>
+})
 
 export default function GrammarPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg text-gray-600">Loading grammar exercises...</div>
-      </div>
-    }>
-      <div className="min-h-screen bg-gray-50">
-        <GrammarExercise />
-      </div>
-    </Suspense>
+    <div className="min-h-screen bg-gray-50">
+      <GrammarLessonsList />
+    </div>
   )
 }
 

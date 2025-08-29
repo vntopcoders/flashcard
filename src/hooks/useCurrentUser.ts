@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useEffect, useState } from 'react'
 
 export interface CurrentUserData {
   id: string
@@ -12,41 +11,18 @@ export interface CurrentUserData {
 
 export function useCurrentUser() {
   const { user, isAuthenticated, loading } = useAuth()
-  const [userData, setUserData] = useState<CurrentUserData | null>(null)
-  const [userLoading, setUserLoading] = useState(true)
 
-  useEffect(() => {
-    async function fetchUserData() {
-      if (!isAuthenticated || !user?.email || loading) {
-        setUserData(null)
-        setUserLoading(false)
-        return
-      }
-
-      try {
-        const response = await fetch('/api/profile')
-        if (response.ok) {
-          const data = await response.json()
-          setUserData({
-            id: data.user.id,
-            name: data.user.name,
-            email: data.user.email,
-            image: data.user.image
-          })
-        }
-      } catch (error) {
-        console.error('Failed to fetch user data:', error)
-      } finally {
-        setUserLoading(false)
-      }
-    }
-
-    fetchUserData()
-  }, [isAuthenticated, user?.email, loading])
+  // Dùng trực tiếp NextAuth session thay vì gọi API
+  const userData: CurrentUserData | null = user && isAuthenticated ? {
+    id: user.id || user.email || 'temp-id',
+    name: user.name || undefined,
+    email: user.email || undefined,
+    image: user.image || undefined
+  } : null
 
   return {
     user: userData,
     isAuthenticated: isAuthenticated && !!userData,
-    loading: loading || userLoading
+    loading
   }
 }

@@ -17,7 +17,30 @@ interface Props {
 }
 
 // Grammar lesson content data
-const LESSON_CONTENT: Record<string, any> = {
+interface Exercise {
+  question: string
+  options: string[]
+  correct: number
+  explanation: string
+}
+
+interface TheoryType {
+  name: string
+  structure: string
+  use: string
+  example: string
+  vietnamese: string
+}
+
+interface LessonContent {
+  theory: {
+    introduction: string
+    types: TheoryType[]
+  }
+  exercises: Exercise[]
+}
+
+const LESSON_CONTENT: Record<string, LessonContent> = {
   'conditional-types': {
     theory: {
       introduction: 'Conditional sentences express hypothetical situations and their consequences. There are four main types of conditionals in English.',
@@ -832,7 +855,7 @@ const LESSON_CONTENT: Record<string, any> = {
         question: 'Is this the reason _______ you left early?',
         options: ['which', 'that', 'why', 'when'],
         correct: 2,
-        explanation: '"Why" is used for reasons in relative clauses.'
+        explanation: '&quot;Why&quot; is used for reasons in relative clauses.'
       }
     ]
   }
@@ -854,7 +877,7 @@ export default function GrammarLessonContent({ lesson, lessonData }: Props) {
           Lesson Content Coming Soon
         </h3>
         <p className="text-gray-600 mb-6">
-          We're working on creating comprehensive content for {lessonData.title}.
+          We&apos;re working on creating comprehensive content for {lessonData.title}.
         </p>
         <Link 
           href="/grammar"
@@ -922,7 +945,7 @@ export default function GrammarLessonContent({ lesson, lessonData }: Props) {
               </p>
 
               <div className="space-y-8">
-                {content.theory.types.map((type: any, index: number) => (
+                {content.theory.types.map((type: TheoryType, index: number) => (
                   <div key={index} className="border-l-4 border-blue-500 pl-6">
                     <h3 className="text-xl font-semibold text-gray-900 mb-3">
                       {type.name}
@@ -968,7 +991,7 @@ export default function GrammarLessonContent({ lesson, lessonData }: Props) {
             </div>
 
             <div className="space-y-6">
-              {content.exercises.map((exercise: any, exerciseIndex: number) => (
+              {content.exercises.map((exercise: Exercise, exerciseIndex: number) => (
                 <div key={exerciseIndex} className="border rounded-lg p-6">
                   <div className="mb-4">
                     <h4 className="font-medium text-gray-900 mb-3">

@@ -58,11 +58,10 @@ export async function GET(request: Request) {
       .from('vocabulary_words')
       .select('id', { count: 'exact', head: true })
 
-    if (category && category !== 'all') {
-      countQuery = countQuery
-        .select('id, vocabulary_categories!inner(name)', { count: 'exact', head: true })
-        .eq('vocabulary_categories.name', category)
-    }
+    // Note: Category filtering disabled for now due to Supabase API complexity
+    // if (category && category !== 'all') {
+    //   countQuery = countQuery.eq('category_id', category)
+    // }
 
     if (difficulty) {
       countQuery = countQuery.eq('difficulty_level', parseInt(difficulty))
@@ -119,13 +118,11 @@ export async function POST(request: Request) {
         
         supabase
           .from('vocabulary_words')
-          .select('vocabulary_categories(name), count:id.count()')
-          .group('vocabulary_categories.name'),
-
+          .select('vocabulary_categories(name)'),
+        
         supabase
           .from('vocabulary_words')
-          .select('difficulty_level, count:id.count()')
-          .group('difficulty_level')
+          .select('difficulty_level')
       ])
 
       return NextResponse.json({

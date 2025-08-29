@@ -60,7 +60,7 @@ export async function GET(
       if (!acc[type]) acc[type] = []
       acc[type].push(resource)
       return acc
-    }, {} as Record<string, any[]>) || {}
+    }, {} as Record<string, { url: string; [key: string]: unknown }[]>) || {}
 
     return NextResponse.json({
       success: true,
@@ -68,8 +68,8 @@ export async function GET(
         weekNumber,
         topics: topicsWithPoints,
         resources: groupedResources,
-        lessonLinks: groupedResources.lesson?.map((r: any) => r.url) || [],
-        grammarLinks: groupedResources.grammar?.map((r: any) => r.url) || []
+        lessonLinks: groupedResources.lesson?.map((r: { url: string }) => r.url) || [],
+        grammarLinks: groupedResources.grammar?.map((r: { url: string }) => r.url) || []
       }
     })
   } catch (error) {

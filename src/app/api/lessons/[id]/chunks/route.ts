@@ -8,10 +8,10 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const url = new URL(request.url)
     const chunkSize = parseInt(url.searchParams.get('size') || '20')
 

@@ -1,7 +1,9 @@
 /**
  * Google Cloud Text-to-Speech Service
- * Provides pronunciation audio for vocabulary words
+ * Provides pronunciation audio for vocabulary words with offline caching
  */
+
+import { OfflineAudioCache } from './offline-audio-cache'
 
 export interface TTSOptions {
   text: string
@@ -15,6 +17,7 @@ export interface TTSOptions {
 export interface TTSResponse {
   audioContent: string // Base64 encoded audio
   error?: string
+  cached?: boolean // Indicates if audio came from offline cache
 }
 
 export class GoogleTTSService {
@@ -37,7 +40,7 @@ export class GoogleTTSService {
   }
 
   /**
-   * Generate audio for text using Google Cloud TTS
+   * Generate audio for text using Google Cloud TTS with offline caching
    */
   static async generateAudio(options: TTSOptions): Promise<TTSResponse> {
     try {
@@ -48,6 +51,19 @@ export class GoogleTTSService {
         speakingRate = 0.9, // Slightly slower for learning
         pitch = 0.0
       } = options
+
+      const accent = languageCode.includes('GB') ? 'UK' : languageCode.includes('AU') ? 'AU' : 'US'
+
+      // Check offline cache first
+      if (OfflineAudioCache.isSupported()) {
+        const cachedAudio = await OfflineAudioCache.getCachedAudio(text, accent)
+        if (cachedAudio) {
+          return {
+            audioContent: cachedAudio,
+            cached: true
+          }
+        }
+      }
 
       const voiceConfig = this.VOICE_CONFIGS[languageCode as keyof typeof this.VOICE_CONFIGS] 
         || this.VOICE_CONFIGS['en-US']
@@ -81,6 +97,12 @@ export class GoogleTTSService {
       }
 
       const data = await response.json()
+      
+      // Cache the audio data for offline use
+      if (data.audioContent && OfflineAudioCache.isSupported()) {
+        await OfflineAudioCache.cacheAudio(text, accent, data.audioContent)
+      }
+
       return data
       
     } catch (error) {
@@ -150,13 +172,25 @@ export class GoogleTTSService {
   }
 
   /**
-   * Play audio from base64 content
+   * Play audio from base64 content with settings
    */
-  static async playAudio(base64Audio: string): Promise<void> {
+  static async playAudio(base64Audio: string, options?: {
+    volume?: number
+    playbackRate?: number
+  }): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         const audioUrl = this.createAudioUrl(base64Audio)
         const audio = new Audio(audioUrl)
+        
+        // Apply audio settings
+        if (options?.volume !== undefined) {
+          audio.volume = Math.max(0, Math.min(1, options.volume))
+        }
+        
+        if (options?.playbackRate !== undefined) {
+          audio.playbackRate = Math.max(0.25, Math.min(4, options.playbackRate))
+        }
         
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl) // Clean up

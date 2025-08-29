@@ -340,18 +340,18 @@ export default function ReviewQueue() {
         </div>
 
         {/* Flashcard */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
+        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 mb-6">
           <div 
-            className={`min-h-[300px] flex items-center justify-center cursor-pointer transition-all duration-300 ${
+            className={`min-h-[250px] sm:min-h-[300px] md:min-h-[350px] flex items-center justify-center cursor-pointer transition-all duration-300 ${
               isFlipped ? 'transform' : ''
             }`}
             onClick={flipCard}
           >
             {!isFlipped ? (
               // Front side - English word
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className="text-4xl font-bold text-gray-800">
+              <div className="text-center px-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
                     {currentCard.english}
                   </div>
                   <PronunciationPlayer 
@@ -359,7 +359,7 @@ export default function ReviewQueue() {
                     type="word"
                     size="large"
                     showAccentSelector={true}
-                    className="mt-2"
+                    className="mt-2 sm:mt-0"
                   />
                 </div>
                 {currentCard.ipa && (
@@ -376,12 +376,12 @@ export default function ReviewQueue() {
               </div>
             ) : (
               // Back side - Vietnamese meaning
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-4">
+              <div className="text-center px-2">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 mb-4">
                   {currentCard.vietnamese}
                 </div>
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="text-xl text-gray-700">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4">
+                  <div className="text-lg sm:text-xl text-gray-700">
                     {currentCard.english}
                   </div>
                   <PronunciationPlayer 
@@ -411,16 +411,16 @@ export default function ReviewQueue() {
 
         {/* Quality Rating Buttons */}
         {isFlipped && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+            <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 text-center px-2">
               How well did you know this word?
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
               {[0, 1, 2, 3, 4, 5].map(quality => (
                 <button
                   key={quality}
                   onClick={() => submitReview(quality)}
-                  className={`p-4 rounded-lg text-white font-medium transition-colors ${getQualityColor(quality)}`}
+                  className={`p-3 sm:p-4 rounded-lg text-white font-medium transition-colors text-sm sm:text-base ${getQualityColor(quality)}`}
                 >
                   <div className="text-lg font-bold mb-1">{quality}</div>
                   <div className="text-sm opacity-90">

@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import { Volume2, VolumeX, Loader2, Globe, Settings } from 'lucide-react'
-import { GoogleTTSService } from '@/lib/google-tts'
+import React, { useState, useCallback } from 'react'
+import { Volume2, VolumeX, Loader2, Globe, Settings, Zap } from 'lucide-react'
+import { HybridAudioService } from '@/lib/hybrid-audio-service'
+import { useAudioSettings } from '@/contexts/AudioSettingsContext'
 
 interface PronunciationPlayerProps {
   text: string
@@ -25,22 +26,25 @@ const accentLabels = {
 export default function PronunciationPlayer({
   text,
   type = 'word',
-  accent = 'US',
+  accent,
   size = 'medium',
-  autoPlay = false,
+  autoPlay,
   showAccentSelector = false,
   className = '',
   onPlay,
   onError
 }: PronunciationPlayerProps) {
+  const { settings } = useAudioSettings()
   const [isLoading, setIsLoading] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [selectedAccent, setSelectedAccent] = useState<'US' | 'UK' | 'AU'>(accent)
+  const [selectedAccent, setSelectedAccent] = useState<'US' | 'UK' | 'AU'>(accent || settings.preferredAccent)
   const [showSettings, setShowSettings] = useState(false)
   const [error, setError] = useState<string>('')
-  const [audioCache, setAudioCache] = useState<Map<string, string>>(new Map())
+  const [audioSource, setAudioSource] = useState<'static' | 'tts' | 'cached' | null>(null)
+  const [loadTime, setLoadTime] = useState<number>(0)
   
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  // Use settings values with props as fallbacks
+  const effectiveAutoPlay = autoPlay !== undefined ? autoPlay : settings.autoPlay
 
   const sizeClasses = {
     small: 'w-6 h-6',
@@ -54,49 +58,30 @@ export default function PronunciationPlayer({
     large: 'p-3'
   }
 
-  React.useEffect(() => {
-    if (autoPlay && text) {
-      handlePlay()
-    }
-  }, [text, autoPlay])
-
-  const getCacheKey = (text: string, accent: string) => `${text}-${accent}`
-
-  const handlePlay = async () => {
+  const handlePlay = useCallback(async () => {
     if (isPlaying || isLoading) return
 
     try {
       setIsLoading(true)
       setError('')
-      
-      const cacheKey = getCacheKey(text, selectedAccent)
-      let audioContent = audioCache.get(cacheKey)
-      
-      if (!audioContent) {
-        // Generate new audio
-        const response = type === 'word' 
-          ? await GoogleTTSService.pronounceWord(text, selectedAccent)
-          : await GoogleTTSService.pronounceSentence(text, selectedAccent)
-        
-        if (response.error) {
-          throw new Error(response.error)
-        }
-        
-        if (!response.audioContent) {
-          throw new Error('No audio content received')
-        }
-        
-        audioContent = response.audioContent
-        
-        // Cache the audio
-        if (audioContent) {
-          setAudioCache(prev => new Map(prev).set(cacheKey, audioContent as string))
-        }
-      }
-
-      // Play the audio
       setIsPlaying(true)
-      await GoogleTTSService.playAudio(audioContent)
+      
+      // Use hybrid audio service
+      const result = await HybridAudioService.playAudio({
+        word: text,
+        accent: selectedAccent,
+        type,
+        volume: settings.volume,
+        playbackRate: settings.playbackSpeed
+      })
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Audio playback failed')
+      }
+      
+      // Store audio source info and load time
+      setAudioSource(result.audioSource.type)
+      setLoadTime(result.loadTime || 0)
       
       onPlay?.()
       
@@ -109,7 +94,20 @@ export default function PronunciationPlayer({
       setIsLoading(false)
       setIsPlaying(false)
     }
-  }
+  }, [isPlaying, isLoading, text, selectedAccent, type, settings.volume, settings.playbackSpeed, onPlay, onError])
+
+  React.useEffect(() => {
+    if (effectiveAutoPlay && text) {
+      handlePlay()
+    }
+  }, [text, effectiveAutoPlay, handlePlay])
+
+  // Update selected accent when settings change
+  React.useEffect(() => {
+    if (!accent) {
+      setSelectedAccent(settings.preferredAccent)
+    }
+  }, [settings.preferredAccent, accent])
 
   const handleAccentChange = (newAccent: 'US' | 'UK' | 'AU') => {
     setSelectedAccent(newAccent)
@@ -141,16 +139,33 @@ export default function PronunciationPlayer({
         )}
       </button>
 
-      {/* Accent Info */}
-      <span className="text-xs text-gray-500 font-medium">
-        {accentLabels[selectedAccent].flag}
-      </span>
+      {/* Accent Info & Audio Source */}
+      <div className="flex items-center gap-1">
+        <span className="text-xs text-gray-500 font-medium">
+          {accentLabels[selectedAccent].flag}
+        </span>
+        
+        {/* Audio source indicator */}
+        {audioSource && (
+          <div className="flex items-center gap-1" title={`Audio source: ${audioSource} (${loadTime}ms)`}>
+            {audioSource === 'static' && (
+              <Zap className="w-3 h-3 text-green-500" />
+            )}
+            {audioSource === 'tts' && (
+              <div className="w-2 h-2 bg-blue-500 rounded-full" />
+            )}
+            {audioSource === 'cached' && (
+              <div className="w-2 h-2 bg-purple-500 rounded-full" />
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Settings Button */}
       {showAccentSelector && (
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-1 text-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
           title="Change accent"
         >
           <Settings className="w-4 h-4" />
@@ -159,7 +174,7 @@ export default function PronunciationPlayer({
 
       {/* Accent Selector Dropdown */}
       {showSettings && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-36">
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-36 max-w-48">
           <div className="p-2">
             <div className="text-xs font-medium text-gray-500 mb-2 flex items-center gap-1">
               <Globe className="w-3 h-3" />
@@ -170,7 +185,7 @@ export default function PronunciationPlayer({
                 key={key}
                 onClick={() => handleAccentChange(key as 'US' | 'UK' | 'AU')}
                 className={`
-                  w-full text-left px-2 py-1.5 text-sm rounded transition-colors
+                  w-full text-left px-3 py-2 text-sm rounded transition-colors touch-manipulation
                   flex items-center gap-2
                   ${selectedAccent === key 
                     ? 'bg-blue-100 text-blue-700' 
@@ -196,10 +211,10 @@ export default function PronunciationPlayer({
         </div>
       )}
 
-      {/* Loading indicator for cached audio */}
-      {audioCache.size > 0 && (
-        <div className="text-xs text-green-500 opacity-70" title="Audio cached">
-          •
+      {/* Performance info */}
+      {loadTime > 0 && (
+        <div className="text-xs text-gray-400 opacity-70" title={`Load time: ${loadTime}ms`}>
+          {loadTime}ms
         </div>
       )}
     </div>

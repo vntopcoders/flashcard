@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 
-// Note: You'll need to set up Google Cloud TTS API credentials
-// For now, this is a mock implementation that you can replace with actual Google TTS API
+// Initialize Google Cloud TTS client
+// Requires GOOGLE_APPLICATION_CREDENTIALS env var or service account key
+let ttsClient: TextToSpeechClient | null = null
+
+try {
+  ttsClient = new TextToSpeechClient({
+    // If GOOGLE_APPLICATION_CREDENTIALS is not set, you can provide credentials here
+    keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  })
+} catch (error) {
+  console.warn('Google TTS Client initialization failed:', error)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,47 +26,74 @@ export async function POST(request: NextRequest) {
       language: voice?.languageCode
     })
 
-    // TODO: Replace this mock with actual Google Cloud TTS API call
-    // const { TextToSpeechClient } = require('@google-cloud/text-to-speech')
-    // const client = new TextToSpeechClient()
-    
-    // For development, return a mock response
-    // In production, you would make the actual API call:
-    /*
-    const [response] = await client.synthesizeSpeech({
-      input: { text: input.text },
-      voice: {
-        languageCode: voice.languageCode,
-        name: voice.name,
-        ssmlGender: voice.ssmlGender
-      },
-      audioConfig: {
-        audioEncoding: audioConfig.audioEncoding,
-        speakingRate: audioConfig.speakingRate,
-        pitch: audioConfig.pitch,
-        volumeGainDb: audioConfig.volumeGainDb,
-        sampleRateHertz: audioConfig.sampleRateHertz
-      }
-    })
-    
-    return NextResponse.json({
-      audioContent: response.audioContent.toString('base64')
-    })
-    */
+    // Check if Google TTS client is available
+    if (!ttsClient) {
+      console.warn('Google TTS client not available, using mock response')
+      const mockAudioContent = generateMockAudio(input?.text || '')
+      
+      return NextResponse.json({
+        audioContent: mockAudioContent,
+        message: 'Mock TTS response - Google TTS client not configured',
+        usage: {
+          characters: input?.text?.length || 0,
+          voice: voice?.name,
+          language: voice?.languageCode,
+          cost: calculateCost(input?.text?.length || 0, voice?.name || 'standard')
+        }
+      })
+    }
 
-    // Mock implementation for development
-    // This simulates a successful TTS response without actually calling Google API
-    const mockAudioContent = generateMockAudio(input?.text || '')
-    
-    return NextResponse.json({
-      audioContent: mockAudioContent,
-      message: 'Mock TTS response - replace with actual Google TTS API',
-      usage: {
-        characters: input?.text?.length || 0,
-        voice: voice?.name,
-        language: voice?.languageCode
+    // Make actual Google Cloud TTS API call
+    try {
+      const request = {
+        input: { text: input.text },
+        voice: {
+          languageCode: voice.languageCode,
+          name: voice.name,
+          ssmlGender: voice.ssmlGender
+        },
+        audioConfig: {
+          audioEncoding: audioConfig.audioEncoding,
+          speakingRate: audioConfig.speakingRate,
+          pitch: audioConfig.pitch,
+          volumeGainDb: audioConfig.volumeGainDb,
+          sampleRateHertz: audioConfig.sampleRateHertz
+        }
       }
-    })
+
+      const [response] = await ttsClient.synthesizeSpeech(request)
+      
+      if (!response.audioContent) {
+        throw new Error('No audio content received from Google TTS')
+      }
+
+      return NextResponse.json({
+        audioContent: response.audioContent.toString('base64'),
+        usage: {
+          characters: input?.text?.length || 0,
+          voice: voice?.name,
+          language: voice?.languageCode,
+          cost: calculateCost(input?.text?.length || 0, voice?.name || 'standard')
+        }
+      })
+
+    } catch (ttsError) {
+      console.error('Google TTS API Error:', ttsError)
+      
+      // Fallback to mock if API fails
+      const mockAudioContent = generateMockAudio(input?.text || '')
+      
+      return NextResponse.json({
+        audioContent: mockAudioContent,
+        message: 'Google TTS API failed, using fallback',
+        error: ttsError instanceof Error ? ttsError.message : 'TTS API error',
+        usage: {
+          characters: input?.text?.length || 0,
+          voice: voice?.name,
+          language: voice?.languageCode
+        }
+      })
+    }
 
   } catch (error) {
     console.error('Google TTS API Error:', error)
@@ -69,8 +108,19 @@ export async function POST(request: NextRequest) {
 }
 
 /**
+ * Calculate estimated cost for Google TTS usage
+ */
+function calculateCost(characters: number, voiceType: string): number {
+  // Google TTS pricing (as of 2024):
+  // Standard voices: $4 per 1M characters
+  // Neural2/WaveNet voices: $16 per 1M characters
+  const isNeuralVoice = voiceType.includes('Neural') || voiceType.includes('WaveNet')
+  const ratePerMillion = isNeuralVoice ? 16 : 4
+  return (characters / 1000000) * ratePerMillion
+}
+
+/**
  * Generate a mock base64 audio content for development
- * Replace this with actual Google TTS API integration
  */
 function generateMockAudio(text: string): string {
   // This is a minimal WAV file header for a silent audio file

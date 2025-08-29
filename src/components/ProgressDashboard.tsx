@@ -9,8 +9,12 @@ import {
   BookOpen,
   CheckCircle,
   Flame,
-  RotateCcw
+  RotateCcw,
+  User,
+  LogIn
 } from 'lucide-react'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { UserSpacedRepetitionService } from '@/lib/user-spaced-repetition'
 
 interface DashboardData {
   overview: {
@@ -51,96 +55,75 @@ interface DashboardData {
 }
 
 export default function ProgressDashboard() {
+  const { user, isAuthenticated, loading: userLoading } = useCurrentUser()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedTimeframe, setSelectedTimeframe] = useState<'week' | 'month' | 'year'>('week')
 
   useEffect(() => {
-    loadDashboardData()
-  }, [])
+    if (!userLoading) {
+      loadDashboardData()
+    }
+  }, [user, userLoading])
 
   const loadDashboardData = async () => {
     try {
       setIsLoading(true)
       
-      // Simulate data since we don't have the backend tables yet
-      // In production, this would fetch from /api/spaced-repetition/progress
-      const mockData: DashboardData = {
+      if (!isAuthenticated || !user) {
+        setDashboardData(null)
+        return
+      }
+
+      // Get real user progress data
+      const [progressData, studySchedule, achievements] = await Promise.all([
+        UserSpacedRepetitionService.getLearningProgress(user.id).catch(() => null),
+        UserSpacedRepetitionService.getStudySchedule(user.id).catch(() => null),
+        UserSpacedRepetitionService.getAchievements(user.id).catch(() => null)
+      ])
+
+      // Get daily stats for the last 7 days
+      const last7Days = []
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date()
+        date.setDate(date.getDate() - i)
+        const stats = await UserSpacedRepetitionService.getDailyStats(user.id, date).catch(() => null)
+        last7Days.push({
+          date: date.toISOString(),
+          cards_reviewed: stats?.cards_reviewed || 0,
+          new_cards_learned: stats?.cards_learned || 0,
+          accuracy: stats?.accuracy_rate || 0
+        })
+      }
+
+      const totalCards = progressData?.cardStates.reduce((sum, state) => sum + state.count, 0) || 0
+      const masteredCards = progressData?.cardStates.find(s => s.state === 'mastered')?.count || 0
+      
+      const realData: DashboardData = {
         overview: {
-          total_cards: 1987,
-          cards_due_today: 45,
-          cards_mastered: 234,
-          current_streak: 7,
-          study_time_today: 23,
-          accuracy_rate: 87.5
+          total_cards: totalCards,
+          cards_due_today: studySchedule?.dueToday || 0,
+          cards_mastered: masteredCards,
+          current_streak: studySchedule?.streak || 0,
+          study_time_today: Math.floor((progressData?.recentStats?.[0]?.total_study_time_ms || 0) / 60000),
+          accuracy_rate: studySchedule?.accuracy || 0
         },
-        recent_sessions: [
-          { date: '2025-08-28', cards_studied: 25, accuracy: 88, duration_minutes: 18, session_type: 'mixed' },
-          { date: '2025-08-27', cards_studied: 30, accuracy: 91, duration_minutes: 22, session_type: 'reviews' },
-          { date: '2025-08-26', cards_studied: 20, accuracy: 85, duration_minutes: 15, session_type: 'new_cards' },
-          { date: '2025-08-25', cards_studied: 35, accuracy: 89, duration_minutes: 25, session_type: 'mixed' },
-          { date: '2025-08-24', cards_studied: 28, accuracy: 92, duration_minutes: 19, session_type: 'reviews' }
-        ],
-        weekly_progress: [
-          { date: '2025-08-22', cards_reviewed: 32, new_cards_learned: 8, accuracy: 86 },
-          { date: '2025-08-23', cards_reviewed: 28, new_cards_learned: 12, accuracy: 89 },
-          { date: '2025-08-24', cards_reviewed: 35, new_cards_learned: 5, accuracy: 92 },
-          { date: '2025-08-25', cards_reviewed: 30, new_cards_learned: 10, accuracy: 88 },
-          { date: '2025-08-26', cards_reviewed: 25, new_cards_learned: 15, accuracy: 85 },
-          { date: '2025-08-27', cards_reviewed: 40, new_cards_learned: 3, accuracy: 91 },
-          { date: '2025-08-28', cards_reviewed: 25, new_cards_learned: 8, accuracy: 87 }
-        ],
-        card_states: [
-          { state: 'new', count: 856 },
-          { state: 'learning', count: 432 },
-          { state: 'review', count: 465 },
-          { state: 'mastered', count: 234 }
-        ],
-        achievements: [
-          {
-            id: '1',
-            name: 'Learning Streak - 7 Days',
-            description: 'Study for 7 consecutive days',
-            progress: 7,
-            target: 7,
-            is_completed: true,
-            badge_icon: '🔥',
-            badge_color: 'orange'
-          },
-          {
-            id: '2',
-            name: 'First 100 Words',
-            description: 'Master your first 100 vocabulary words',
-            progress: 234,
-            target: 100,
-            is_completed: true,
-            badge_icon: '📚',
-            badge_color: 'blue'
-          },
-          {
-            id: '3',
-            name: 'Vocabulary Expert - 500 Words',
-            description: 'Master 500 vocabulary words',
-            progress: 234,
-            target: 500,
-            is_completed: false,
-            badge_icon: '🎓',
-            badge_color: 'purple'
-          },
-          {
-            id: '4',
-            name: 'Perfect Session - 10 Cards',
-            description: 'Get 10 cards correct in a row',
-            progress: 8,
-            target: 10,
-            is_completed: false,
-            badge_icon: '⚡',
-            badge_color: 'yellow'
-          }
-        ]
+        recent_sessions: [], // TODO: Implement recent sessions query
+        weekly_progress: last7Days,
+        card_states: progressData?.cardStates || [],
+        achievements: (achievements || []).map(achievement => ({
+          id: achievement.id || achievement.achievement_type,
+          name: achievement.achievement_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          description: `Complete ${achievement.achievement_type.replace('_', ' ')}`,
+          progress: achievement.current_progress || 0,
+          target: 100, // Default target
+          is_completed: achievement.is_completed || false,
+          badge_icon: achievement.is_completed ? '🏆' : '🎯',
+          badge_color: achievement.is_completed ? 'gold' : 'blue'
+        }))
       }
       
-      setDashboardData(mockData)
+      setDashboardData(realData)
       
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
@@ -187,7 +170,7 @@ export default function ProgressDashboard() {
     }
   }
 
-  if (isLoading) {
+  if (userLoading || isLoading) {
     return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="animate-pulse space-y-6">
@@ -198,6 +181,29 @@ export default function ProgressDashboard() {
             ))}
           </div>
           <div className="h-64 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">📊</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Sign in to view your progress
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Track your vocabulary learning journey and achievements by signing in.
+          </p>
+          <button
+            onClick={() => window.location.href = '/api/auth/signin'}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <LogIn className="w-5 h-5" />
+            Sign In
+          </button>
         </div>
       </div>
     )

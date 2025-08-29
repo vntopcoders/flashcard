@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import Navigation from '@/components/Navigation'
+import ClientProviders from '@/components/ClientProviders'
 
 export default function RootLayout({
   children,
@@ -29,10 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
       >
-        <Navigation />
-        <main>
-          {children}
-        </main>
+        <ClientProviders>
+          <Navigation />
+          <main>
+            {children}
+          </main>
+        </ClientProviders>
       </body>
     </html>
   );

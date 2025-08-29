@@ -14,8 +14,11 @@ import {
   Brain,
   Edit3,
   Headphones,
-  MessageSquare
+  MessageSquare,
+  LogIn,
+  User
 } from 'lucide-react'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
 import AchievementHeader from './AchievementHeader'
 import AchievementPanel from './AchievementPanel'
 import AchievementToast from './AchievementToast'
@@ -66,6 +69,7 @@ interface StudyPlanData {
 }
 
 export default function StudyPlan() {
+  const { user, isAuthenticated, loading: userLoading } = useCurrentUser()
   const [studyData, setStudyData] = useState<StudyPlanData | null>(null)
   const [selectedWeek, setSelectedWeek] = useState<number>(1)
   const [showDailyView, setShowDailyView] = useState(false)
@@ -80,9 +84,11 @@ export default function StudyPlan() {
   const [pointsForNext, setPointsForNext] = useState(100)
 
   useEffect(() => {
-    loadStudyPlan()
-    loadAchievements()
-  }, [])
+    if (!userLoading) {
+      loadStudyPlan()
+      loadAchievements()
+    }
+  }, [user, userLoading])
 
   const loadAchievements = async () => {
     try {
@@ -353,7 +359,7 @@ export default function StudyPlan() {
     return { phase: 'Final Prep', color: 'bg-orange-100 text-orange-800' }
   }
 
-  if (isLoading) {
+  if (userLoading || isLoading) {
     return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="animate-pulse space-y-6">
@@ -363,6 +369,29 @@ export default function StudyPlan() {
               <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
             ))}
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">📅</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Sign in to access your study plan
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Get a personalized 24-week IELTS study plan with daily tasks and progress tracking.
+          </p>
+          <button
+            onClick={() => window.location.href = '/api/auth/signin'}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <LogIn className="w-5 h-5" />
+            Sign In
+          </button>
         </div>
       </div>
     )
@@ -410,7 +439,7 @@ export default function StudyPlan() {
       </div>
 
       {/* Progress Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
         <div className="bg-white p-4 rounded-lg shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <Target className="w-4 h-4 text-blue-600" />
@@ -555,7 +584,15 @@ export default function StudyPlan() {
                     )}
                   </div>
 
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 flex items-center gap-2">
+                    {task.skill === 'grammar' && (
+                      <button
+                        onClick={() => window.location.href = '/grammar'}
+                        className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition-colors"
+                      >
+                        Practice
+                      </button>
+                    )}
                     {task.isCompleted ? (
                       <Pause className="w-4 h-4 text-green-600" />
                     ) : (
@@ -589,7 +626,7 @@ export default function StudyPlan() {
           {/* Week Selection */}
           <div className="bg-white rounded-lg shadow-sm p-4">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Study Weeks Overview</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-1 sm:gap-2">
               {studyData.weeklyPlans.map((week) => {
                 const phase = getWeekPhase(week.week)
                 return (

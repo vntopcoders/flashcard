@@ -113,7 +113,7 @@ export default function ProgressDashboard() {
         card_states: progressData?.cardStates || [],
         achievements: (achievements || []).map(achievement => ({
           id: achievement.id || achievement.achievement_type,
-          name: achievement.achievement_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          name: achievement.achievement_type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
           description: `Complete ${achievement.achievement_type.replace('_', ' ')}`,
           progress: achievement.current_progress || 0,
           target: 100, // Default target

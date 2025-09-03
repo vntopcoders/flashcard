@@ -132,6 +132,14 @@ function FlashcardApp() {
       'ước tính', 'bằng chứng', 'xuất khẩu', 'yếu tố', 'tài chính', 'công thức', 'chức năng', 'xác định'
     ]
 
+    const ipaTranscriptions = [
+      '/əˈtʃiːv/', '/ədˌmɪnɪˈstreɪʃn/', '/əˈfekt/', '/əˈnæləsɪs/', '/əˈproʊtʃ/', '/əˈproʊpriət/', '/ˈeriə/', '/ˈæspekts/',
+      '/əˈsɪstəns/', '/əˈsuːm/', '/əˈθɔːrəti/', '/əˈveɪləbl/', '/ˈbenɪfɪt/', '/ˈkætəɡɔːri/', '/kəˈmjuːnəti/', '/kəmˈpleks/',
+      '/kənˈsɜːrnɪŋ/', '/kənˈkluːʒn/', '/kənˈdʌkt/', '/ˈkɑːnsəkwəns/', '/kənˈsɪstənt/', '/ˌkɑːnstəˈtuːʃənl/', '/ˈkɑːntekst/', '/ˈkɑːntrækt/',
+      '/kriˈeɪt/', '/ˈdeɪtə/', '/ˌdefəˈnɪʃn/', '/dɪˈraɪvd/', '/ˌdɪstrəˈbjuːʃn/', '/ˌiːkəˈnɑːmɪk/', '/ɪnˈvaɪrənmənt/', '/ɪˈstæblɪʃt/',
+      '/ˈestəmət/', '/ˈevɪdəns/', '/ɪkˈspɔːrt/', '/ˈfæktərz/', '/faɪˈnænʃl/', '/ˈfɔːrmjələ/', '/ˈfʌŋkʃn/', '/aɪˈdentəˌfaɪd/'
+    ]
+
     const startIndex = (dayNumber - 1) * 20
     const dailyWords = []
     
@@ -141,12 +149,12 @@ function FlashcardApp() {
         id: `daily-${dayNumber}-${i + 1}`,
         english: baseWords[wordIndex],
         vietnamese: meanings[wordIndex],
-        pronunciation_guide: '',
+        pronunciation_guide: ipaTranscriptions[wordIndex],
         difficulty: phase === 'foundation' ? 1 : phase === 'development' ? 2 : phase === 'mastery' ? 3 : 4,
         category: 'daily-lesson',
         lesson_id: `daily-lesson-${dayNumber}`,
         lessonId: `daily-lesson-${dayNumber}`,
-        ipa: '',
+        ipa: ipaTranscriptions[wordIndex],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       })

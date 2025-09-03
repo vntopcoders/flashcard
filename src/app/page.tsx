@@ -313,10 +313,15 @@ function FlashcardApp() {
                   📚 Browse All Lessons
                 </a>
                 <Link
-                  href="/grammar"
+                  href={dailyLessonNumber ? `/grammar?day=${dailyLessonNumber}&week=${Math.ceil(dailyLessonNumber / 7)}` : "/grammar"}
                   className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium hover:bg-green-200 transition-colors"
                 >
                   📝 Grammar Practice
+                  {dailyLessonNumber && (
+                    <span className="ml-1 text-xs">
+                      (Day {dailyLessonNumber})
+                    </span>
+                  )}
                 </Link>
                 <a
                   href="/study-plan"

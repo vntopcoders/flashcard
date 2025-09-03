@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { BookOpen, Clock, Target, Filter, ChevronRight } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { BookOpen, Clock, Target, Filter, ChevronRight, Calendar, ArrowLeft } from 'lucide-react'
 
 // Complete IELTS Grammar Lessons
 const GRAMMAR_LESSONS = [
@@ -236,8 +237,25 @@ const GRAMMAR_LESSONS = [
 ]
 
 export default function GrammarLessonsList() {
+  const searchParams = useSearchParams()
   const [selectedLevel, setSelectedLevel] = useState<string>('all')
   const [selectedWeek, setSelectedWeek] = useState<string>('all')
+  const [dailyLessonDay, setDailyLessonDay] = useState<number | null>(null)
+  const [dailyLessonWeek, setDailyLessonWeek] = useState<number | null>(null)
+
+  // Handle daily lesson parameters
+  useEffect(() => {
+    const dayParam = searchParams.get('day')
+    const weekParam = searchParams.get('week')
+    
+    if (dayParam && weekParam) {
+      const day = parseInt(dayParam)
+      const week = parseInt(weekParam)
+      setDailyLessonDay(day)
+      setDailyLessonWeek(week)
+      setSelectedWeek(week.toString())
+    }
+  }, [searchParams])
 
   const levels = ['all', 'Basic', 'Intermediate', 'Advanced', 'IELTS']
   const weeks = ['all', ...Array.from({length: 19}, (_, i) => (i + 1).toString())]
@@ -267,14 +285,42 @@ export default function GrammarLessonsList() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      {/* Daily Lesson Header */}
+      {dailyLessonDay && dailyLessonWeek && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-blue-600" />
+              <div>
+                <h2 className="text-xl font-semibold text-blue-900">
+                  📅 Day {dailyLessonDay} Grammar Focus
+                </h2>
+                <p className="text-blue-700">
+                  Week {dailyLessonWeek} - Grammar lessons for today&apos;s study session
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/?daily-lesson=${dailyLessonDay}&phase=foundation`}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Flashcards
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          IELTS Grammar Lessons
+          {dailyLessonDay ? `Day ${dailyLessonDay} Grammar Practice` : 'IELTS Grammar Lessons'}
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Master English grammar with our comprehensive 19-week program. 
-          From basic tenses to advanced IELTS structures.
+          {dailyLessonDay 
+            ? `Focus on Week ${dailyLessonWeek} grammar topics for today's learning session`
+            : 'Master English grammar with our comprehensive 19-week program. From basic tenses to advanced IELTS structures.'
+          }
         </p>
       </div>
 

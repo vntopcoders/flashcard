@@ -9,6 +9,7 @@ import WelcomeDashboard from '@/components/WelcomeDashboard'
 import LessonChunksSelector from '@/components/LessonChunksSelector'
 import DailyLessonCompletion from '@/components/DailyLessonCompletion'
 import UserInfo from '@/components/UserInfo'
+import HomeDashboard from '@/components/HomeDashboard'
 import { Flashcard, Lesson } from '@/types/flashcard'
 import { useSearchParams } from 'next/navigation'
 import { getCurrentUserId } from '@/lib/user-utils'
@@ -345,6 +346,11 @@ function FlashcardApp() {
         </div>
       </div>
     )
+  }
+
+  // Show HomeDashboard when no lesson is selected
+  if (!selectedLessonId && !dailyLessonNumber && !showChunkSelector) {
+    return <HomeDashboard />
   }
 
   if (flashcards.length === 0) {

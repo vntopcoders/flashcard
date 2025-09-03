@@ -3,25 +3,56 @@ import { supabase } from '@/lib/supabase'
 import { AchievementSystem } from '@/lib/achievement-system'
 
 // Get user achievements
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Get user statistics (simulated for now)
-    const mockUserStats = {
-      vocabularyLearned: 450,
-      studyStreak: 12,
+    const searchParams = request.nextUrl.searchParams
+    const userId = searchParams.get('user_id')
+    
+    // Get real user statistics
+    let userStats = {
+      vocabularyLearned: 0,
+      studyStreak: 0,
       accuracy: 85,
-      averageTime: 4500, // 4.5 seconds
-      mockTestsCompleted: 3,
-      grammarUnitsCompleted: 25,
-      studyHours: 84,
+      averageTime: 4500,
+      mockTestsCompleted: 0,
+      grammarUnitsCompleted: 0,
+      studyHours: 0,
       bandScore: 5.5,
-      perfectDays: 8,
-      reviewsCompleted: 1250,
-      speedImprovements: 15
+      perfectDays: 0,
+      reviewsCompleted: 0,
+      speedImprovements: 0
+    }
+
+    if (userId) {
+      try {
+        // Fetch real user progress
+        const userResponse = await fetch(`${request.nextUrl.origin}/api/user/sync-progress?user_id=${userId}`)
+        if (userResponse.ok) {
+          const userData = await userResponse.json()
+          if (userData.success && userData.data.user_progress) {
+            const progress = userData.data.user_progress
+            userStats = {
+              vocabularyLearned: progress.total_words_learned || 0,
+              studyStreak: progress.study_streak || 0,
+              accuracy: 85, // Default for now
+              averageTime: 4500,
+              mockTestsCompleted: Math.floor((progress.total_days_studied || 0) / 7), // Weekly tests
+              grammarUnitsCompleted: Math.floor((progress.total_days_studied || 0) * 1.2),
+              studyHours: (progress.total_days_studied || 0) * 2.5, // Estimate 2.5h per day
+              bandScore: progress.current_estimated_score || 5.5,
+              perfectDays: progress.total_days_studied || 0,
+              reviewsCompleted: (progress.total_words_learned || 0) * 3, // Estimate
+              speedImprovements: Math.floor((progress.total_days_studied || 0) / 10)
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Using default user stats:', error)
+      }
     }
 
     // Simulate achievements with current progress
-    const achievements = AchievementSystem.simulateProgress(mockUserStats)
+    const achievements = AchievementSystem.simulateProgress(userStats)
     const totalPoints = AchievementSystem.getTotalPoints(achievements)
     const level = AchievementSystem.calculateLevel(totalPoints)
     const pointsForNext = AchievementSystem.getPointsForNextLevel(totalPoints)

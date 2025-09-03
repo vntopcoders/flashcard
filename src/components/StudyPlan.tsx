@@ -104,14 +104,23 @@ export default function StudyPlan() {
 
   const loadAchievements = async () => {
     try {
-      const response = await fetch('/api/achievements')
+      const userId = getCurrentUserId()
+      const response = await fetch(`/api/achievements?user_id=${userId}`)
       const result = await response.json()
       
       if (result.success) {
+        console.log('🏆 Achievement data loaded:', {
+          achievements: result.data.achievements.length,
+          unlocked: result.data.achievements.filter((a: any) => a.isUnlocked).length,
+          level: result.data.level,
+          totalPoints: result.data.totalPoints
+        })
         setAchievements(result.data.achievements)
         setUserLevel(result.data.level)
         setTotalPoints(result.data.totalPoints)
         setPointsForNext(result.data.pointsForNext)
+      } else {
+        console.error('❌ Achievement loading failed:', result)
       }
     } catch (error) {
       console.error('Failed to load achievements:', error)
@@ -714,7 +723,7 @@ export default function StudyPlan() {
         totalPoints={totalPoints}
         pointsForNext={pointsForNext}
         recentAchievements={achievements.filter(a => a.isUnlocked).slice(0, 5)}
-        nextAchievements={achievements.filter(a => !a.isUnlocked && a.progress > 0).slice(0, 3)}
+        nextAchievements={achievements.filter(a => !a.isUnlocked && (a.progress || 0) > 0).slice(0, 3)}
         onShowAll={() => setShowAchievements(true)}
       />
 

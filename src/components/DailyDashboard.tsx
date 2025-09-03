@@ -18,7 +18,7 @@ import {
   BarChart3
 } from 'lucide-react'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
-import { UserSpacedRepetitionService } from '@/lib/user-spaced-repetition'
+import { SpacedRepetitionService } from '@/lib/spaced-repetition'
 
 interface DailyTask {
   id: string
@@ -70,10 +70,10 @@ export default function DailyDashboard() {
         return
       }
 
-      // Get spaced repetition data
+      // Get spaced repetition data (using single-user service for now)
       const [studySchedule, progressData] = await Promise.all([
-        UserSpacedRepetitionService.getStudySchedule(user.id).catch(() => null),
-        UserSpacedRepetitionService.getLearningProgress(user.id).catch(() => null)
+        SpacedRepetitionService.getStudySchedule().catch(() => null),
+        SpacedRepetitionService.getLearningProgress().catch(() => null)
       ])
 
       // Generate daily tasks based on user's study plan and spaced repetition

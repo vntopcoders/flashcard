@@ -14,7 +14,7 @@ import {
   LogIn
 } from 'lucide-react'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
-import { UserSpacedRepetitionService } from '@/lib/user-spaced-repetition'
+import { SpacedRepetitionService } from '@/lib/spaced-repetition'
 
 interface DashboardData {
   overview: {
@@ -75,11 +75,11 @@ export default function ProgressDashboard() {
         return
       }
 
-      // Get real user progress data
+      // Get real user progress data (using single-user service for now)
       const [progressData, studySchedule, achievements] = await Promise.all([
-        UserSpacedRepetitionService.getLearningProgress(user.id).catch(() => null),
-        UserSpacedRepetitionService.getStudySchedule(user.id).catch(() => null),
-        UserSpacedRepetitionService.getAchievements(user.id).catch(() => null)
+        SpacedRepetitionService.getLearningProgress().catch(() => null),
+        SpacedRepetitionService.getStudySchedule().catch(() => null),
+        SpacedRepetitionService.getAchievements().catch(() => null)
       ])
 
       // Get daily stats for the last 7 days
@@ -87,7 +87,7 @@ export default function ProgressDashboard() {
       for (let i = 6; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
-        const stats = await UserSpacedRepetitionService.getDailyStats(user.id, date).catch(() => null)
+        const stats = await SpacedRepetitionService.getDailyStats(date).catch(() => null)
         last7Days.push({
           date: date.toISOString(),
           cards_reviewed: stats?.cards_reviewed || 0,

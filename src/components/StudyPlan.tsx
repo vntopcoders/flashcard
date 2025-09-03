@@ -15,8 +15,7 @@ import {
   Edit3,
   Headphones,
   MessageSquare,
-  LogIn,
-  User
+  LogIn
 } from 'lucide-react'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { getCurrentUserId } from '@/lib/user-utils'

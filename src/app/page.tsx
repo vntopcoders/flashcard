@@ -8,8 +8,10 @@ import AddFlashcardForm from '@/components/AddFlashcardForm'
 import WelcomeDashboard from '@/components/WelcomeDashboard'
 import LessonChunksSelector from '@/components/LessonChunksSelector'
 import DailyLessonCompletion from '@/components/DailyLessonCompletion'
+import UserInfo from '@/components/UserInfo'
 import { Flashcard, Lesson } from '@/types/flashcard'
 import { useSearchParams } from 'next/navigation'
+import { getCurrentUserId } from '@/lib/user-utils'
 
 function FlashcardApp() {
   const searchParams = useSearchParams()
@@ -85,7 +87,7 @@ function FlashcardApp() {
   // Auto-initialize user progress for daily lessons
   const initializeUserIfNeeded = async () => {
     try {
-      const userId = 'demo-user' // In real app, get from auth
+      const userId = getCurrentUserId()
       
       // Check if user exists
       const checkResponse = await fetch(`/api/user/initialize?user_id=${userId}`)
@@ -288,7 +290,7 @@ function FlashcardApp() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          user_id: 'demo-user', // In real app, get from auth
+          user_id: getCurrentUserId(),
           day_number: dailyLessonNumber,
           words_learned: completionData.wordsLearned,
           study_time_minutes: completionData.studyTimeMinutes,
@@ -435,6 +437,9 @@ function FlashcardApp() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {/* User Info */}
+              <UserInfo />
+              
               {/* Lesson Selector */}
               <select
                 value={selectedLessonId || ''}

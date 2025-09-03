@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { RefreshCw, CheckCircle, AlertCircle, User, BookOpen, Calendar } from 'lucide-react'
+import { getCurrentUserId } from '@/lib/user-utils'
 
 export default function SyncProgressPage() {
-  const [userId, setUserId] = useState('demo-user')
+  const [userId, setUserId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<{
     success: boolean
@@ -32,6 +33,11 @@ export default function SyncProgressPage() {
     total_words_from_lessons: number
     needs_sync: boolean
   } | null>(null)
+
+  // Initialize with current user ID
+  useEffect(() => {
+    setUserId(getCurrentUserId())
+  }, [])
 
   const checkSyncStatus = async () => {
     try {

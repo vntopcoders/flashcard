@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { UserPlus, Play, CheckCircle, AlertCircle, Users } from 'lucide-react'
+import { getCurrentUserId } from '@/lib/user-utils'
 
 export default function InitializeUsersPage() {
-  const [userIds, setUserIds] = useState('demo-user\nuser-1\nuser-2')
+  const [userIds, setUserIds] = useState('')
   const [isInitializing, setIsInitializing] = useState(false)
   const [results, setResults] = useState<{
     user_id: string
@@ -14,6 +15,12 @@ export default function InitializeUsersPage() {
     error?: string
   }[]>([])
   const [error, setError] = useState<string | null>(null)
+
+  // Initialize with current user ID
+  useEffect(() => {
+    const currentUser = getCurrentUserId()
+    setUserIds(`${currentUser}\ndemo-user\nuser-1`)
+  }, [])
 
   const initializeUsers = async () => {
     try {

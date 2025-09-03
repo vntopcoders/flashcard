@@ -56,7 +56,7 @@ interface DailyTask {
 interface StudyPlanData {
   currentWeek: number
   currentDay: number
-  totalWeeks: 24
+  totalWeeks: 36
   startDate: Date
   targetScore: number
   currentScore: number
@@ -138,31 +138,31 @@ export default function StudyPlan() {
     try {
       setIsLoading(true)
       
-      // Mock data based on the 24-week IELTS plan
+      // Mock data based on the 36-week IELTS plan for Band 8.0+
       const mockData: StudyPlanData = {
         currentWeek: 1,
         currentDay: 1,
-        totalWeeks: 24,
+        totalWeeks: 36,
         startDate: new Date('2025-08-01'),
-        targetScore: 7.0,
+        targetScore: 8.0,
         currentScore: 5.5,
         overallProgress: {
           vocabularyLearned: 650,
-          vocabularyTarget: 4000,
+          vocabularyTarget: 5000,
           grammarCompleted: 25,
-          grammarTarget: 145,
+          grammarTarget: 180,
           mockTestsCompleted: 8,
           studyDays: 22,
           currentStreak: 7
         },
         weeklyPlans: [
-          // Foundation Phase (Weeks 1-8)
+          // Foundation Phase (Weeks 1-12) - Band 4.0 to 5.5
           {
             week: 1,
             title: 'Foundation Building - Assessment',
             targetBand: '4.0-4.5',
-            vocabularyGoal: 300,
-            grammarUnits: 'Units 1-12 (Tenses)',
+            vocabularyGoal: 140,
+            grammarUnits: 'Present Simple & Present Continuous',
             grammarTheory: 'Thì hiện tại đơn và hiện tại tiếp diễn là nền tảng cơ bản nhất trong tiếng Anh. Thì hiện tại đơn diễn tả thói quen, sự thật hiển nhiên. Thì hiện tại tiếp diễn diễn tả hành động đang xảy ra tại thời điểm nói.',
             grammarKeyPoints: [
               'Present Simple: S + V/V-s/es (thói quen, sự thật)',
@@ -180,10 +180,10 @@ export default function StudyPlan() {
           },
           {
             week: 2,
-            title: 'Vocabulary & Grammar Foundation',
+            title: 'Modal Verbs & Ability',
             targetBand: '4.5-5.0',
-            vocabularyGoal: 600,
-            grammarUnits: 'Units 13-25 (Modal verbs)',
+            vocabularyGoal: 140,
+            grammarUnits: 'Modal Verbs (Can, Could, May, Might)',
             grammarTheory: 'Động từ khuyết thiếu (Modal verbs) là những động từ đặc biệt diễn tả khả năng, sự cho phép, nghĩa vụ, lời khuyên. Chúng không chia theo ngôi và luôn đi với động từ nguyên mẫu không "to".',
             grammarKeyPoints: [
               'Can/Could: khả năng, sự cho phép (có thể)',
@@ -201,10 +201,10 @@ export default function StudyPlan() {
           },
           {
             week: 3,
-            title: 'Reading & Writing Introduction',
+            title: 'Perfect Tenses Mastery',
             targetBand: '5.0',
-            vocabularyGoal: 900,
-            grammarUnits: 'Units 26-35 (Perfect tenses)',
+            vocabularyGoal: 140,
+            grammarUnits: 'Perfect Tenses (Present & Past Perfect)',
             grammarTheory: 'Thì hoàn thành diễn tả hành động đã xảy ra trong quá khứ và có liên quan đến hiện tại, hoặc hành động xảy ra trong một khoảng thời gian kéo dài đến hiện tại.',
             grammarKeyPoints: [
               'Present Perfect: S + have/has + V3 (kinh nghiệm, kết quả)',
@@ -222,10 +222,10 @@ export default function StudyPlan() {
           },
           {
             week: 4,
-            title: 'Speaking & Listening Development',
+            title: 'Conditional Sentences',
             targetBand: '5.0-5.5',
-            vocabularyGoal: 1200,
-            grammarUnits: 'Units 36-45 (Conditionals)',
+            vocabularyGoal: 140,
+            grammarUnits: 'Conditional Sentences (Types 0, 1, 2)',
             lessonLinks: ['/lessons?level=Intermediate', '/?lesson=a2c42066-9712-4066-a8ab-4f8918ce14de-chunk-1', '/?lesson=29684d22-bc94-42a4-b6df-b6dc9b21e82a-chunk-1'],
             grammarLinks: ['/grammar/conditional-types'],
             focusSkills: ['Speaking Fluency', 'Listening Techniques', 'Writing Task 2'],
@@ -234,13 +234,13 @@ export default function StudyPlan() {
             isCompleted: false,
             isActive: false
           },
-          // Development Phase (Weeks 5-12)
+          // Foundation continues through Week 12
           {
             week: 8,
-            title: 'Month 2 Milestone',
-            targetBand: '5.5-6.0',
-            vocabularyGoal: 2400,
-            grammarUnits: 'Units 60-80',
+            title: 'Articles & Quantifiers',
+            targetBand: '5.0-5.5',
+            vocabularyGoal: 140,
+            grammarUnits: 'Articles (A, An, The) and Quantifiers',
             lessonLinks: ['/lessons?level=Intermediate', '/?lesson=9344a13e-4468-44e0-86b6-222251186092-chunk-1', '/?lesson=6b0cd49d-2100-4b57-82fc-b2a9bb76c930-chunk-1'],
             grammarLinks: ['/grammar/passive-voice', '/grammar/reported-speech'],
             focusSkills: ['All Skills Integration', 'Exam Techniques'],
@@ -251,59 +251,102 @@ export default function StudyPlan() {
           },
           {
             week: 12,
-            title: 'Month 3 Milestone',
-            targetBand: '6.0-6.5',
-            vocabularyGoal: 3200,
-            grammarUnits: 'Units 80-100',
-            lessonLinks: ['/lessons?level=Advanced', '/?lesson=ed8bf3ea-f09d-45e5-9984-04c1e5328cd0-chunk-1', '/?lesson=5b2f05c6-7b0f-49a0-8b39-4bb21f40375f-chunk-1'],
-            grammarLinks: ['/grammar/relative-clauses', '/grammar/subjunctive-mood'],
-            focusSkills: ['Advanced Techniques', 'Speed Building'],
-            milestones: ['3200 words', 'All question types', 'Speaking 3+ minutes', 'Target 6.0-6.5'],
+            title: 'Foundation Complete - Subjunctive Mood',
+            targetBand: '5.5',
+            vocabularyGoal: 140,
+            grammarUnits: 'Subjunctive Mood',
+            lessonLinks: ['/lessons?level=Foundation', '/?lesson=ed8bf3ea-f09d-45e5-9984-04c1e5328cd0-chunk-1', '/?lesson=5b2f05c6-7b0f-49a0-8b39-4bb21f40375f-chunk-1'],
+            grammarLinks: ['/grammar/subjunctive-mood'],
+            focusSkills: ['Foundation Mastery', 'Assessment'],
+            milestones: ['1680 words total', 'Foundation grammar complete', 'Band 5.5 ready', 'Development phase prep'],
             dailyHours: 3.0,
             isCompleted: false,
             isActive: false
           },
-          // Mastery Phase (Weeks 13-20)
+          // Development Phase (Weeks 13-24) - Band 5.5 to 6.5
           {
             week: 16,
-            title: 'Month 4 Milestone',
-            targetBand: '6.5+',
-            vocabularyGoal: 3600,
-            grammarUnits: 'Units 100-120',
-            lessonLinks: ['/lessons?level=Advanced', '/?lesson=457ec6a9-fbfd-4a1c-8e13-9da749828249-chunk-1', '/?lesson=d0f38a8f-c205-4120-906c-5dee0fb80d75-chunk-1'],
-            grammarLinks: ['/grammar/inversion', '/grammar/cleft-sentences'],
-            focusSkills: ['Complex Structures', 'Band 7 Techniques'],
-            milestones: ['3600 words', 'Reading 220+ wpm', 'Writing under 40 min', 'Target 6.5+'],
+            title: 'Cleft Sentences & Emphasis',
+            targetBand: '6.0-6.5',
+            vocabularyGoal: 140,
+            grammarUnits: 'Cleft Sentences',
+            lessonLinks: ['/lessons?level=Intermediate', '/?lesson=457ec6a9-fbfd-4a1c-8e13-9da749828249-chunk-1', '/?lesson=d0f38a8f-c205-4120-906c-5dee0fb80d75-chunk-1'],
+            grammarLinks: ['/grammar/cleft-sentences'],
+            focusSkills: ['Emphasis Techniques', 'Band 6+ Skills'],
+            milestones: ['2240 words total', 'Complex structures', 'Band 6.0+ writing', 'Emphasis mastery'],
             dailyHours: 3.5,
             isCompleted: false,
             isActive: false
           },
           {
             week: 20,
-            title: 'Month 5 Milestone',
-            targetBand: '7.0-',
-            vocabularyGoal: 4000,
-            grammarUnits: 'Units 120-145',
-            lessonLinks: ['/lessons?level=Expert', '/?lesson=70b5b987-1e9b-4903-a651-d2b14bc29485-chunk-1', '/?lesson=ed8bf3ea-f09d-45e5-9984-04c1e5328cd0-chunk-2'],
-            grammarLinks: ['/grammar/mixed-conditionals', '/grammar/advanced-passive'],
-            focusSkills: ['Sophistication', 'Speed Mastery'],
-            milestones: ['4000 words', 'Reading 250+ wpm', 'Band 7 writing', 'Target 7.0'],
+            title: 'Hedging & Academic Language',
+            targetBand: '6.5',
+            vocabularyGoal: 140,
+            grammarUnits: 'Hedging and Qualifying Language',
+            lessonLinks: ['/lessons?level=Advanced', '/?lesson=70b5b987-1e9b-4903-a651-d2b14bc29485-chunk-1', '/?lesson=ed8bf3ea-f09d-45e5-9984-04c1e5328cd0-chunk-2'],
+            grammarLinks: ['/grammar/hedging-language'],
+            focusSkills: ['Academic Writing', 'Precision'],
+            milestones: ['2800 words total', 'Academic precision', 'Band 6.5 writing', 'Development complete'],
             dailyHours: 3.5,
             isCompleted: false,
             isActive: false
           },
-          // Final Phase (Weeks 21-24)
           {
             week: 24,
-            title: 'Final Exam Preparation',
-            targetBand: '7.0+',
-            vocabularyGoal: 4000,
-            grammarUnits: 'Review & Polish',
-            lessonLinks: ['/lessons?level=Expert', '/lessons?level=Topic-Specific', '/?lesson=7302db71-188d-4079-b9cb-ec9dd42bf8c4-chunk-1'],
-            grammarLinks: ['/grammar/academic-writing-grammar', '/grammar/complex-sentence-structures', '/grammar/error-correction'],
-            focusSkills: ['Exam Strategies', 'Confidence Building'],
-            milestones: ['Consistent 7.0+', 'Exam readiness', 'Final review complete'],
-            dailyHours: 3.0,
+            title: 'Development Complete - Error Analysis',
+            targetBand: '6.5-7.0',
+            vocabularyGoal: 140,
+            grammarUnits: 'Error Analysis and Polish',
+            lessonLinks: ['/lessons?level=Advanced', '/lessons?level=Error-Correction', '/?lesson=7302db71-188d-4079-b9cb-ec9dd42bf8c4-chunk-1'],
+            grammarLinks: ['/grammar/error-analysis', '/grammar/common-mistakes'],
+            focusSkills: ['Error Correction', 'Accuracy'],
+            milestones: ['3360 words total', 'Error-free accuracy', 'Band 7.0 ready', 'Mastery phase prep'],
+            dailyHours: 3.5,
+            isCompleted: false,
+            isActive: false
+          },
+          // Mastery Phase (Weeks 25-32) - Band 6.5 to 7.5+
+          {
+            week: 28,
+            title: 'Sophisticated Conditionals',
+            targetBand: '7.0-7.5',
+            vocabularyGoal: 140,
+            grammarUnits: 'Sophisticated Conditional Structures',
+            lessonLinks: ['/lessons?level=Mastery', '/?lesson=mastery-conditionals-1', '/?lesson=mastery-conditionals-2'],
+            grammarLinks: ['/grammar/sophisticated-conditionals'],
+            focusSkills: ['Complex Conditionals', 'Band 7+ Grammar'],
+            milestones: ['3920 words total', 'Advanced conditionals', 'Band 7.0+ structures', 'Mastery progress'],
+            dailyHours: 4.0,
+            isCompleted: false,
+            isActive: false
+          },
+          {
+            week: 32,
+            title: 'Register Variation & Style',
+            targetBand: '7.5+',
+            vocabularyGoal: 140,
+            grammarUnits: 'Register Variation & Style',
+            lessonLinks: ['/lessons?level=Mastery', '/?lesson=register-variation-1', '/?lesson=style-mastery-1'],
+            grammarLinks: ['/grammar/register-variation'],
+            focusSkills: ['Style Mastery', 'Register Control'],
+            milestones: ['4480 words total', 'Style flexibility', 'Band 7.5+ writing', 'Expert phase ready'],
+            dailyHours: 4.0,
+            isCompleted: false,
+            isActive: false
+          },
+          // Expert Phase (Weeks 33-36) - Band 8.0 to 8.5+
+          {
+            week: 36,
+            title: 'Band 8.0+ Mastery Complete',
+            targetBand: '8.0-8.5+',
+            vocabularyGoal: 140,
+            grammarUnits: 'Error-free Complex Integration',
+            lessonLinks: ['/lessons?level=Expert', '/lessons?level=Band-8-Plus', '/?lesson=expert-integration-final'],
+            grammarLinks: ['/grammar/complex-integration', '/grammar/band-8-mastery'],
+            focusSkills: ['Perfect Integration', 'Band 8.0+ Confidence'],
+            milestones: ['5000 words total', 'Error-free complexity', 'Band 8.0+ achievement', 'IELTS mastery'],
+            dailyHours: 3.5,
             isCompleted: false,
             isActive: false
           }
@@ -420,10 +463,10 @@ export default function StudyPlan() {
   }
 
   const getWeekPhase = (weekNumber: number) => {
-    if (weekNumber <= 8) return { phase: 'Foundation', color: 'bg-blue-100 text-blue-800' }
-    if (weekNumber <= 16) return { phase: 'Development', color: 'bg-green-100 text-green-800' }
-    if (weekNumber <= 20) return { phase: 'Mastery', color: 'bg-purple-100 text-purple-800' }
-    return { phase: 'Final Prep', color: 'bg-orange-100 text-orange-800' }
+    if (weekNumber <= 12) return { phase: 'Foundation', color: 'bg-blue-100 text-blue-800' }
+    if (weekNumber <= 24) return { phase: 'Development', color: 'bg-green-100 text-green-800' }
+    if (weekNumber <= 32) return { phase: 'Mastery', color: 'bg-purple-100 text-purple-800' }
+    return { phase: 'Expert', color: 'bg-orange-100 text-orange-800' }
   }
 
   if (userLoading || isLoading) {
@@ -485,10 +528,10 @@ export default function StudyPlan() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            📅 24-Week IELTS Study Plan
+            📅 36-Week IELTS Study Plan (Band 8.0+)
           </h1>
           <p className="text-gray-600">
-            Structured journey from Band 4.0 to 7.0+ • Week {studyData.currentWeek} of {studyData.totalWeeks}
+            Comprehensive journey from Band 4.0 to 8.0+ • Week {studyData.currentWeek} of {studyData.totalWeeks}
           </p>
         </div>
         <div className="flex gap-2">

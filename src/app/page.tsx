@@ -61,10 +61,14 @@ function FlashcardApp() {
     }
   }, [searchParams, selectedLessonId, dailyLessonNumber])
 
-  // Fetch lessons
+  // Fetch lessons and initialize user if needed
   useEffect(() => {
     fetchLessons()
-  }, [])
+    // Auto-initialize user when accessing daily lessons
+    if (dailyLessonNumber) {
+      initializeUserIfNeeded()
+    }
+  }, [dailyLessonNumber])
 
   const fetchLessons = async () => {
     try {
@@ -75,6 +79,35 @@ function FlashcardApp() {
       }
     } catch (error) {
       console.error('Error fetching lessons:', error)
+    }
+  }
+
+  // Auto-initialize user progress for daily lessons
+  const initializeUserIfNeeded = async () => {
+    try {
+      const userId = 'demo-user' // In real app, get from auth
+      
+      // Check if user exists
+      const checkResponse = await fetch(`/api/user/initialize?user_id=${userId}`)
+      const checkData = await checkResponse.json()
+      
+      if (checkData.success && checkData.data.needs_initialization) {
+        console.log('🚀 Auto-initializing user for daily lessons...')
+        
+        // Initialize user
+        const initResponse = await fetch('/api/user/initialize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId })
+        })
+        
+        const initData = await initResponse.json()
+        if (initData.success) {
+          console.log('✅ User initialized successfully for daily lessons')
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing user:', error)
     }
   }
 

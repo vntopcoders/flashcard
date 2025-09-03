@@ -24,6 +24,7 @@ import AchievementPanel from './AchievementPanel'
 import AchievementToast from './AchievementToast'
 import { Achievement } from './AchievementBadge'
 import GrammarWeekContent from './GrammarWeekContent'
+import DailyLessonsView from './DailyLessonsView'
 
 interface StudyWeek {
   week: number
@@ -78,6 +79,8 @@ export default function StudyPlan() {
   const [studyData, setStudyData] = useState<StudyPlanData | null>(null)
   const [selectedWeek, setSelectedWeek] = useState<number>(1)
   const [showDailyView, setShowDailyView] = useState(false)
+  const [showDailyLessons, setShowDailyLessons] = useState(false)
+  const [selectedDailyLesson, setSelectedDailyLesson] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [initialized, setInitialized] = useState(false)
   
@@ -543,7 +546,17 @@ export default function StudyPlan() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            {showDailyView ? 'Week View' : 'Daily View'}
+            {showDailyView ? 'Week View' : 'Daily Tasks'}
+          </button>
+          <button
+            onClick={() => setShowDailyLessons(!showDailyLessons)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              showDailyLessons
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            📅 Daily Lessons
           </button>
           <button
             onClick={resetProgress}
@@ -639,7 +652,14 @@ export default function StudyPlan() {
         />
       )}
 
-      {showDailyView ? (
+      {showDailyLessons ? (
+        /* Daily Lessons View */
+        <DailyLessonsView
+          currentWeek={selectedWeek}
+          onLessonSelect={setSelectedDailyLesson}
+          selectedLessonId={selectedDailyLesson}
+        />
+      ) : showDailyView ? (
         /* Daily View */
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow-sm p-6">

@@ -1,5 +1,6 @@
 -- User Progress Schema for 36-Week IELTS Daily System
 -- Tracks individual user progress through the 252-day learning journey
+-- NOTE: Run supabase-36week-daily-system.sql FIRST to create daily_lessons table
 
 -- Create user_progress table for tracking overall progress
 CREATE TABLE IF NOT EXISTS user_progress (
@@ -115,7 +116,7 @@ CREATE INDEX IF NOT EXISTS idx_achievements_user_id ON user_achievements(user_id
 CREATE INDEX IF NOT EXISTS idx_achievements_type ON user_achievements(achievement_type);
 
 -- Create useful views for progress tracking
--- View: Current user status
+-- View: Current user status (without daily_lessons dependency)
 CREATE OR REPLACE VIEW user_current_status AS
 SELECT 
   up.user_id,
@@ -136,11 +137,16 @@ SELECT
     ELSE 0
   END as phase_progress_percentage,
   ROUND((up.current_day::DECIMAL / 252) * 100, 1) as overall_progress_percentage,
-  dl.title as current_lesson_title,
-  dl.description as current_lesson_description,
-  dl.grammar_focus as current_grammar_focus
-FROM user_progress up
-LEFT JOIN daily_lessons dl ON dl.day_number = up.current_day;
+  -- Generate lesson info based on day number instead of JOIN
+  CONCAT('Day ', up.current_day, ' - ', up.current_phase, ' Phase') as current_lesson_title,
+  CONCAT('Continue your ', up.current_phase, ' phase learning journey') as current_lesson_description,
+  CASE 
+    WHEN up.current_week = 1 THEN 'Present Simple & Present Continuous'
+    WHEN up.current_week = 2 THEN 'Modal Verbs (Can, Could, May, Might)'
+    WHEN up.current_week = 3 THEN 'Perfect Tenses (Present & Past Perfect)'
+    ELSE CONCAT('Week ', up.current_week, ' Grammar Focus')
+  END as current_grammar_focus
+FROM user_progress up;
 
 -- View: Weekly progress summary
 CREATE OR REPLACE VIEW user_weekly_summary AS

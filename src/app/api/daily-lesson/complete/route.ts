@@ -84,14 +84,21 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
+    // Get current user progress to calculate increments
+    const { data: currentProgress } = await supabase
+      .from('user_progress')
+      .select('total_days_studied, total_words_learned')
+      .eq('user_id', user_id)
+      .single()
+
     // Update overall user progress
     const { error: progressUpdateError } = await supabase
       .from('user_progress')
       .update({
         current_day: Math.max(day_number + 1, day_number),
         current_week: Math.ceil(Math.max(day_number + 1, day_number) / 7),
-        total_days_studied: supabase.raw('total_days_studied + 1'),
-        total_words_learned: supabase.raw(`total_words_learned + ${words_learned}`),
+        total_days_studied: (currentProgress?.total_days_studied || 0) + 1,
+        total_words_learned: (currentProgress?.total_words_learned || 0) + words_learned,
         last_study_date: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })

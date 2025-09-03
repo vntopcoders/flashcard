@@ -6,7 +6,13 @@ import { UserPlus, Play, CheckCircle, AlertCircle, Users } from 'lucide-react'
 export default function InitializeUsersPage() {
   const [userIds, setUserIds] = useState('demo-user\nuser-1\nuser-2')
   const [isInitializing, setIsInitializing] = useState(false)
-  const [results, setResults] = useState<any[]>([])
+  const [results, setResults] = useState<{
+    user_id: string
+    success: boolean
+    message: string
+    is_new_user?: boolean
+    error?: string
+  }[]>([])
   const [error, setError] = useState<string | null>(null)
 
   const initializeUsers = async () => {
@@ -42,7 +48,7 @@ export default function InitializeUsersPage() {
             is_new_user: data.data?.is_new_user,
             error: data.error
           })
-        } catch (err) {
+        } catch {
           initResults.push({
             user_id: userId,
             success: false,
@@ -212,7 +218,7 @@ export default function InitializeUsersPage() {
               <div><strong>Data flow:</strong></div>
               <ol className="list-decimal list-inside ml-4 space-y-1">
                 <li>User_progress được tạo (tự động hoặc thủ công)</li>
-                <li>Khi user click "Complete Day X" → tạo daily_lesson_progress</li>
+                <li>Khi user click &quot;Complete Day X&quot; → tạo daily_lesson_progress</li>
                 <li>API tự động cập nhật lại user_progress với tiến độ mới</li>
               </ol>
             </div>

@@ -6,9 +6,32 @@ import { RefreshCw, CheckCircle, AlertCircle, User, BookOpen, Calendar } from 'l
 export default function SyncProgressPage() {
   const [userId, setUserId] = useState('demo-user')
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<{
+    success: boolean
+    message: string
+    data: {
+      user_id: string
+      synced_lessons: number
+      total_words_learned: number
+      current_day: number
+      current_week: number
+      current_phase: string
+      user_progress: unknown
+    }
+  } | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [syncStatus, setSyncStatus] = useState<any>(null)
+  const [syncStatus, setSyncStatus] = useState<{
+    user_progress: {
+      total_days_studied: number
+      total_words_learned: number
+      current_day: number
+      current_week: number
+      current_phase: string
+    } | null
+    completed_lessons_count: number
+    total_words_from_lessons: number
+    needs_sync: boolean
+  } | null>(null)
 
   const checkSyncStatus = async () => {
     try {
@@ -234,8 +257,8 @@ export default function SyncProgressPage() {
             <h3 className="font-medium text-blue-900 mb-2">Hướng dẫn sử dụng:</h3>
             <ol className="list-decimal list-inside text-blue-800 space-y-1 text-sm">
               <li>Nhập User ID cần đồng bộ (ví dụ: demo-user)</li>
-              <li>Click "Check Status" để xem trạng thái hiện tại</li>
-              <li>Nếu cần sync, click "Sync Progress" để đồng bộ dữ liệu</li>
+              <li>Click &quot;Check Status&quot; để xem trạng thái hiện tại</li>
+              <li>Nếu cần sync, click &quot;Sync Progress&quot; để đồng bộ dữ liệu</li>
               <li>Hệ thống sẽ tính toán lại tiến độ từ daily_lesson_progress</li>
             </ol>
           </div>

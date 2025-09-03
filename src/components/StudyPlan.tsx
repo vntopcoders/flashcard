@@ -111,7 +111,7 @@ export default function StudyPlan() {
       if (result.success) {
         console.log('🏆 Achievement data loaded:', {
           achievements: result.data.achievements.length,
-          unlocked: result.data.achievements.filter((a: any) => a.isUnlocked).length,
+          unlocked: result.data.achievements.filter((a: Achievement) => a.isUnlocked).length,
           level: result.data.level,
           totalPoints: result.data.totalPoints
         })

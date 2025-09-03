@@ -7,6 +7,7 @@ import FlashcardComponent from '@/components/FlashcardComponent'
 import AddFlashcardForm from '@/components/AddFlashcardForm'
 import WelcomeDashboard from '@/components/WelcomeDashboard'
 import LessonChunksSelector from '@/components/LessonChunksSelector'
+import DailyLessonCompletion from '@/components/DailyLessonCompletion'
 import { Flashcard, Lesson } from '@/types/flashcard'
 import { useSearchParams } from 'next/navigation'
 
@@ -32,6 +33,10 @@ function FlashcardApp() {
   const [dailyLessonPhase, setDailyLessonPhase] = useState<string | null>(
     searchParams.get('phase')
   )
+  
+  // Daily lesson completion
+  const [showCompletion, setShowCompletion] = useState(false)
+  const [isCompleting, setIsCompleting] = useState(false)
 
   // Get lesson from URL params
   useEffect(() => {
@@ -231,6 +236,57 @@ function FlashcardApp() {
     setCurrentIndex(0)
   }
 
+  // Handle daily lesson completion
+  const handleDailyLessonComplete = async (completionData: any) => {
+    if (!dailyLessonNumber) return
+
+    try {
+      setIsCompleting(true)
+      
+      const response = await fetch('/api/daily-lesson/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: 'demo-user', // In real app, get from auth
+          day_number: dailyLessonNumber,
+          words_learned: completionData.wordsLearned,
+          study_time_minutes: completionData.studyTimeMinutes,
+          accuracy_percentage: completionData.accuracyPercentage,
+          grammar_completed: completionData.grammarCompleted,
+          skills_practiced: completionData.skillsPracticed
+        })
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        console.log('✅ Day completed successfully:', result)
+        alert(`🎉 Day ${dailyLessonNumber} completed! Next: Day ${result.data.next_day || 'Complete!'}`)
+        
+        // Navigate to next day or study plan
+        if (result.data.next_day && result.data.next_day <= 252) {
+          window.location.href = `/?daily-lesson=${result.data.next_day}&phase=${result.data.next_phase.toLowerCase()}`
+        } else {
+          window.location.href = '/study-plan'
+        }
+      } else {
+        console.error('❌ Completion failed:', result)
+        alert('Failed to complete day. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error completing daily lesson:', error)
+      alert('Error completing day. Please try again.')
+    } finally {
+      setIsCompleting(false)
+    }
+  }
+
+  const handleSkipCompletion = () => {
+    setShowCompletion(false)
+  }
+
   const handleChunkSelect = (chunkId: string) => {
     // Update URL with chunk ID and trigger flashcard fetch
     const url = new URL(window.location.href)
@@ -329,6 +385,14 @@ function FlashcardApp() {
                 >
                   📅 Study Plan
                 </a>
+                {dailyLessonNumber && (
+                  <button
+                    onClick={() => setShowCompletion(true)}
+                    className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-200 transition-colors"
+                  >
+                    ✅ Complete Day {dailyLessonNumber}
+                  </button>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -449,6 +513,21 @@ function FlashcardApp() {
             onClose={() => setShowAddForm(false)}
             selectedLessonId={selectedLessonId}
           />
+        )}
+
+        {/* Daily Lesson Completion Modal */}
+        {showCompletion && dailyLessonNumber && dailyLessonPhase && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <DailyLessonCompletion
+                dayNumber={dailyLessonNumber}
+                phase={dailyLessonPhase}
+                onComplete={handleDailyLessonComplete}
+                onSkip={handleSkipCompletion}
+                isCompleting={isCompleting}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>

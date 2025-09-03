@@ -19,6 +19,7 @@ import {
   User
 } from 'lucide-react'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { getCurrentUserId } from '@/lib/user-utils'
 import AchievementHeader from './AchievementHeader'
 import AchievementPanel from './AchievementPanel'
 import AchievementToast from './AchievementToast'
@@ -141,21 +142,50 @@ export default function StudyPlan() {
     try {
       setIsLoading(true)
       
-      // Mock data based on the 36-week IELTS plan for Band 8.0+
-      const mockData: StudyPlanData = {
+      // Get real user progress data
+      const userId = getCurrentUserId()
+      let realUserData = {
         currentWeek: 1,
         currentDay: 1,
+        totalDaysStudied: 0,
+        totalWordsLearned: 0,
+        currentPhase: 'Foundation'
+      }
+      
+      try {
+        const userResponse = await fetch(`/api/user/sync-progress?user_id=${userId}`)
+        if (userResponse.ok) {
+          const userData = await userResponse.json()
+          if (userData.success && userData.data.user_progress) {
+            const progress = userData.data.user_progress
+            realUserData = {
+              currentWeek: progress.current_week || 1,
+              currentDay: progress.current_day || 1,
+              totalDaysStudied: progress.total_days_studied || 0,
+              totalWordsLearned: progress.total_words_learned || 0,
+              currentPhase: progress.current_phase || 'Foundation'
+            }
+          }
+        }
+      } catch (userError) {
+        console.log('Using default user data:', userError)
+      }
+      
+      // Create study plan with real user data
+      const mockData: StudyPlanData = {
+        currentWeek: realUserData.currentWeek,
+        currentDay: realUserData.currentDay,
         totalWeeks: 36,
         startDate: new Date('2025-08-01'),
         targetScore: 8.0,
         currentScore: 5.5,
         overallProgress: {
-          vocabularyLearned: 650,
+          vocabularyLearned: realUserData.totalWordsLearned,
           vocabularyTarget: 5000,
-          grammarCompleted: 25,
+          grammarCompleted: Math.floor(realUserData.totalDaysStudied * 1.2), // Estimate
           grammarTarget: 180,
-          mockTestsCompleted: 8,
-          studyDays: 22,
+          mockTestsCompleted: Math.floor(realUserData.totalDaysStudied / 7), // Weekly tests
+          studyDays: realUserData.totalDaysStudied,
           currentStreak: 7
         },
         weeklyPlans: [

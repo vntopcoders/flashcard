@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Calendar, BookOpen, Clock, CheckCircle, Play, Star, Target } from 'lucide-react'
+import { getCurrentUserId } from '@/lib/user-utils'
 
 interface DailyLesson {
   id: string
@@ -70,11 +71,34 @@ export default function DailyLessonsView({ currentWeek, onLessonSelect, selected
           grammar_focus: getGrammarFocus(weekNum),
           skills_focus: getSkillsFocus(dayOfWeek),
           day_name: dayNames[dayOfWeek - 1],
-          actual_words: Math.floor(Math.random() * 5) + 18, // Mock: 18-22 words
-          is_completed: day < (currentWeek - 1) * 7 + 3 // Mock: some days completed
+          actual_words: 20, // Standard target words
+          is_completed: false // Will be updated with real data
         }
         
         mockLessons.push(lesson)
+      }
+      
+      // Fetch real completion data and update lessons
+      try {
+        const userId = getCurrentUserId()
+        const completedResponse = await fetch(`/api/daily-lesson/completed?user_id=${userId}`)
+        if (completedResponse.ok) {
+          const completedData = await completedResponse.json()
+          const completedDays = new Set(completedData.data?.completed_days || [])
+          
+          // Update lessons with real completion status
+          mockLessons.forEach(lesson => {
+            lesson.is_completed = completedDays.has(lesson.day_number)
+          })
+          
+          console.log('✅ Updated lessons with completion data:', {
+            total_lessons: mockLessons.length,
+            completed_count: Array.from(completedDays).length,
+            completed_days: Array.from(completedDays).slice(0, 10) // Show first 10
+          })
+        }
+      } catch (completionError) {
+        console.log('Could not fetch completion data, using defaults:', completionError)
       }
       
       setDailyLessons(mockLessons)

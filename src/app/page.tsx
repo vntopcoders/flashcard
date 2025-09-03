@@ -237,7 +237,13 @@ function FlashcardApp() {
   }
 
   // Handle daily lesson completion
-  const handleDailyLessonComplete = async (completionData: any) => {
+  const handleDailyLessonComplete = async (completionData: {
+    wordsLearned: number
+    studyTimeMinutes: number
+    accuracyPercentage: number
+    grammarCompleted: boolean
+    skillsPracticed: string[]
+  }) => {
     if (!dailyLessonNumber) return
 
     try {

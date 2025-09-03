@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import ReviewQueue from '@/components/ReviewQueue'
+import SimpleReviewQueue from '@/components/SimpleReviewQueue'
 
 export default function ReviewPage() {
   return (
@@ -8,7 +8,7 @@ export default function ReviewPage() {
         <div className="text-lg text-gray-600">Loading review system...</div>
       </div>
     }>
-      <ReviewQueue />
+      <SimpleReviewQueue />
     </Suspense>
   )
 }

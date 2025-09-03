@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import ProgressDashboard from '@/components/ProgressDashboard'
+import SimpleProgressDashboard from '@/components/SimpleProgressDashboard'
 
 export default function ProgressPage() {
   return (
@@ -8,7 +8,7 @@ export default function ProgressPage() {
         <div className="text-lg text-gray-600">Loading progress dashboard...</div>
       </div>
     }>
-      <ProgressDashboard />
+      <SimpleProgressDashboard />
     </Suspense>
   )
 }

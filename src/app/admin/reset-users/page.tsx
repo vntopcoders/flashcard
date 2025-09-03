@@ -5,7 +5,17 @@ import { Users, RotateCcw, CheckCircle, AlertTriangle, Calendar, Target } from '
 
 export default function ResetUsersPage() {
   const [isResetting, setIsResetting] = useState(false)
-  const [resetResult, setResetResult] = useState<any>(null)
+  const [resetResult, setResetResult] = useState<{
+    success: boolean
+    message: string
+    affected_users: number
+    reset_to: {
+      week: number
+      day: number
+      phase: string
+    }
+    timestamp: string
+  } | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const handleResetAllUsers = async () => {
@@ -213,7 +223,7 @@ export default function ResetUsersPage() {
                   • Updates last study date to current time
                 </p>
                 <p>
-                  • Creates user_progress table if it doesn't exist
+                  • Creates user_progress table if it doesn&apos;t exist
                 </p>
                 <p>
                   • Maintains user accounts and authentication data

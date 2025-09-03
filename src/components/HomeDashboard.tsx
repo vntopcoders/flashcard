@@ -67,7 +67,11 @@ export default function HomeDashboard() {
       // Fetch completed lessons
       const completedResponse = await fetch(`/api/daily-lesson/completed?user_id=${userId}`)
       let completedLessons: number[] = []
-      let recentActivity: any[] = []
+      let recentActivity: Array<{
+        day: number
+        words_learned: number
+        completion_date: string
+      }> = []
       if (completedResponse.ok) {
         const completedData = await completedResponse.json()
         completedLessons = completedData.data?.completed_days || []
@@ -258,7 +262,7 @@ export default function HomeDashboard() {
             {/* Today's Focus */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                📅 Today's Focus
+                📅 Today&apos;s Focus
               </h2>
               
               {data?.completedToday ? (
@@ -266,8 +270,8 @@ export default function HomeDashboard() {
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-6 h-6 text-green-600" />
                     <div>
-                      <p className="font-medium text-green-900">Great job! Today's lesson completed</p>
-                      <p className="text-green-700 text-sm">You're on track with your learning goals</p>
+                      <p className="font-medium text-green-900">Great job! Today&apos;s lesson completed</p>
+                      <p className="text-green-700 text-sm">You&apos;re on track with your learning goals</p>
                     </div>
                   </div>
                 </div>
@@ -390,7 +394,7 @@ export default function HomeDashboard() {
             {/* Weekly Goal */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                📊 This Week's Goal
+                📊 This Week&apos;s Goal
               </h3>
               
               <div className="space-y-4">
@@ -463,7 +467,7 @@ export default function HomeDashboard() {
                 🏆 Next Milestone
               </h3>
               <p className="text-sm text-gray-600 mb-3">
-                Complete 7 days to unlock "Week Champion" badge
+                Complete 7 days to unlock &ldquo;Week Champion&rdquo; badge
               </p>
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-yellow-600" />

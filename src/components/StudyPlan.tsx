@@ -42,6 +42,8 @@ interface StudyWeek {
   dailyHours: number
   isCompleted: boolean
   isActive: boolean
+  hasProgress?: boolean
+  completedDays?: number
 }
 
 interface DailyTask {
@@ -80,7 +82,7 @@ export default function StudyPlan() {
   const [studyData, setStudyData] = useState<StudyPlanData | null>(null)
   const [selectedWeek, setSelectedWeek] = useState<number>(1)
   const [showDailyView, setShowDailyView] = useState(false)
-  const [showDailyLessons, setShowDailyLessons] = useState(false)
+  const [showDailyLessons, setShowDailyLessons] = useState(true) // Default to true
   const [selectedDailyLesson, setSelectedDailyLesson] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [initialized, setInitialized] = useState(false)
@@ -448,8 +450,45 @@ export default function StudyPlan() {
         ]
       }
       
+      // Update weekly completion status based on real data
+      try {
+        const completedResponse = await fetch(`/api/daily-lesson/completed?user_id=${userId}`)
+        if (completedResponse.ok) {
+          const completedData = await completedResponse.json()
+          const completedDays = new Set(completedData.data?.completed_days || [])
+          
+          // Update each week's completion status
+          mockData.weeklyPlans = mockData.weeklyPlans.map(week => {
+            const weekStart = (week.week - 1) * 7 + 1
+            const weekEnd = week.week * 7
+            
+            // Count completed days in this week
+            let completedDaysInWeek = 0
+            for (let day = weekStart; day <= weekEnd; day++) {
+              if (completedDays.has(day)) {
+                completedDaysInWeek++
+              }
+            }
+            
+            const isCompleted = completedDaysInWeek >= 7 // All 7 days completed
+            const isActive = week.week === realUserData.currentWeek
+            const hasProgress = completedDaysInWeek > 0
+            
+            return {
+              ...week,
+              isCompleted,
+              isActive,
+              hasProgress,
+              completedDays: completedDaysInWeek
+            }
+          })
+        }
+      } catch (completionError) {
+        console.log('Could not update week completion status:', completionError)
+      }
+      
       setStudyData(mockData)
-      setSelectedWeek(mockData.currentWeek)
+      setSelectedWeek(realUserData.currentWeek) // Set to current week instead of 1
       
     } catch (error) {
       console.error('Failed to load study plan:', error)
@@ -671,16 +710,14 @@ export default function StudyPlan() {
       </div>
 
       {/* Achievement Header */}
-      {achievements.length > 0 && (
-        <AchievementHeader
-          level={userLevel}
-          totalPoints={totalPoints}
-          pointsForNext={pointsForNext}
-          recentAchievements={achievements.filter(a => a.isUnlocked).slice(0, 5)}
-          nextAchievements={achievements.filter(a => !a.isUnlocked && a.progress > 0).slice(0, 3)}
-          onShowAll={() => setShowAchievements(true)}
-        />
-      )}
+      <AchievementHeader
+        level={userLevel}
+        totalPoints={totalPoints}
+        pointsForNext={pointsForNext}
+        recentAchievements={achievements.filter(a => a.isUnlocked).slice(0, 5)}
+        nextAchievements={achievements.filter(a => !a.isUnlocked && a.progress > 0).slice(0, 3)}
+        onShowAll={() => setShowAchievements(true)}
+      />
 
       {showDailyLessons ? (
         /* Daily Lessons View */
@@ -794,7 +831,6 @@ export default function StudyPlan() {
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Study Weeks Overview</h2>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-1 sm:gap-2">
               {studyData.weeklyPlans.map((week) => {
-                const phase = getWeekPhase(week.week)
                 return (
                   <button
                     key={week.week}
@@ -804,6 +840,8 @@ export default function StudyPlan() {
                         ? 'bg-blue-600 text-white'
                         : week.isCompleted
                         ? 'bg-green-100 text-green-700'
+                        : week.hasProgress
+                        ? 'bg-yellow-100 text-yellow-700'
                         : week.isActive
                         ? 'bg-orange-100 text-orange-700'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -811,7 +849,12 @@ export default function StudyPlan() {
                   >
                     <div>Week {week.week}</div>
                     {week.isCompleted && <CheckCircle className="w-3 h-3 mx-auto mt-1" />}
-                    {week.isActive && <Clock className="w-3 h-3 mx-auto mt-1" />}
+                    {week.hasProgress && !week.isCompleted && (
+                      <div className="text-xs mt-1">
+                        {week.completedDays}/7
+                      </div>
+                    )}
+                    {week.isActive && !week.hasProgress && <Clock className="w-3 h-3 mx-auto mt-1" />}
                   </button>
                 )
               })}

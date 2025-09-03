@@ -24,15 +24,37 @@ function FlashcardApp() {
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [showChunkSelector, setShowChunkSelector] = useState(false)
   const [lessonTotalWords, setLessonTotalWords] = useState(0)
+  
+  // Daily lesson support
+  const [dailyLessonNumber, setDailyLessonNumber] = useState<number | null>(
+    searchParams.get('daily-lesson') ? parseInt(searchParams.get('daily-lesson')!) : null
+  )
+  const [dailyLessonPhase, setDailyLessonPhase] = useState<string | null>(
+    searchParams.get('phase')
+  )
 
   // Get lesson from URL params
   useEffect(() => {
     const lessonParam = searchParams.get('lesson')
-    console.log('🔗 URL lesson param:', lessonParam)
+    const dailyLessonParam = searchParams.get('daily-lesson')
+    const phaseParam = searchParams.get('phase')
+    
+    console.log('🔗 URL params:', { lesson: lessonParam, dailyLesson: dailyLessonParam, phase: phaseParam })
+    
     if (lessonParam !== selectedLessonId) {
       setSelectedLessonId(lessonParam)
     }
-  }, [searchParams, selectedLessonId])
+    
+    if (dailyLessonParam) {
+      const dayNum = parseInt(dailyLessonParam)
+      if (dayNum !== dailyLessonNumber) {
+        setDailyLessonNumber(dayNum)
+        setDailyLessonPhase(phaseParam)
+        // For daily lessons, we'll use a mock lesson setup
+        setSelectedLessonId(`daily-lesson-${dayNum}`)
+      }
+    }
+  }, [searchParams, selectedLessonId, dailyLessonNumber])
 
   // Fetch lessons
   useEffect(() => {
@@ -51,9 +73,60 @@ function FlashcardApp() {
     }
   }
 
+  // Generate mock daily lesson flashcards
+  const generateDailyLessonFlashcards = (dayNumber: number, phase: string): Flashcard[] => {
+    const baseWords = [
+      'achieve', 'administration', 'affect', 'analysis', 'approach', 'appropriate', 'area', 'aspects',
+      'assistance', 'assume', 'authority', 'available', 'benefit', 'category', 'community', 'complex',
+      'concerning', 'conclusion', 'conduct', 'consequence', 'consistent', 'constitutional', 'context', 'contract',
+      'create', 'data', 'definition', 'derived', 'distribution', 'economic', 'environment', 'established',
+      'estimate', 'evidence', 'export', 'factors', 'financial', 'formula', 'function', 'identified'
+    ]
+    
+    const meanings = [
+      'đạt được', 'quản lý', 'ảnh hưởng', 'phân tích', 'tiếp cận', 'thích hợp', 'khu vực', 'khía cạnh',
+      'hỗ trợ', 'giả định', 'quyền lực', 'có sẵn', 'lợi ích', 'loại', 'cộng đồng', 'phức tạp',
+      'liên quan', 'kết luận', 'tiến hành', 'hậu quả', 'nhất quán', 'hiến pháp', 'ngữ cảnh', 'hợp đồng',
+      'tạo ra', 'dữ liệu', 'định nghĩa', 'bắt nguồn', 'phân phối', 'kinh tế', 'môi trường', 'thành lập',
+      'ước tính', 'bằng chứng', 'xuất khẩu', 'yếu tố', 'tài chính', 'công thức', 'chức năng', 'xác định'
+    ]
+
+    const startIndex = (dayNumber - 1) * 20
+    const dailyWords = []
+    
+    for (let i = 0; i < 20; i++) {
+      const wordIndex = (startIndex + i) % baseWords.length
+      dailyWords.push({
+        id: `daily-${dayNumber}-${i + 1}`,
+        english: baseWords[wordIndex],
+        vietnamese: meanings[wordIndex],
+        pronunciation_guide: '',
+        difficulty: phase === 'foundation' ? 1 : phase === 'development' ? 2 : phase === 'mastery' ? 3 : 4,
+        category: 'daily-lesson',
+        lesson_id: `daily-lesson-${dayNumber}`,
+        lessonId: `daily-lesson-${dayNumber}`,
+        ipa: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+    }
+    
+    return dailyWords
+  }
+
   // Fetch flashcards from API  
   const fetchFlashcards = useCallback(async () => {
     try {
+      // Handle daily lesson flashcards
+      if (dailyLessonNumber && dailyLessonPhase) {
+        console.log('📚 Loading daily lesson:', dailyLessonNumber, dailyLessonPhase)
+        const mockFlashcards = generateDailyLessonFlashcards(dailyLessonNumber, dailyLessonPhase)
+        setFlashcards(mockFlashcards)
+        setLessonTotalWords(mockFlashcards.length)
+        setIsLoading(false)
+        return
+      }
+      
       let url = '/api/flashcards'
       
       if (selectedLessonId) {
@@ -99,7 +172,7 @@ function FlashcardApp() {
     } finally {
       setIsLoading(false)
     }
-  }, [selectedLessonId])
+  }, [selectedLessonId, dailyLessonNumber, dailyLessonPhase])
 
   // Call fetchFlashcards when component mounts or selectedLessonId changes
   useEffect(() => {
@@ -217,7 +290,13 @@ function FlashcardApp() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-semibold text-gray-900">
-                Học Flashcards
+                {dailyLessonNumber ? (
+                  <>📅 Day {dailyLessonNumber} - {dailyLessonPhase?.charAt(0).toUpperCase()}{dailyLessonPhase?.slice(1)} Phase</>
+                ) : selectedLesson ? (
+                  <>{selectedLesson.name}</>
+                ) : (
+                  <>🏠 IELTS Flashcards</>
+                )}
               </h2>
               {selectedLesson && (
                 <div className="flex items-center gap-2 px-3 py-1 rounded-full text-sm"

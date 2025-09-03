@@ -218,16 +218,16 @@ export default function DailyLessonsView({ currentWeek, onLessonSelect, selected
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {dailyLessons.map((lesson) => (
-          <button
+          <div
             key={lesson.id}
-            onClick={() => onLessonSelect(lesson.id)}
-            className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+            className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md cursor-pointer ${
               selectedLessonId === lesson.id
                 ? 'border-blue-500 bg-blue-50'
                 : lesson.is_completed
                 ? 'border-green-200 bg-green-50'
                 : 'border-gray-200 hover:border-gray-300 bg-white'
             }`}
+            onClick={() => onLessonSelect(lesson.id)}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
@@ -292,7 +292,20 @@ export default function DailyLessonsView({ currentWeek, onLessonSelect, selected
                 Ready to study
               </div>
             )}
-          </button>
+
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  // Navigate to flashcard system with daily lesson
+                  window.location.href = `/?daily-lesson=${lesson.day_number}&phase=${lesson.phase.toLowerCase()}`
+                }}
+                className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                🚀 Start Day {lesson.day_number}
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 

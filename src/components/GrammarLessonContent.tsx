@@ -47,72 +47,148 @@ interface LessonContent {
 const generateDailyLessonContent = (topic: string, day: number): LessonContent => {
   const contentMap: Record<string, { introduction: string; types: TheoryType[] }> = {
     'Present Simple & Continuous': {
-      introduction: `Learn the fundamentals of Present Simple and Present Continuous tenses. These are essential for expressing habits, facts, and ongoing actions.`,
+      introduction: `Học những kiến thức cơ bản về thì Hiện tại đơn và Hiện tại tiếp diễn. Đây là những thì thiết yếu để diễn tả thói quen, sự thật và hành động đang xảy ra.`,
       types: [
         {
           name: 'Present Simple',
           structure: 'Subject + base verb (+ s/es for 3rd person)',
-          use: 'Facts, habits, general truths, scheduled events',
+          use: 'Sự thật, thói quen hàng ngày, chân lý, sự kiện đã lên lịch',
           example: 'She works at a bank. / The train leaves at 9 AM.',
           vietnamese: 'Diễn tả sự thật, thói quen, lịch trình'
         },
         {
           name: 'Present Continuous',
           structure: 'Subject + am/is/are + verb-ing',
-          use: 'Actions happening now, temporary situations, future arrangements',
+          use: 'Hành động đang xảy ra bây giờ, tình huống tạm thời, kế hoạch tương lai',
           example: 'I am studying English. / We are meeting tomorrow.',
           vietnamese: 'Diễn tả hành động đang xảy ra, tình huống tạm thời'
         }
       ]
     },
     'Past Simple & Continuous': {
-      introduction: `Master past tenses to describe completed actions and ongoing actions in the past.`,
+      introduction: `Thành thạo các thì quá khứ để mô tả những hành động đã hoàn thành và những hành động đang diễn ra trong quá khứ.`,
       types: [
         {
           name: 'Past Simple',
           structure: 'Subject + verb-ed (or irregular past form)',
-          use: 'Completed actions in the past, past habits',
+          use: 'Hành động đã hoàn thành trong quá khứ, thói quen trong quá khứ',
           example: 'I visited London last year. / She studied hard.',
           vietnamese: 'Hành động đã hoàn thành trong quá khứ'
         },
         {
           name: 'Past Continuous',
           structure: 'Subject + was/were + verb-ing',
-          use: 'Ongoing actions in the past, interrupted actions',
+          use: 'Hành động đang diễn ra trong quá khứ, hành động bị gián đoạn',
           example: 'I was reading when he called. / They were working.',
           vietnamese: 'Hành động đang diễn ra trong quá khứ'
         }
       ]
     },
     'Present Perfect': {
-      introduction: `Connect past actions to the present moment with Present Perfect tense.`,
+      introduction: `Kết nối những hành động từ quá khứ đến hiện tại với thì Hiện tại hoàn thành.`,
       types: [
         {
           name: 'Present Perfect',
           structure: 'Subject + have/has + past participle',
-          use: 'Life experiences, recent actions, unfinished time periods',
+          use: 'Kinh nghiệm sống, hành động gần đây, khoảng thời gian chưa kết thúc',
           example: 'I have visited 10 countries. / She has just arrived.',
           vietnamese: 'Kinh nghiệm, hành động từ quá khứ đến hiện tại'
         },
         {
           name: 'Present Perfect vs Past Simple',
           structure: 'Present Perfect (no specific time) vs Past Simple (specific time)',
-          use: 'Present Perfect: unfinished time / Past Simple: finished time',
+          use: 'Present Perfect: thời gian chưa kết thúc / Past Simple: thời gian đã kết thúc',
           example: 'I have been to Paris (experience) vs I went to Paris in 2020 (specific)',
           vietnamese: 'Phân biệt thời gian không cụ thể vs cụ thể'
+        }
+      ]
+    },
+    'Future Forms': {
+      introduction: `Nắm vững các dạng thì tương lai để diễn tả dự đoán, kế hoạch và quyết định tự phát.`,
+      types: [
+        {
+          name: 'Will for Predictions',
+          structure: 'Subject + will + base verb',
+          use: 'Dự đoán, quyết định tự phát, lời hứa',
+          example: 'It will rain tomorrow. / I will help you.',
+          vietnamese: 'Dự đoán và quyết định đột xuất'
+        },
+        {
+          name: 'Going to for Plans',
+          structure: 'Subject + am/is/are + going to + base verb',
+          use: 'Kế hoạch đã định trước, dự đoán có bằng chứng',
+          example: 'I am going to study abroad. / Look! It is going to rain.',
+          vietnamese: 'Kế hoạch và dự đoán có căn cứ'
+        }
+      ]
+    },
+    'Modal Verbs': {
+      introduction: `Học các động từ khuyết thiếu để diễn tả khả năng, khả năng xảy ra và sự cần thiết.`,
+      types: [
+        {
+          name: 'Can/Could',
+          structure: 'Subject + can/could + base verb',
+          use: 'Khả năng, sự cho phép, yêu cầu lịch sự',
+          example: 'I can swim. / Could you help me?',
+          vietnamese: 'Khả năng và yêu cầu lịch sự'
+        },
+        {
+          name: 'Must/Have to',
+          structure: 'Subject + must/have to + base verb',
+          use: 'Sự bắt buộc, cần thiết',
+          example: 'You must study hard. / I have to go now.',
+          vietnamese: 'Sự bắt buộc và cần thiết'
+        }
+      ]
+    },
+    'Conditional Sentences': {
+      introduction: `Thành thạo câu điều kiện để diễn tả các tình huống giả định và hệ quả của chúng.`,
+      types: [
+        {
+          name: 'First Conditional',
+          structure: 'If + present simple, will + base verb',
+          use: 'Tình huống có thể xảy ra trong tương lai',
+          example: 'If it rains, I will stay home.',
+          vietnamese: 'Điều kiện có thể xảy ra'
+        },
+        {
+          name: 'Second Conditional',
+          structure: 'If + past simple, would + base verb',
+          use: 'Tình huống không có thật ở hiện tại',
+          example: 'If I were rich, I would travel the world.',
+          vietnamese: 'Điều kiện không có thật ở hiện tại'
+        }
+      ]
+    },
+    'Articles & Determiners': {
+      introduction: `Sử dụng chính xác mạo từ và từ hạn định để làm rõ danh từ trong câu.`,
+      types: [
+        {
+          name: 'A/An/The',
+          structure: 'a/an + singular countable noun / the + specific noun',
+          use: 'Xác định tính cụ thể của danh từ',
+          example: 'I saw a cat. The cat was black.',
+          vietnamese: 'Mạo từ xác định và không xác định'
+        },
+        {
+          name: 'Some/Any',
+          structure: 'some (positive) / any (negative, questions)',
+          use: 'Số lượng không xác định',
+          example: 'I have some money. / Do you have any questions?',
+          vietnamese: 'Lượng từ không xác định'
         }
       ]
     }
   }
 
   const defaultContent = {
-    introduction: `Learn about ${topic.toLowerCase()} with practical examples and exercises.`,
+    introduction: `Học về ${topic.toLowerCase()} với các ví dụ thực tế và bài tập.`,
     types: [
       {
         name: topic,
-        structure: 'Grammar structure and patterns',
-        use: 'Common usage and applications',
-        example: 'Example sentences with explanations',
+        structure: 'Cấu trúc ngữ pháp và mẫu câu',
+        use: 'Cách sử dụng phổ biến và ứng dụng',
+        example: 'Ví dụ câu với giải thích',
         vietnamese: 'Giải thích bằng tiếng Việt'
       }
     ]
@@ -128,7 +204,7 @@ const generateDailyExercises = (topic: string, day: number): Exercise[] => {
   // Generate contextual exercises based on topic
   const exercises: Exercise[] = [
     {
-      question: `Choose the correct form for this ${topic.toLowerCase()} sentence:`,
+      question: `Chọn dạng đúng cho câu ${topic.toLowerCase()} này:`,
       options: [
         'I _____ English every day.',
         'I study English every day.',
@@ -136,10 +212,10 @@ const generateDailyExercises = (topic: string, day: number): Exercise[] => {
         'I studied English every day.'
       ],
       correct: 1,
-      explanation: `For habits and routines, we use Present Simple tense.`
+      explanation: `Với thói quen hàng ngày, chúng ta dùng thì Hiện tại đơn.`
     },
     {
-      question: `Which sentence uses ${topic.toLowerCase()} correctly?`,
+      question: `Câu nào sử dụng ${topic.toLowerCase()} đúng?`,
       options: [
         'She is working right now.',
         'She works right now.',
@@ -147,7 +223,7 @@ const generateDailyExercises = (topic: string, day: number): Exercise[] => {
         'She has worked right now.'
       ],
       correct: 0,
-      explanation: `For actions happening at the moment of speaking, we use Present Continuous.`
+      explanation: `Với hành động đang xảy ra tại thời điểm nói, chúng ta dùng thì Hiện tại tiếp diễn.`
     }
   ]
 

@@ -144,16 +144,17 @@ export default function DailyLessonsView({ currentWeek, onLessonSelect, selected
   }
 
   const getSkillsFocus = (dayOfWeek: number): string[] => {
+    // Cập nhật: Có grammar hàng ngày thay vì chỉ 2 ngày/tuần
     const skillsByDay = [
-      ['vocabulary', 'grammar'],
-      ['vocabulary', 'reading'],
-      ['grammar', 'writing'],
-      ['vocabulary', 'listening'],
-      ['speaking', 'vocabulary'],
-      ['writing', 'vocabulary'],
-      ['review', 'all-skills']
+      ['vocabulary', 'grammar', 'reading'], // Thứ 2: 3 skill focus
+      ['vocabulary', 'grammar', 'writing'], // Thứ 3: 3 skill focus  
+      ['grammar', 'reading', 'listening'], // Thứ 4: 3 skill focus
+      ['vocabulary', 'grammar', 'speaking'], // Thứ 5: 3 skill focus
+      ['grammar', 'writing', 'speaking'], // Thứ 6: 3 skill focus
+      ['vocabulary', 'grammar', 'listening'], // Thứ 7: 3 skill focus
+      ['grammar', 'review', 'all-skills'] // Chủ nhật: Review + grammar
     ]
-    return skillsByDay[dayOfWeek - 1] || ['vocabulary']
+    return skillsByDay[dayOfWeek - 1] || ['vocabulary', 'grammar']
   }
 
   const getPhaseColor = (phase: string) => {

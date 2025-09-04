@@ -105,7 +105,7 @@ export async function POST() {
     for (const phase of phases) {
       for (let i = 0; i < phase.weeks; i++) {
         const vocabGoal = 150 + (currentWeek * 50) // Progressive vocabulary goals
-        const grammarUnits = Math.min(5 + Math.floor(currentWeek / 2), 10) // Grammar units per week
+        const grammarUnits = Math.min(14, 12 + Math.floor(currentWeek / 3)) // Tăng grammar lên 14 bài/tuần
         
         defaultWeeks.push({
           week_number: currentWeek,

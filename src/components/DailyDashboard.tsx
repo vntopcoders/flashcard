@@ -103,13 +103,27 @@ export default function DailyDashboard() {
           skill_category: 'vocabulary'
         },
         {
-          id: 'grammar-exercise',
+          id: 'grammar-morning',
           type: 'grammar',
-          title: 'Grammar Practice',
-          description: 'Complete interactive grammar exercises (Present Perfect vs Past Simple)',
-          estimated_minutes: 25,
+          title: 'Morning Grammar Focus',
+          description: 'Core grammar structures and usage patterns (40 minutes)',
+          estimated_minutes: 40,
+          priority: 'high',
+          is_completed: false,
+          target_count: 2,
+          current_count: 0,
+          skill_category: 'grammar'
+        },
+        {
+          id: 'grammar-evening',
+          type: 'grammar',
+          title: 'Evening Grammar Practice',
+          description: 'Applied grammar exercises and error correction (30 minutes)',
+          estimated_minutes: 30,
           priority: 'medium',
           is_completed: false,
+          target_count: 2,
+          current_count: 0,
           skill_category: 'grammar'
         },
         {

@@ -60,7 +60,7 @@ export class StudyPlanIntegrationService {
         week: weekNumber,
         phase: 'Foundation',
         vocabularyTarget: 150 * weekNumber,
-        grammarTarget: Math.min(weekNumber * 6, 50),
+        grammarTarget: Math.min(weekNumber * 14, 100), // Tăng từ 6 lên 14 bài/tuần (2 bài/ngày)
         skillsFocus: ['vocabulary', 'grammar', 'reading', 'listening'],
         dailyHours: 2.5,
         targetBand: weekNumber <= 4 ? '4.0-5.0' : '5.0-5.5'
@@ -70,7 +70,7 @@ export class StudyPlanIntegrationService {
         week: weekNumber,
         phase: 'Development',
         vocabularyTarget: 150 * weekNumber,
-        grammarTarget: Math.min(weekNumber * 6, 100),
+        grammarTarget: Math.min(weekNumber * 14, 150), // Tăng từ 6 lên 14 bài/tuần cho giai đoạn Development
         skillsFocus: ['writing', 'speaking', 'advanced_reading', 'complex_grammar'],
         dailyHours: 3.0,
         targetBand: weekNumber <= 12 ? '5.5-6.0' : '6.0-6.5'
@@ -80,7 +80,7 @@ export class StudyPlanIntegrationService {
         week: weekNumber,
         phase: 'Mastery',
         vocabularyTarget: 150 * weekNumber,
-        grammarTarget: Math.min(weekNumber * 6, 120),
+        grammarTarget: Math.min(weekNumber * 14, 200), // Tăng từ 6 lên 14 bài/tuần cho giai đoạn Mastery
         skillsFocus: ['band7_techniques', 'speed_accuracy', 'sophistication'],
         dailyHours: 3.5,
         targetBand: '6.5-7.0'
@@ -90,7 +90,7 @@ export class StudyPlanIntegrationService {
         week: weekNumber,
         phase: 'Final Prep',
         vocabularyTarget: 4000,
-        grammarTarget: 145,
+        grammarTarget: 280, // Tăng grammar trong giai đoạn Final Prep (14 bài/tuần x 20 tuần)
         skillsFocus: ['exam_strategies', 'mock_tests', 'confidence_building'],
         dailyHours: 3.0,
         targetBand: '7.0+'

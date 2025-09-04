@@ -5,7 +5,95 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { BookOpen, Clock, Target, Filter, ChevronRight, Calendar, ArrowLeft } from 'lucide-react'
 
-// Complete IELTS Grammar Lessons
+// Function to generate daily grammar content
+const generateDailyGrammarLessons = (day: number, week: number) => {
+  const baseTopics = [
+    // Week 1 Grammar Topics
+    ['Present Simple & Continuous', 'Question Formation', 'Negative Sentences'],
+    ['Past Simple & Continuous', 'Time Expressions', 'Irregular Verbs'],
+    ['Present Perfect', 'Already/Yet/Just', 'Experience vs Finished Actions'],
+    ['Future Forms', 'Will vs Going to', 'Present Continuous for Future'],
+    ['Modal Verbs', 'Can/Could/May/Might', 'Permission & Possibility'],
+    ['Conditional Sentences', 'First Conditional', 'If vs When'],
+    ['Articles & Determiners', 'A/An/The Usage', 'Quantifiers']
+  ]
+
+  const dayOfWeek = ((day - 1) % 7) + 1
+  const weekTopics = baseTopics[dayOfWeek - 1] || ['Grammar Practice', 'Review', 'Exercises']
+  
+  return weekTopics.map((topic, index) => ({
+    id: `day-${day}-topic-${index + 1}`,
+    title: `Day ${day}: ${topic}`,
+    level: week <= 4 ? 'Basic' : week <= 12 ? 'Intermediate' : 'Advanced',
+    week: week,
+    day: day,
+    duration: `${25 + (index * 5)} min`,
+    description: `Master ${topic.toLowerCase()} with practical IELTS examples and exercises`,
+    topics: getSubTopics(topic, day),
+    completed: false,
+    isDailyContent: true
+  }))
+}
+
+const getDailyGrammarFocus = (day: number): string => {
+  const focusAreas = [
+    'Present Tenses & Question Formation',    // Day 1
+    'Past Tenses & Time Expressions',         // Day 2  
+    'Present Perfect & Experience',           // Day 3
+    'Future Forms & Planning',                // Day 4
+    'Modal Verbs & Possibility',              // Day 5
+    'Conditional Sentences',                  // Day 6
+    'Articles & Determiners'                  // Day 7
+  ]
+  
+  const dayOfWeek = ((day - 1) % 7) + 1
+  return focusAreas[dayOfWeek - 1] || 'Grammar Practice'
+}
+
+const getSubTopics = (mainTopic: string, day: number) => {
+  const variations: Record<string, string[][]> = {
+    'Present Simple & Continuous': [
+      ['Facts & General Truths', 'Habits & Routines', 'Actions in Progress'],
+      ['State vs Action Verbs', 'Time Expressions', 'Present Simple Questions'],
+      ['Permanent vs Temporary', 'Adverbs of Frequency', 'Present Continuous Questions']
+    ],
+    'Past Simple & Continuous': [
+      ['Completed Past Actions', 'Past Time Expressions', 'Regular vs Irregular'],
+      ['Past Habits', 'Interrupted Actions', 'When vs While'],
+      ['Past Questions', 'Negative Forms', 'Time Sequences']
+    ],
+    'Present Perfect': [
+      ['Life Experiences', 'Recent Actions', 'Unfinished Time'],
+      ['Present Perfect vs Past Simple', 'For vs Since', 'Already/Yet/Just'],
+      ['Present Perfect Questions', 'Never/Ever', 'Time Expressions']
+    ],
+    'Future Forms': [
+      ['Will for Predictions', 'Going to for Plans', 'Present Continuous Future'],
+      ['Future Time Expressions', 'Conditional Future', 'Future Questions'],
+      ['Future Perfect', 'Future Continuous', 'Be about to']
+    ],
+    'Modal Verbs': [
+      ['Ability: Can/Could', 'Permission: May/Can', 'Possibility: Might/Could'],
+      ['Necessity: Must/Have to', 'Advice: Should/Ought to', 'Prohibition: Mustn\'t'],
+      ['Past Modals', 'Modal Questions', 'Modal + Perfect']
+    ],
+    'Conditional Sentences': [
+      ['Zero Conditional', 'First Conditional', 'Time vs Condition'],
+      ['Second Conditional', 'Unless vs If not', 'Mixed Conditionals'],
+      ['Third Conditional', 'Conditional Questions', 'Wish vs If only']
+    ],
+    'Articles & Determiners': [
+      ['A vs An', 'The Definite Article', 'No Article (Zero)'],
+      ['Some vs Any', 'Much vs Many', 'Few vs Little'],
+      ['This/That/These/Those', 'All/Both/Neither', 'Each/Every']
+    ]
+  }
+  
+  const dayVariation = ((day - 1) % 3)
+  return variations[mainTopic]?.[dayVariation] || [mainTopic, 'Practice', 'Review']
+}
+
+// Complete IELTS Grammar Lessons (Static fallback)
 const GRAMMAR_LESSONS = [
   // Basic Grammar (Weeks 1-4)
   {
@@ -260,7 +348,12 @@ export default function GrammarLessonsList() {
   const levels = ['all', 'Basic', 'Intermediate', 'Advanced', 'IELTS']
   const weeks = ['all', ...Array.from({length: 19}, (_, i) => (i + 1).toString())]
 
-  const filteredLessons = GRAMMAR_LESSONS.filter(lesson => {
+  // Use daily grammar content if day is specified
+  const lessonsToFilter = dailyLessonDay && dailyLessonWeek 
+    ? generateDailyGrammarLessons(dailyLessonDay, dailyLessonWeek)
+    : GRAMMAR_LESSONS
+
+  const filteredLessons = lessonsToFilter.filter(lesson => {
     const levelMatch = selectedLevel === 'all' || lesson.level === selectedLevel
     const weekMatch = selectedWeek === 'all' || lesson.week.toString() === selectedWeek
     return levelMatch && weekMatch
@@ -318,7 +411,7 @@ export default function GrammarLessonsList() {
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           {dailyLessonDay 
-            ? `Focus on Week ${dailyLessonWeek} grammar topics for today's learning session`
+            ? `Day ${dailyLessonDay} focuses on ${getDailyGrammarFocus(dailyLessonDay)} - practice targeted grammar exercises for your daily lesson`
             : 'Master English grammar with our comprehensive 19-week program. From basic tenses to advanced IELTS structures.'
           }
         </p>
@@ -393,6 +486,11 @@ export default function GrammarLessonsList() {
                           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                             {lesson.title}
                           </h3>
+                          {(lesson as any).isDailyContent && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                              📅 Daily Focus
+                            </span>
+                          )}
                           <div className="flex items-center gap-2 text-sm text-gray-500">
                             <Clock className="w-4 h-4" />
                             {lesson.duration}
@@ -417,7 +515,10 @@ export default function GrammarLessonsList() {
                       
                       <div className="flex items-center gap-3 ml-4">
                         <div className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(lesson.level)}`}>
-                          Week {lesson.week}
+                          {(lesson as any).isDailyContent && (lesson as any).day 
+                            ? `Day ${(lesson as any).day}` 
+                            : `Week ${lesson.week}`
+                          }
                         </div>
                         <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                       </div>

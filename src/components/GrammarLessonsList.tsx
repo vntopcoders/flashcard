@@ -5,8 +5,22 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { BookOpen, Clock, Target, Filter, ChevronRight, Calendar, ArrowLeft } from 'lucide-react'
 
+// Types for grammar lessons
+interface GrammarLesson {
+  id: string
+  title: string
+  level: string
+  week: number
+  day?: number
+  duration: string
+  description: string
+  topics: string[]
+  completed: boolean
+  isDailyContent?: boolean
+}
+
 // Function to generate daily grammar content
-const generateDailyGrammarLessons = (day: number, week: number) => {
+const generateDailyGrammarLessons = (day: number, week: number): GrammarLesson[] => {
   const baseTopics = [
     // Week 1 Grammar Topics
     ['Present Simple & Continuous', 'Question Formation', 'Negative Sentences'],
@@ -94,7 +108,7 @@ const getSubTopics = (mainTopic: string, day: number) => {
 }
 
 // Complete IELTS Grammar Lessons (Static fallback)
-const GRAMMAR_LESSONS = [
+const GRAMMAR_LESSONS: GrammarLesson[] = [
   // Basic Grammar (Weeks 1-4)
   {
     id: 'present-simple',
@@ -364,7 +378,7 @@ export default function GrammarLessonsList() {
     if (!groups[key]) groups[key] = []
     groups[key].push(lesson)
     return groups
-  }, {} as Record<string, typeof GRAMMAR_LESSONS>)
+  }, {} as Record<string, GrammarLesson[]>)
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -486,7 +500,7 @@ export default function GrammarLessonsList() {
                           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                             {lesson.title}
                           </h3>
-                          {(lesson as any).isDailyContent && (
+                          {lesson.isDailyContent && (
                             <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
                               📅 Daily Focus
                             </span>
@@ -515,8 +529,8 @@ export default function GrammarLessonsList() {
                       
                       <div className="flex items-center gap-3 ml-4">
                         <div className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(lesson.level)}`}>
-                          {(lesson as any).isDailyContent && (lesson as any).day 
-                            ? `Day ${(lesson as any).day}` 
+                          {lesson.isDailyContent && lesson.day 
+                            ? `Day ${lesson.day}` 
                             : `Week ${lesson.week}`
                           }
                         </div>

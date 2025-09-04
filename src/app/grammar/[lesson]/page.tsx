@@ -1,6 +1,44 @@
 import { notFound } from 'next/navigation'
 import GrammarLessonContent from '@/components/GrammarLessonContent'
 
+// Function to generate daily lesson data from ID
+const generateDailyLessonData = (lessonId: string) => {
+  // Parse daily lesson ID format: day-X-topic-Y
+  const match = lessonId.match(/^day-(\d+)-topic-(\d+)$/)
+  if (!match) return null
+  
+  const day = parseInt(match[1])
+  const topicIndex = parseInt(match[2]) - 1 // Convert to 0-based index
+  
+  const baseTopics = [
+    ['Present Simple & Continuous', 'Question Formation', 'Negative Sentences'],
+    ['Past Simple & Continuous', 'Time Expressions', 'Irregular Verbs'],
+    ['Present Perfect', 'Already/Yet/Just', 'Experience vs Finished Actions'],
+    ['Future Forms', 'Will vs Going to', 'Present Continuous for Future'],
+    ['Modal Verbs', 'Can/Could/May/Might', 'Permission & Possibility'],
+    ['Conditional Sentences', 'First Conditional', 'If vs When'],
+    ['Articles & Determiners', 'A/An/The Usage', 'Quantifiers']
+  ]
+  
+  const week = Math.ceil(day / 7)
+  const dayOfWeek = ((day - 1) % 7) + 1
+  const weekTopics = baseTopics[dayOfWeek - 1] || ['Grammar Practice', 'Review', 'Exercises']
+  
+  if (topicIndex >= weekTopics.length) return null
+  
+  const topic = weekTopics[topicIndex]
+  
+  return {
+    title: `Day ${day}: ${topic}`,
+    level: week <= 4 ? 'Basic' : week <= 12 ? 'Intermediate' : 'Advanced',
+    week: week,
+    day: day,
+    description: `Master ${topic.toLowerCase()} with practical IELTS examples and exercises for Day ${day}`,
+    isDailyContent: true,
+    topic: topic
+  }
+}
+
 // IELTS Grammar Lessons Organization
 const GRAMMAR_LESSONS = {
   // Basic Grammar (Beginner)
@@ -151,7 +189,13 @@ interface PageProps {
 export default async function GrammarLessonPage({ params }: PageProps) {
   const { lesson } = await params
   
-  const lessonData = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS]
+  // Try to get static lesson first
+  let lessonData = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS]
+  
+  // If not found, try to generate daily lesson data
+  if (!lessonData) {
+    lessonData = generateDailyLessonData(lesson)
+  }
   
   if (!lessonData) {
     notFound()
@@ -172,9 +216,20 @@ export default async function GrammarLessonPage({ params }: PageProps) {
               }`}>
                 {lessonData.level}
               </div>
-              <div className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                Week {lessonData.week}
-              </div>
+              {(lessonData as any).isDailyContent ? (
+                <>
+                  <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                    Day {(lessonData as any).day}
+                  </div>
+                  <div className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                    📅 Daily Focus
+                  </div>
+                </>
+              ) : (
+                <div className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                  Week {lessonData.week}
+                </div>
+              )}
             </div>
           </div>
           
@@ -195,6 +250,8 @@ export default async function GrammarLessonPage({ params }: PageProps) {
 }
 
 export async function generateStaticParams() {
+  // Only generate static params for predefined lessons
+  // Daily lessons (day-X-topic-Y) will be handled dynamically
   return Object.keys(GRAMMAR_LESSONS).map((lesson) => ({
     lesson,
   }))
@@ -202,7 +259,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps) {
   const { lesson } = await params
-  const lessonData = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS]
+  
+  // Try static lesson first
+  let lessonData = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS]
+  
+  // If not found, try daily lesson
+  if (!lessonData) {
+    lessonData = generateDailyLessonData(lesson)
+  }
   
   if (!lessonData) {
     return {

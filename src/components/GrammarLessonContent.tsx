@@ -9,6 +9,9 @@ interface LessonData {
   level: string
   week: number
   description: string
+  isDailyContent?: boolean
+  day?: number
+  topic?: string
 }
 
 interface Props {
@@ -38,6 +41,117 @@ interface LessonContent {
     types: TheoryType[]
   }
   exercises: Exercise[]
+}
+
+// Function to generate daily lesson content
+const generateDailyLessonContent = (topic: string, day: number): LessonContent => {
+  const contentMap: Record<string, any> = {
+    'Present Simple & Continuous': {
+      introduction: `Learn the fundamentals of Present Simple and Present Continuous tenses. These are essential for expressing habits, facts, and ongoing actions.`,
+      types: [
+        {
+          name: 'Present Simple',
+          structure: 'Subject + base verb (+ s/es for 3rd person)',
+          use: 'Facts, habits, general truths, scheduled events',
+          example: 'She works at a bank. / The train leaves at 9 AM.',
+          vietnamese: 'Diễn tả sự thật, thói quen, lịch trình'
+        },
+        {
+          name: 'Present Continuous',
+          structure: 'Subject + am/is/are + verb-ing',
+          use: 'Actions happening now, temporary situations, future arrangements',
+          example: 'I am studying English. / We are meeting tomorrow.',
+          vietnamese: 'Diễn tả hành động đang xảy ra, tình huống tạm thời'
+        }
+      ]
+    },
+    'Past Simple & Continuous': {
+      introduction: `Master past tenses to describe completed actions and ongoing actions in the past.`,
+      types: [
+        {
+          name: 'Past Simple',
+          structure: 'Subject + verb-ed (or irregular past form)',
+          use: 'Completed actions in the past, past habits',
+          example: 'I visited London last year. / She studied hard.',
+          vietnamese: 'Hành động đã hoàn thành trong quá khứ'
+        },
+        {
+          name: 'Past Continuous',
+          structure: 'Subject + was/were + verb-ing',
+          use: 'Ongoing actions in the past, interrupted actions',
+          example: 'I was reading when he called. / They were working.',
+          vietnamese: 'Hành động đang diễn ra trong quá khứ'
+        }
+      ]
+    },
+    'Present Perfect': {
+      introduction: `Connect past actions to the present moment with Present Perfect tense.`,
+      types: [
+        {
+          name: 'Present Perfect',
+          structure: 'Subject + have/has + past participle',
+          use: 'Life experiences, recent actions, unfinished time periods',
+          example: 'I have visited 10 countries. / She has just arrived.',
+          vietnamese: 'Kinh nghiệm, hành động từ quá khứ đến hiện tại'
+        },
+        {
+          name: 'Present Perfect vs Past Simple',
+          structure: 'Present Perfect (no specific time) vs Past Simple (specific time)',
+          use: 'Present Perfect: unfinished time / Past Simple: finished time',
+          example: 'I have been to Paris (experience) vs I went to Paris in 2020 (specific)',
+          vietnamese: 'Phân biệt thời gian không cụ thể vs cụ thể'
+        }
+      ]
+    }
+  }
+
+  const defaultContent = {
+    introduction: `Learn about ${topic.toLowerCase()} with practical examples and exercises.`,
+    types: [
+      {
+        name: topic,
+        structure: 'Grammar structure and patterns',
+        use: 'Common usage and applications',
+        example: 'Example sentences with explanations',
+        vietnamese: 'Giải thích bằng tiếng Việt'
+      }
+    ]
+  }
+
+  return {
+    theory: contentMap[topic] || defaultContent,
+    exercises: generateDailyExercises(topic, day)
+  }
+}
+
+const generateDailyExercises = (topic: string, day: number): Exercise[] => {
+  // Generate contextual exercises based on topic
+  const exercises: Exercise[] = [
+    {
+      question: `Choose the correct form for this ${topic.toLowerCase()} sentence:`,
+      options: [
+        'I _____ English every day.',
+        'I study English every day.',
+        'I am studying English every day.',
+        'I studied English every day.'
+      ],
+      correct: 1,
+      explanation: `For habits and routines, we use Present Simple tense.`
+    },
+    {
+      question: `Which sentence uses ${topic.toLowerCase()} correctly?`,
+      options: [
+        'She is working right now.',
+        'She works right now.',
+        'She worked right now.',
+        'She has worked right now.'
+      ],
+      correct: 0,
+      explanation: `For actions happening at the moment of speaking, we use Present Continuous.`
+    }
+  ]
+
+  return exercises
 }
 
 const LESSON_CONTENT: Record<string, LessonContent> = {
@@ -867,7 +981,13 @@ export default function GrammarLessonContent({ lesson, lessonData }: Props) {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({})
   const [showResults, setShowResults] = useState(false)
 
-  const content = LESSON_CONTENT[lesson]
+  // Get content from static lessons or generate for daily lessons
+  let content = LESSON_CONTENT[lesson]
+  
+  // If no static content and this is daily content, generate it
+  if (!content && lessonData.isDailyContent && lessonData.topic) {
+    content = generateDailyLessonContent(lessonData.topic, lessonData.day || 1)
+  }
   
   if (!content) {
     return (

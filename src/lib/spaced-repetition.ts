@@ -450,7 +450,7 @@ export class SpacedRepetitionService {
    * Get optimal study schedule for user
    */
   static async getStudySchedule() {
-    const now = new Date()
+    // const now = new Date() // Not currently used
     // const today = now.toISOString().split('T')[0] // Commented out as not used
     
     // Get cards due today

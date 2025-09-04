@@ -146,7 +146,7 @@ export class HybridAudioService {
             audioSource: { type: 'static', url }
           }
         }
-      } catch (error) {
+      } catch {
         console.debug(`Static audio not found at ${source.name}:`, url)
         continue
       }

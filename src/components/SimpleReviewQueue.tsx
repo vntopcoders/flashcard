@@ -2,13 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { 
-  Clock, 
-  CheckCircle, 
-  RotateCcw, 
   Brain, 
-  Target,
   BookOpen,
-  Play,
   ArrowRight,
   Volume2
 } from 'lucide-react'
@@ -39,7 +34,7 @@ export default function SimpleReviewQueue() {
 
   useEffect(() => {
     loadReviewCards()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadReviewCards = async () => {
     try {

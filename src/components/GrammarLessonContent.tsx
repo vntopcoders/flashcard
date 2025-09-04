@@ -45,7 +45,7 @@ interface LessonContent {
 
 // Function to generate daily lesson content
 const generateDailyLessonContent = (topic: string, day: number): LessonContent => {
-  const contentMap: Record<string, any> = {
+  const contentMap: Record<string, { introduction: string; types: TheoryType[] }> = {
     'Present Simple & Continuous': {
       introduction: `Learn the fundamentals of Present Simple and Present Continuous tenses. These are essential for expressing habits, facts, and ongoing actions.`,
       types: [

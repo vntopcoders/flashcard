@@ -67,7 +67,7 @@ export default function UserProfile() {
       const data = await response.json()
       setProfile(data.user)
       setPreferences(data.preferences)
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to load profile' })
     } finally {
       setLoading(false)
@@ -100,7 +100,7 @@ export default function UserProfile() {
       // Clear message after 3 seconds
       setTimeout(() => setMessage(null), 3000)
 
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to save profile' })
     } finally {
       setSaving(false)

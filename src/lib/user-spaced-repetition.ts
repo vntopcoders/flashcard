@@ -433,7 +433,7 @@ export class UserSpacedRepetitionService {
    * Get optimal study schedule for a specific user
    */
   static async getStudySchedule(userId: string) {
-    const now = new Date()
+    // const now = new Date() // Not currently used
     
     // Get cards due today for this user
     const dueTodayPromise = this.getCardsDueForReview(userId, 50)

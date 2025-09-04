@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import GrammarLessonContent from '@/components/GrammarLessonContent'
 
 // Function to generate daily lesson data from ID
-const generateDailyLessonData = (lessonId: string) => {
+const generateDailyLessonData = (lessonId: string): DailyLessonData | null => {
   // Parse daily lesson ID format: day-X-topic-Y
   const match = lessonId.match(/^day-(\d+)-topic-(\d+)$/)
   if (!match) return null
@@ -182,6 +182,25 @@ const GRAMMAR_LESSONS = {
   }
 }
 
+interface StaticLessonData {
+  title: string
+  level: string
+  week: number
+  description: string
+}
+
+interface DailyLessonData {
+  title: string
+  level: string
+  week: number
+  day: number
+  description: string
+  isDailyContent: boolean
+  topic: string
+}
+
+type LessonData = StaticLessonData | DailyLessonData
+
 interface PageProps {
   params: Promise<{ lesson: string }>
 }
@@ -190,7 +209,7 @@ export default async function GrammarLessonPage({ params }: PageProps) {
   const { lesson } = await params
   
   // Try to get static lesson first
-  let lessonData = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS]
+  let lessonData: LessonData | null = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS] || null
   
   // If not found, try to generate daily lesson data
   if (!lessonData) {
@@ -216,10 +235,10 @@ export default async function GrammarLessonPage({ params }: PageProps) {
               }`}>
                 {lessonData.level}
               </div>
-              {(lessonData as any).isDailyContent ? (
+              {lessonData && 'isDailyContent' in lessonData && lessonData.isDailyContent ? (
                 <>
                   <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                    Day {(lessonData as any).day}
+                    Day {'day' in lessonData ? String(lessonData.day) : '?'}
                   </div>
                   <div className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
                     📅 Daily Focus
@@ -261,7 +280,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { lesson } = await params
   
   // Try static lesson first
-  let lessonData = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS]
+  let lessonData: LessonData | null = GRAMMAR_LESSONS[lesson as keyof typeof GRAMMAR_LESSONS] || null
   
   // If not found, try daily lesson
   if (!lessonData) {

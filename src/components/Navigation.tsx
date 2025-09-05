@@ -14,7 +14,8 @@ import {
   User,
   LogIn,
   LogOut,
-  Edit3
+  Edit3,
+  Headphones
 } from 'lucide-react'
 import UserSettingsPanel from './UserSettingsPanel'
 import { useAuth } from '@/contexts/AuthContext'
@@ -50,6 +51,12 @@ export default function Navigation() {
       href: '/grammar',
       icon: Edit3,
       description: 'Grammar exercises'
+    },
+    {
+      name: 'Listening',
+      href: '/listening',
+      icon: Headphones,
+      description: 'IELTS Listening practice'
     },
     {
       name: 'Progress',

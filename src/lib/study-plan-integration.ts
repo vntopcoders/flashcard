@@ -7,11 +7,19 @@
 
 import { SpacedRepetitionService } from './spaced-repetition'
 
+export interface ListeningProgressStats {
+  testsCompleted: number
+  averageBandScore: number
+  weakAreas: string[]
+  recommendedDifficulty: 'beginner' | 'intermediate' | 'advanced'
+}
+
 export interface StudyPlanWeek {
   week: number
   phase: 'Foundation' | 'Development' | 'Mastery' | 'Final Prep'
   vocabularyTarget: number
   grammarTarget: number
+  listeningTarget: number // Number of listening tests per week
   skillsFocus: string[]
   dailyHours: number
   targetBand: string
@@ -37,6 +45,8 @@ export interface StudySession {
   description: string
   isCompleted: boolean
   integrationNotes?: string
+  listeningTestId?: number
+  targetBandScore?: number
 }
 
 export class StudyPlanIntegrationService {
@@ -61,6 +71,7 @@ export class StudyPlanIntegrationService {
         phase: 'Foundation',
         vocabularyTarget: 150 * weekNumber,
         grammarTarget: Math.min(weekNumber * 14, 100), // Tăng từ 6 lên 14 bài/tuần (2 bài/ngày)
+        listeningTarget: Math.min(weekNumber * 2, 14), // 2 tests/week, max 14 tests
         skillsFocus: ['vocabulary', 'grammar', 'reading', 'listening'],
         dailyHours: 2.5,
         targetBand: weekNumber <= 4 ? '4.0-5.0' : '5.0-5.5'
@@ -71,7 +82,8 @@ export class StudyPlanIntegrationService {
         phase: 'Development',
         vocabularyTarget: 150 * weekNumber,
         grammarTarget: Math.min(weekNumber * 14, 150), // Tăng từ 6 lên 14 bài/tuần cho giai đoạn Development
-        skillsFocus: ['writing', 'speaking', 'advanced_reading', 'complex_grammar'],
+        listeningTarget: Math.min(weekNumber * 3, 20), // 3 tests/week, max 20 tests
+        skillsFocus: ['writing', 'speaking', 'advanced_reading', 'complex_grammar', 'listening'],
         dailyHours: 3.0,
         targetBand: weekNumber <= 12 ? '5.5-6.0' : '6.0-6.5'
       }
@@ -81,7 +93,8 @@ export class StudyPlanIntegrationService {
         phase: 'Mastery',
         vocabularyTarget: 150 * weekNumber,
         grammarTarget: Math.min(weekNumber * 14, 200), // Tăng từ 6 lên 14 bài/tuần cho giai đoạn Mastery
-        skillsFocus: ['band7_techniques', 'speed_accuracy', 'sophistication'],
+        listeningTarget: Math.min(weekNumber * 4, 30), // 4 tests/week, max 30 tests
+        skillsFocus: ['band7_techniques', 'speed_accuracy', 'sophistication', 'advanced_listening'],
         dailyHours: 3.5,
         targetBand: '6.5-7.0'
       }
@@ -91,7 +104,8 @@ export class StudyPlanIntegrationService {
         phase: 'Final Prep',
         vocabularyTarget: 4000,
         grammarTarget: 280, // Tăng grammar trong giai đoạn Final Prep (14 bài/tuần x 20 tuần)
-        skillsFocus: ['exam_strategies', 'mock_tests', 'confidence_building'],
+        listeningTarget: 40, // Intensive listening practice: 5 tests/week x 4 weeks
+        skillsFocus: ['exam_strategies', 'mock_tests', 'confidence_building', 'full_listening_tests'],
         dailyHours: 3.0,
         targetBand: '7.0+'
       }
@@ -211,15 +225,7 @@ export class StudyPlanIntegrationService {
           description: 'Cambridge IELTS passages - Skimming and scanning techniques',
           isCompleted: false
         },
-        {
-          id: 'listening-evening',
-          time: '19:00-19:30',
-          duration: 30,
-          skill: 'listening',
-          title: 'Daily Listening Practice',
-          description: 'BBC 6 Minute English + Cambridge Listening sections',
-          isCompleted: false
-        }
+        ...this.generateListeningSessions(weekConfig, 'foundation')
       )
     } else if (weekConfig.phase === 'Development') {
       sessions.push(
@@ -249,7 +255,8 @@ export class StudyPlanIntegrationService {
           title: 'Advanced Reading Practice',
           description: 'Complex passages with all question types',
           isCompleted: false
-        }
+        },
+        ...this.generateListeningSessions(weekConfig, 'development')
       )
     } else if (weekConfig.phase === 'Mastery') {
       sessions.push(
@@ -270,7 +277,8 @@ export class StudyPlanIntegrationService {
           title: 'Speed & Accuracy Training',
           description: 'Timed practice with strict time limits',
           isCompleted: false
-        }
+        },
+        ...this.generateListeningSessions(weekConfig, 'mastery')
       )
     } else { // Final Prep
       sessions.push(
@@ -291,7 +299,8 @@ export class StudyPlanIntegrationService {
           title: 'Performance Analysis',
           description: 'Detailed error analysis and improvement strategies',
           isCompleted: false
-        }
+        },
+        ...this.generateListeningSessions(weekConfig, 'final_prep')
       )
     }
 
@@ -466,6 +475,126 @@ export class StudyPlanIntegrationService {
         ? ['Maintain current pace', 'Consider advancing to next phase', 'Add challenge activities']
         : ['Stay consistent', 'Continue current approach', 'Monitor weekly progress']
     }
+  }
+
+  /**
+   * Generate listening sessions for daily study plan
+   */
+  static generateListeningSessions(weekConfig: StudyPlanWeek, phase: string): StudySession[] {
+    const sessions: StudySession[] = []
+    
+    // Removed unused getDifficultyByPhase function
+
+    const getTargetBandByPhase = (phase: string) => {
+      switch (phase) {
+        case 'foundation': return 5.0
+        case 'development': return 6.0
+        case 'mastery': return 7.0
+        case 'final_prep': return 8.0
+        default: return 6.0
+      }
+    }
+
+    if (phase === 'foundation') {
+      sessions.push({
+        id: 'listening-daily',
+        time: '19:00-19:30',
+        duration: 30,
+        skill: 'listening',
+        title: 'Daily Listening Practice',
+        description: 'Part 1 & 2 practice - Conversations and monologues',
+        isCompleted: false,
+        targetBandScore: getTargetBandByPhase(phase),
+        integrationNotes: `Target: ${weekConfig.listeningTarget} tests this week`
+      })
+    } else if (phase === 'development') {
+      sessions.push({
+        id: 'listening-academic',
+        time: '15:30-16:30',
+        duration: 60,
+        skill: 'listening',
+        title: 'Academic Listening Focus',
+        description: 'Part 3 & 4 practice - Academic discussions and lectures',
+        isCompleted: false,
+        targetBandScore: getTargetBandByPhase(phase),
+        integrationNotes: `Target: ${weekConfig.listeningTarget} tests this week`
+      })
+    } else if (phase === 'mastery') {
+      sessions.push({
+        id: 'listening-advanced',
+        time: '14:00-15:00',
+        duration: 60,
+        skill: 'listening',
+        title: 'Advanced Listening Skills',
+        description: 'Full practice tests with complex vocabulary and accents',
+        isCompleted: false,
+        targetBandScore: getTargetBandByPhase(phase),
+        integrationNotes: `Target: ${weekConfig.listeningTarget} tests this week - Focus on Band 7+ skills`
+      })
+    } else if (phase === 'final_prep') {
+      sessions.push({
+        id: 'listening-mock',
+        time: '9:00-10:00',
+        duration: 60,
+        skill: 'listening',
+        title: 'Mock Listening Tests',
+        description: 'Full IELTS listening tests under exam conditions',
+        isCompleted: false,
+        targetBandScore: getTargetBandByPhase(phase),
+        integrationNotes: `Intensive practice: ${weekConfig.listeningTarget} tests this week`
+      })
+    }
+
+    return sessions
+  }
+
+  /**
+   * Get listening recommendations based on progress
+   */
+  static getListeningRecommendations(stats: ListeningProgressStats, currentWeek: number): string[] {
+    const recommendations: string[] = []
+    const weekConfig = this.getWeekConfig(currentWeek)
+
+    // Based on average band score
+    if (stats.averageBandScore < 5.0) {
+      recommendations.push('Focus on Part 1 & 2 - basic conversation skills')
+      recommendations.push('Practice with slower audio speed (0.75x)')
+      recommendations.push('Build essential vocabulary for daily situations')
+    } else if (stats.averageBandScore < 6.0) {
+      recommendations.push('Balance all 4 parts equally')
+      recommendations.push('Work on note-taking strategies')
+      recommendations.push('Practice with various English accents')
+    } else if (stats.averageBandScore < 7.0) {
+      recommendations.push('Focus on Part 3 & 4 - academic content')
+      recommendations.push('Improve speed and accuracy')
+      recommendations.push('Practice complex question types (matching, labeling)')
+    } else {
+      recommendations.push('Maintain performance with regular practice')
+      recommendations.push('Challenge yourself with authentic materials')
+      recommendations.push('Focus on exam techniques and time management')
+    }
+
+    // Based on weak areas
+    if (stats.weakAreas.includes('part1')) {
+      recommendations.push('Practice daily conversation scenarios')
+    }
+    if (stats.weakAreas.includes('part2')) {
+      recommendations.push('Listen to presentations and speeches')
+    }
+    if (stats.weakAreas.includes('part3')) {
+      recommendations.push('Practice academic group discussions')
+    }
+    if (stats.weakAreas.includes('part4')) {
+      recommendations.push('Listen to university lectures and talks')
+    }
+
+    // Based on tests completed vs target
+    const weeklyTarget = Math.ceil(weekConfig.listeningTarget / 7) // Daily target
+    if (stats.testsCompleted < weeklyTarget * 7) {
+      recommendations.push(`Increase practice frequency - aim for ${weeklyTarget} tests per day`)
+    }
+
+    return recommendations.slice(0, 5) // Top 5 recommendations
   }
 }
 

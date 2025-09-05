@@ -120,30 +120,54 @@ export default function ListeningPlayer({
 
     try {
       setLoading(true)
+      setError(null)
       
       // Use Web Speech API for immediate playback
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(audioText)
-        utterance.rate = playbackRate
-        utterance.volume = volume
-        utterance.lang = 'en-US'
+        // Stop any existing speech
+        speechSynthesis.cancel()
         
-        // Try to use a good English voice
-        const voices = speechSynthesis.getVoices()
-        const englishVoice = voices.find(voice => 
-          voice.lang.startsWith('en') && voice.name.includes('Google')
-        ) || voices.find(voice => voice.lang.startsWith('en'))
-        
-        if (englishVoice) {
-          utterance.voice = englishVoice
+        // Wait for voices to load if not already loaded
+        let voices = speechSynthesis.getVoices()
+        if (voices.length === 0) {
+          await new Promise(resolve => {
+            speechSynthesis.onvoiceschanged = () => {
+              voices = speechSynthesis.getVoices()
+              resolve(voices)
+            }
+          })
         }
+
+        const utterance = new SpeechSynthesisUtterance(audioText)
+        utterance.rate = Math.max(0.1, Math.min(2.0, playbackRate))
+        utterance.volume = Math.max(0, Math.min(1, volume))
+        utterance.lang = 'en-US'
+        utterance.pitch = 1.0
+        
+        // Try to use the best available English voice
+        const preferredVoices = [
+          voices.find(voice => voice.name.includes('Google') && voice.lang.startsWith('en-US')),
+          voices.find(voice => voice.name.includes('Microsoft') && voice.lang.startsWith('en-US')),
+          voices.find(voice => voice.lang.startsWith('en-US')),
+          voices.find(voice => voice.lang.startsWith('en-GB')),
+          voices.find(voice => voice.lang.startsWith('en'))
+        ].find(voice => voice !== undefined)
+        
+        if (preferredVoices) {
+          utterance.voice = preferredVoices
+          console.log('Selected voice:', preferredVoices.name, preferredVoices.lang)
+        }
+
+        // Estimate duration (more accurate calculation)
+        const wordsPerMinute = 150 // Average English speaking rate
+        const words = audioText.split(/\s+/).length
+        const estimatedDuration = (words / wordsPerMinute) * 60 / playbackRate
 
         utterance.onstart = () => {
           setIsPlaying(true)
           setLoading(false)
-          // Simulate duration (estimate based on text length)
-          const estimatedDuration = audioText.length * 0.08 // ~80ms per character
           setDuration(estimatedDuration)
+          setCurrentTime(0)
           
           // Start timer for current time
           intervalRef.current = setInterval(() => {
@@ -161,30 +185,65 @@ export default function ListeningPlayer({
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
           }
+          setCurrentTime(estimatedDuration) // Set to end
         }
 
-        utterance.onerror = () => {
+        utterance.onerror = (event) => {
+          console.error('Speech synthesis error:', event)
           setError('Lỗi tạo giọng nói. Vui lòng thử lại.')
           setIsPlaying(false)
           setLoading(false)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+        }
+
+        utterance.onpause = () => {
+          setIsPlaying(false)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+        }
+
+        utterance.onresume = () => {
+          setIsPlaying(true)
+          // Resume timer
+          intervalRef.current = setInterval(() => {
+            setCurrentTime(prev => {
+              const newTime = prev + 0.1
+              onTimeUpdate?.(newTime)
+              return newTime > estimatedDuration ? estimatedDuration : newTime
+            })
+          }, 100)
         }
 
         // Store utterance reference for control
         audioRef.current = { 
           utterance,
-          play: () => speechSynthesis.speak(utterance),
+          play: () => {
+            speechSynthesis.cancel() // Clear any existing speech
+            speechSynthesis.speak(utterance)
+          },
           pause: () => speechSynthesis.pause(),
           resume: () => speechSynthesis.resume(),
-          stop: () => speechSynthesis.cancel()
+          stop: () => {
+            speechSynthesis.cancel()
+            setIsPlaying(false)
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current)
+            }
+          },
+          currentTime: currentTime,
+          duration: estimatedDuration
         } as unknown as HTMLAudioElement
 
         setLoading(false)
       } else {
-        setError('Trình duyệt không hỗ trợ Text-to-Speech')
+        setError('Trình duyệt không hỗ trợ Text-to-Speech. Vui lòng sử dụng Chrome, Firefox, Safari hoặc Edge.')
         setLoading(false)
       }
     } catch (error) {
-      setError('Lỗi tạo audio từ văn bản')
+      setError('Lỗi tạo audio từ văn bản: ' + (error instanceof Error ? error.message : 'Unknown error'))
       setLoading(false)
       console.error('TTS generation error:', error)
     }
@@ -193,6 +252,29 @@ export default function ListeningPlayer({
   const togglePlayPause = async () => {
     if (!audioUrl && !audioText) {
       setError('Không có audio để phát')
+      return
+    }
+
+    // Handle TTS playback
+    if (!audioUrl && audioText) {
+      if (!audioRef.current) {
+        await generateTTSAudio()
+        return
+      }
+      
+      if (isPlaying) {
+        speechSynthesis.pause()
+        setIsPlaying(false)
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+        }
+      } else {
+        if (speechSynthesis.paused) {
+          speechSynthesis.resume()
+        } else {
+          await generateTTSAudio()
+        }
+      }
       return
     }
 
@@ -337,7 +419,16 @@ export default function ListeningPlayer({
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
           <div className="flex items-center gap-2">
             <Volume2 className="w-4 h-4" />
-            <span>Sử dụng Text-to-Speech để nghe audio. Nhấn nút play để bắt đầu.</span>
+            <div>
+              <div className="font-medium">🎙️ Text-to-Speech Audio</div>
+              <div className="text-xs mt-1">
+                Sử dụng giọng nói tự động từ trình duyệt. Nhấn ▶️ để nghe audio IELTS.
+                {typeof window !== 'undefined' && 'speechSynthesis' in window ? 
+                  ' ✅ Trình duyệt hỗ trợ TTS' : 
+                  ' ❌ Trình duyệt không hỗ trợ'
+                }
+              </div>
+            </div>
           </div>
         </div>
       )}

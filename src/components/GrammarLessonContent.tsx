@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, XCircle, ArrowLeft, ArrowRight, BookOpen, PenTool } from 'lucide-react'
+import { CheckCircle, XCircle, ArrowLeft, BookOpen, PenTool } from 'lucide-react'
 import Link from 'next/link'
 
 interface LessonData {
@@ -201,33 +201,245 @@ const generateDailyLessonContent = (topic: string, day: number): LessonContent =
 }
 
 const generateDailyExercises = (topic: string, day: number): Exercise[] => {
-  // Generate contextual exercises based on topic
-  const exercises: Exercise[] = [
+  const exerciseMap: Record<string, Exercise[]> = {
+    'Present Simple & Continuous': [
+      {
+        question: 'Chọn thì đúng: She _______ (work) in a bank.',
+        options: ['work', 'works', 'is working', 'worked'],
+        correct: 1,
+        explanation: 'Công việc cố định dùng Present Simple. Third person singular thêm -s.'
+      },
+      {
+        question: 'Câu nào đúng để diễn tả hành động đang xảy ra?',
+        options: ['I study now', 'I am studying now', 'I studied now', 'I have studied now'],
+        correct: 1,
+        explanation: 'Present Continuous (am/is/are + V-ing) dùng cho hành động đang xảy ra.'
+      },
+      {
+        question: 'Every morning, he _______ (drink) coffee.',
+        options: ['is drinking', 'drinks', 'drink', 'drank'],
+        correct: 1,
+        explanation: 'Thói quen hàng ngày dùng Present Simple với "every".'
+      },
+      {
+        question: 'Look! The children _______ (play) in the garden.',
+        options: ['play', 'plays', 'are playing', 'played'],
+        correct: 2,
+        explanation: '"Look!" là dấu hiệu của Present Continuous - hành động đang xảy ra.'
+      },
+      {
+        question: 'Chọn câu sai:',
+        options: ['Water boils at 100°C', 'She is cooking dinner now', 'They are study English', 'I work here'],
+        correct: 2,
+        explanation: 'Sau "are" phải là V-ing, không phải infinitive. Đúng là "They are studying English".'
+      }
+    ],
+    'Past Simple & Continuous': [
+      {
+        question: 'Yesterday, I _______ (visit) my grandmother.',
+        options: ['visit', 'visited', 'am visiting', 'have visited'],
+        correct: 1,
+        explanation: '"Yesterday" là dấu hiệu của Past Simple - hành động đã hoàn thành.'
+      },
+      {
+        question: 'While I _______ (read), he _______ (call) me.',
+        options: ['read / called', 'was reading / called', 'read / was calling', 'was reading / was calling'],
+        correct: 1,
+        explanation: 'Past Continuous cho hành động đang diễn ra + Past Simple cho hành động xen vào.'
+      },
+      {
+        question: 'They _______ (not go) to school last week.',
+        options: ["didn't went", "didn't go", "wasn't go", "not went"],
+        correct: 1,
+        explanation: 'Past Simple phủ định: didn\'t + V(infinitive).'
+      },
+      {
+        question: 'What _______ you _______ (do) at 8 PM yesterday?',
+        options: ['did / do', 'were / doing', 'are / doing', 'have / done'],
+        correct: 1,
+        explanation: 'Thời gian cụ thể trong quá khứ + "What" dùng Past Continuous.'
+      },
+      {
+        question: 'When I was young, I _______ (play) football every day.',
+        options: ['play', 'played', 'was playing', 'am playing'],
+        correct: 1,
+        explanation: 'Thói quen trong quá khứ dùng Past Simple.'
+      }
+    ],
+    'Present Perfect': [
+      {
+        question: 'I _______ (never be) to Japan.',
+        options: ['never was', 'have never been', 'never am', 'never have been'],
+        correct: 1,
+        explanation: 'Kinh nghiệm sống dùng Present Perfect: have/has + past participle.'
+      },
+      {
+        question: 'She _______ (live) here since 2020.',
+        options: ['lived', 'has lived', 'is living', 'lives'],
+        correct: 1,
+        explanation: '"Since" + thời điểm cụ thể dùng Present Perfect.'
+      },
+      {
+        question: '_______ you _______ (finish) your homework yet?',
+        options: ['Did / finish', 'Have / finished', 'Are / finishing', 'Do / finish'],
+        correct: 1,
+        explanation: '"Yet" trong câu hỏi dùng Present Perfect.'
+      },
+      {
+        question: 'We _______ (just move) to a new house.',
+        options: ['just moved', 'have just moved', 'are just moving', 'just move'],
+        correct: 1,
+        explanation: '"Just" dùng với Present Perfect để diễn tả hành động vừa mới xảy ra.'
+      },
+      {
+        question: 'Chọn câu đúng:',
+        options: ['I went to Paris in 2020', 'I have been to Paris in 2020', 'I go to Paris in 2020', 'I am going to Paris in 2020'],
+        correct: 0,
+        explanation: 'Thời gian cụ thể trong quá khứ ("in 2020") dùng Past Simple, không dùng Present Perfect.'
+      }
+    ],
+    'Future Forms': [
+      {
+        question: 'Tomorrow it _______ rain. (dự đoán)',
+        options: ['is going to', 'will', 'is', 'would'],
+        correct: 1,
+        explanation: '"Will" dùng cho dự đoán không có bằng chứng cụ thể.'
+      },
+      {
+        question: 'Look at those clouds! It _______ rain.',
+        options: ['will', 'is going to', 'is', 'would'],
+        correct: 1,
+        explanation: '"Going to" dùng cho dự đoán có bằng chứng (mây đen).'
+      },
+      {
+        question: 'I _______ help you with that.',
+        options: ['am going to', 'will', 'am', 'would'],
+        correct: 1,
+        explanation: '"Will" dùng cho quyết định tự phát tại thời điểm nói.'
+      },
+      {
+        question: 'We _______ visit our grandparents next weekend. (kế hoạch)',
+        options: ['will', 'are going to', 'are', 'would'],
+        correct: 1,
+        explanation: '"Going to" dùng cho kế hoạch đã định trước.'
+      },
+      {
+        question: 'The train _______ at 9 AM tomorrow.',
+        options: ['will leave', 'is going to leave', 'leaves', 'is leaving'],
+        correct: 2,
+        explanation: 'Lịch trình cố định dùng Present Simple, ngay cả khi nói về tương lai.'
+      }
+    ],
+    'Modal Verbs': [
+      {
+        question: 'I _______ swim when I was 5 years old.',
+        options: ['can', 'could', 'may', 'must'],
+        correct: 1,
+        explanation: '"Could" là dạng quá khứ của "can" - khả năng trong quá khứ.'
+      },
+      {
+        question: '_______ you please help me?',
+        options: ['Can', 'Could', 'May', 'Must'],
+        correct: 1,
+        explanation: '"Could" lịch sự hơn "can" khi đưa ra yêu cầu.'
+      },
+      {
+        question: 'You _______ wear a helmet when riding a motorcycle.',
+        options: ['can', 'may', 'must', 'could'],
+        correct: 2,
+        explanation: '"Must" diễn tả sự bắt buộc, quy định pháp luật.'
+      },
+      {
+        question: 'It _______ rain later. I\'m not sure.',
+        options: ['will', 'might', 'must', 'should'],
+        correct: 1,
+        explanation: '"Might" diễn tả khả năng không chắc chắn.'
+      },
+      {
+        question: 'You _______ see a doctor about that cough.',
+        options: ['can', 'may', 'should', 'must'],
+        correct: 2,
+        explanation: '"Should" dùng để đưa ra lời khuyên.'
+      }
+    ],
+    'Conditional Sentences': [
+      {
+        question: 'If it _______ (rain) tomorrow, I _______ (stay) home.',
+        options: ['rains / will stay', 'will rain / stay', 'rain / will stay', 'rains / stay'],
+        correct: 0,
+        explanation: 'First Conditional: If + Present Simple, will + V(infinitive).'
+      },
+      {
+        question: 'If I _______ (be) rich, I _______ (travel) the world.',
+        options: ['am / will travel', 'was / would travel', 'were / would travel', 'am / would travel'],
+        correct: 2,
+        explanation: 'Second Conditional: If + Past Simple, would + V. Dùng "were" cho tất cả ngôi.'
+      },
+      {
+        question: 'If she _______ (study) harder, she _______ (pass) the exam.',
+        options: ['studied / would pass', 'had studied / would have passed', 'studies / will pass', 'study / pass'],
+        correct: 1,
+        explanation: 'Third Conditional: If + Past Perfect, would have + Past Participle.'
+      },
+      {
+        question: 'If you heat water to 100°C, it _______.',
+        options: ['will boil', 'would boil', 'boils', 'boiled'],
+        correct: 2,
+        explanation: 'Zero Conditional cho sự thật khoa học: If + Present Simple, Present Simple.'
+      },
+      {
+        question: 'Loại điều kiện nào diễn tả tình huống không có thật ở hiện tại?',
+        options: ['Zero Conditional', 'First Conditional', 'Second Conditional', 'Third Conditional'],
+        correct: 2,
+        explanation: 'Second Conditional diễn tả tình huống không có thật hoặc khó xảy ra ở hiện tại.'
+      }
+    ],
+    'Articles & Determiners': [
+      {
+        question: 'I saw _______ cat in the garden. _______ cat was black.',
+        options: ['a / The', 'the / A', 'a / A', 'the / The'],
+        correct: 0,
+        explanation: 'Lần đầu nhắc đến dùng "a", lần sau dùng "the" vì đã xác định.'
+      },
+      {
+        question: 'Do you have _______ questions about the lesson?',
+        options: ['some', 'any', 'a', 'the'],
+        correct: 1,
+        explanation: '"Any" dùng trong câu hỏi và câu phủ định.'
+      },
+      {
+        question: 'There are _______ apples in the basket.',
+        options: ['some', 'any', 'a', 'an'],
+        correct: 0,
+        explanation: '"Some" dùng trong câu khẳng định với danh từ đếm được số nhiều.'
+      },
+      {
+        question: '_______ Sun rises in _______ east.',
+        options: ['A / a', 'The / the', 'A / the', 'The / a'],
+        correct: 1,
+        explanation: 'Các thiên thể và hướng địa lý luôn dùng "the".'
+      },
+      {
+        question: 'She is _______ honest person.',
+        options: ['a', 'an', 'the', 'any'],
+        correct: 1,
+        explanation: '"Honest" bắt đầu bằng âm nguyên âm /ɒ/ nên dùng "an".'
+      }
+    ]
+  }
+
+  const baseExercises = exerciseMap[topic] || [
     {
-      question: `Chọn dạng đúng cho câu ${topic.toLowerCase()} này:`,
-      options: [
-        'I _____ English every day.',
-        'I study English every day.',
-        'I am studying English every day.',
-        'I studied English every day.'
-      ],
-      correct: 1,
-      explanation: `Với thói quen hàng ngày, chúng ta dùng thì Hiện tại đơn.`
-    },
-    {
-      question: `Câu nào sử dụng ${topic.toLowerCase()} đúng?`,
-      options: [
-        'She is working right now.',
-        'She works right now.',
-        'She worked right now.',
-        'She has worked right now.'
-      ],
+      question: `Chọn đáp án đúng cho ${topic}:`,
+      options: ['Option A', 'Option B', 'Option C', 'Option D'],
       correct: 0,
-      explanation: `Với hành động đang xảy ra tại thời điểm nói, chúng ta dùng thì Hiện tại tiếp diễn.`
+      explanation: `Giải thích cho ${topic}.`
     }
   ]
 
-  return exercises
+  // Add day-specific variation by rotating exercises
+  const dayOffset = (day - 1) % baseExercises.length
+  return [...baseExercises.slice(dayOffset), ...baseExercises.slice(0, dayOffset)].slice(0, 5)
 }
 
 const LESSON_CONTENT: Record<string, LessonContent> = {
@@ -1053,7 +1265,6 @@ const LESSON_CONTENT: Record<string, LessonContent> = {
 
 export default function GrammarLessonContent({ lesson, lessonData }: Props) {
   const [currentSection, setCurrentSection] = useState<'theory' | 'exercises'>('theory')
-  const [currentExercise, setCurrentExercise] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({})
   const [showResults, setShowResults] = useState(false)
 
@@ -1100,7 +1311,6 @@ export default function GrammarLessonContent({ lesson, lessonData }: Props) {
   const resetExercises = () => {
     setSelectedAnswers({})
     setShowResults(false)
-    setCurrentExercise(0)
   }
 
   return (

@@ -122,10 +122,10 @@ Sarah: Hello, I'm calling about the photography classes. I saw your advertisemen
       <div className="p-4 bg-blue-50 rounded-lg">
         <h3 className="font-semibold text-blue-900 mb-2">Debug Steps:</h3>
         <ol className="text-sm text-blue-800 space-y-1">
-          <li>1. Click "Check TTS Support" and look at console</li>
-          <li>2. Click "Start TTS Test" and watch console logs</li>
+          <li>1. Click &quot;Check TTS Support&quot; and look at console</li>
+          <li>2. Click &quot;Start TTS Test&quot; and watch console logs</li>
           <li>3. Report what you see in the console</li>
-          <li>4. If it works here but not in /listening/1, we know it's a component issue</li>
+          <li>4. If it works here but not in /listening/1, we know it&apos;s a component issue</li>
         </ol>
       </div>
     </div>

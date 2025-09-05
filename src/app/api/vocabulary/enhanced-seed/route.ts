@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
 // Enhanced IELTS vocabulary with comprehensive learning data
@@ -275,7 +275,7 @@ const ENHANCED_VOCABULARY = [
   }
 ]
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     let successCount = 0
     const errors: string[] = []
@@ -283,7 +283,7 @@ export async function POST(request: NextRequest) {
     for (const vocab of ENHANCED_VOCABULARY) {
       try {
         // Insert the enhanced flashcard
-        const { data: flashcard, error: flashcardError } = await supabase
+        const { error: flashcardError } = await supabase
           .from('flashcards')
           .insert({
             english: vocab.english,

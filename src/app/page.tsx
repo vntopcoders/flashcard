@@ -156,7 +156,23 @@ function FlashcardApp() {
         lessonId: `daily-lesson-${dayNumber}`,
         ipa: ipaTranscriptions[wordIndex],
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        // Enhanced learning fields
+        examples: null,
+        collocations: null,
+        synonyms: null,
+        antonyms: null,
+        etymology: null,
+        memory_tips: null,
+        // Spaced repetition fields
+        ease_factor: 2.5,
+        interval: 1,
+        repetitions: 0,
+        times_studied: 0,
+        times_correct: 0,
+        times_wrong: 0,
+        mastery_level: 'new' as 'new' | 'learning' | 'familiar' | 'mastered',
+        next_review: null
       })
     }
     

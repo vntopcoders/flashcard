@@ -19,7 +19,6 @@ export default function EnhancedFlashcardComponent({
 }: EnhancedFlashcardComponentProps) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [activeTab, setActiveTab] = useState<'meaning' | 'examples' | 'collocations' | 'tips'>('meaning')
-  const [showExamples, setShowExamples] = useState(false)
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0)
 
   const handleFlip = () => {
@@ -145,7 +144,7 @@ export default function EnhancedFlashcardComponent({
               {examples.length > 0 && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100 max-w-md">
                   <p className="text-sm text-blue-800 italic">
-                    "{examples[0].sentence}"
+                    &ldquo;{examples[0].sentence}&rdquo;
                   </p>
                   {examples.length > 1 && (
                     <p className="text-xs text-blue-600 mt-1">
@@ -347,7 +346,7 @@ export default function EnhancedFlashcardComponent({
                             <AudioButton word={collocation.phrase} size="sm" />
                           </div>
                           <p className="text-gray-700 text-sm mb-1">{collocation.meaning}</p>
-                          <p className="text-purple-600 text-sm italic">"{collocation.example}"</p>
+                          <p className="text-purple-600 text-sm italic">&ldquo;{collocation.example}&rdquo;</p>
                         </div>
                       ))}
                     </>

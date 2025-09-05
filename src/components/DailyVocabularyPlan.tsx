@@ -68,7 +68,7 @@ export default function DailyVocabularyPlan({ onStudyComplete }: DailyPlanProps)
     }
   }
 
-  const startStudySession = async (sessionType: 'new' | 'review' | 'mixed') => {
+  const startStudySession = async () => {
     try {
       // Mock flashcards for development - replace with actual API call
       const mockCards: Flashcard[] = [
@@ -286,7 +286,7 @@ export default function DailyVocabularyPlan({ onStudyComplete }: DailyPlanProps)
         <div className="space-y-2 mb-6">
           {accuracy >= 90 && (
             <div className="bg-gold-50 border border-yellow-200 rounded-lg p-3">
-              <span className="text-yellow-700">🏆 Excellent! You're mastering these words!</span>
+              <span className="text-yellow-700">🏆 Excellent! You&apos;re mastering these words!</span>
             </div>
           )}
           {accuracy >= 70 && accuracy < 90 && (
@@ -318,7 +318,7 @@ export default function DailyVocabularyPlan({ onStudyComplete }: DailyPlanProps)
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
             <Calendar className="w-6 h-6 text-blue-600" />
-            Today's Vocabulary Plan
+            Today&apos;s Vocabulary Plan
           </h2>
           <div className="flex items-center gap-2 text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
             <Star className="w-4 h-4" />
@@ -359,7 +359,7 @@ export default function DailyVocabularyPlan({ onStudyComplete }: DailyPlanProps)
       {/* Study Session Options */}
       <div className="grid md:grid-cols-3 gap-4">
         <button
-          onClick={() => startStudySession('review')}
+          onClick={() => startStudySession()}
           className="bg-white rounded-lg p-6 border hover:border-red-300 hover:bg-red-50 transition-all group"
         >
           <div className="text-center">
@@ -374,7 +374,7 @@ export default function DailyVocabularyPlan({ onStudyComplete }: DailyPlanProps)
         </button>
 
         <button
-          onClick={() => startStudySession('new')}
+          onClick={() => startStudySession()}
           className="bg-white rounded-lg p-6 border hover:border-blue-300 hover:bg-blue-50 transition-all group"
         >
           <div className="text-center">
@@ -389,7 +389,7 @@ export default function DailyVocabularyPlan({ onStudyComplete }: DailyPlanProps)
         </button>
 
         <button
-          onClick={() => startStudySession('mixed')}
+          onClick={() => startStudySession()}
           className="bg-white rounded-lg p-6 border hover:border-green-300 hover:bg-green-50 transition-all group relative"
         >
           <div className="absolute top-2 right-2">

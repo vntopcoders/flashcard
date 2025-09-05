@@ -493,7 +493,7 @@ export class SpacedRepetitionService {
       return {
         type: 'reviews',
         cardCount: Math.min(30, dueCount),
-        reason: 'You have many cards due for review. Let\'s catch up!'
+        reason: 'You have many cards due for review. Let&apos;s catch up!'
       }
     }
     

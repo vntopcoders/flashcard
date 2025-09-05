@@ -9,6 +9,11 @@ interface AudioSegment {
   accent: 'american' | 'british' | 'australian'
 }
 
+interface AudioSegmentResult extends AudioSegment {
+  audioData: string | null
+  success: boolean
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { testId } = await request.json()
@@ -32,8 +37,8 @@ export async function POST(request: NextRequest) {
     const audioContent = generateAudioContent(test.title, test.difficulty)
     
     // Generate TTS for each segment
-    const audioSegments = await Promise.all(
-      audioContent.segments.map(async (segment: AudioSegment) => {
+    const audioSegments: AudioSegmentResult[] = await Promise.all(
+      audioContent.segments.map(async (segment: AudioSegment): Promise<AudioSegmentResult> => {
         try {
           // Use Web Speech API synthesis (fallback) or external TTS
           const audioData = await generateTTSAudio(segment.text, segment.voice, segment.accent)
@@ -242,7 +247,7 @@ function getVoiceName(voice: 'male' | 'female', accent: string): string {
   return voiceMap[`${accent}-${voice}` as keyof typeof voiceMap] || 'en-US-Neural2-F'
 }
 
-function combineAudioSegments(segments: { audioData?: string; success: boolean }[]): string {
+function combineAudioSegments(segments: AudioSegmentResult[]): string {
   // For now, return the first successful audio segment
   // In production, you'd combine all segments into one audio file
   const successfulSegment = segments.find(s => s.success && s.audioData)

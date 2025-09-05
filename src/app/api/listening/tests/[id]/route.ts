@@ -4,10 +4,11 @@ import { supabase } from '@/lib/supabase'
 // GET /api/listening/tests/[id] - Get specific listening test with questions
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const testId = parseInt(params.id)
+    const { id } = await params
+    const testId = parseInt(id)
     
     if (isNaN(testId)) {
       return NextResponse.json({ error: 'Invalid test ID' }, { status: 400 })
@@ -68,10 +69,11 @@ export async function GET(
 // PUT /api/listening/tests/[id] - Update listening test
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const testId = parseInt(params.id)
+    const { id } = await params
+    const testId = parseInt(id)
     const body = await request.json()
     
     if (isNaN(testId)) {
@@ -129,10 +131,11 @@ export async function PUT(
 // DELETE /api/listening/tests/[id] - Delete listening test
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const testId = parseInt(params.id)
+    const { id } = await params
+    const testId = parseInt(id)
     
     if (isNaN(testId)) {
       return NextResponse.json({ error: 'Invalid test ID' }, { status: 400 })

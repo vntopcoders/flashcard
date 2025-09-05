@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/quangduy/Documents/claude",
+        "/Users/quangduy/Downloads"
+      ]
+    },
+    "exa": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "exa",
+        "--config",
+        "\"{\\\"exaApiKey\\\":\\\"00f8bb07-ee34-4f7a-8a25-9ee6a9593912\\\"}\""
+      ]
+    },
+    "firecrawl-lig0gc-38": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "<https://mcp.composio.dev/partner/composio/firecrawl/mcp?customerId=[your-customer-id]>"
+      ],
+      "env": {
+        "npm_config_yes": "true"
+      }
+    }
+  }
+}

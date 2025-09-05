@@ -103,6 +103,370 @@ const generateDailyLessonContent = (topic: string, day: number): LessonContent =
         }
       ]
     },
+    'Already/Yet/Just': {
+      introduction: `Thành thạo cách sử dụng already, yet, just với thì Present Perfect để diễn tả thời gian và tình trạng hoàn thành.`,
+      types: [
+        {
+          name: 'Already',
+          structure: 'Subject + have/has + already + past participle',
+          use: 'Diễn tả hành động đã hoàn thành sớm hơn dự kiến',
+          example: 'I have already finished my homework. / She has already left.',
+          vietnamese: 'Đã hoàn thành rồi (sớm hơn dự kiến)'
+        },
+        {
+          name: 'Yet',
+          structure: 'Have/Has + subject + past participle + yet? / Subject + have/has + not + past participle + yet',
+          use: 'Dùng trong câu hỏi và phủ định, diễn tả điều gì chưa xảy ra',
+          example: 'Have you finished yet? / I haven\'t eaten yet.',
+          vietnamese: 'Chưa (trong câu hỏi và phủ định)'
+        },
+        {
+          name: 'Just',
+          structure: 'Subject + have/has + just + past participle',
+          use: 'Diễn tả hành động vừa mới hoàn thành (rất gần hiện tại)',
+          example: 'I have just arrived. / The movie has just started.',
+          vietnamese: 'Vừa mới (hoàn thành gần đây)'
+        }
+      ]
+    },
+    'Experience vs Finished Actions': {
+      introduction: `Phân biệt rõ ràng giữa Present Perfect (kinh nghiệm) và Past Simple (hành động đã kết thúc) để sử dụng đúng trong IELTS.`,
+      types: [
+        {
+          name: 'Present Perfect for Experience',
+          structure: 'Subject + have/has + past participle (no specific time)',
+          use: 'Diễn tả kinh nghiệm sống, không chỉ rõ thời gian cụ thể',
+          example: 'I have visited Paris. / She has worked abroad.',
+          vietnamese: 'Kinh nghiệm sống (không có thời gian cụ thể)'
+        },
+        {
+          name: 'Past Simple for Finished Actions',
+          structure: 'Subject + past verb + time expression',
+          use: 'Diễn tả hành động đã hoàn thành với thời gian cụ thể',
+          example: 'I visited Paris last year. / She worked in Japan in 2020.',
+          vietnamese: 'Hành động đã kết thúc (có thời gian cụ thể)'
+        },
+        {
+          name: 'Time Expressions',
+          structure: 'Present Perfect: ever, never, already, yet, recently / Past Simple: yesterday, last..., ago, in 2020',
+          use: 'Từ chỉ thời gian giúp phân biệt hai thì',
+          example: 'Have you ever been there? vs Did you go there yesterday?',
+          vietnamese: 'Từ chỉ thời gian quyết định thì sử dụng'
+        }
+      ]
+    },
+    'Question Formation': {
+      introduction: `Thành thạo cách tạo câu hỏi trong tiếng Anh với các thì khác nhau và từ hỏi cần thiết cho IELTS Speaking và Writing.`,
+      types: [
+        {
+          name: 'Yes/No Questions',
+          structure: 'Do/Does/Did + subject + base verb? / Am/Is/Are + subject + verb-ing?',
+          use: 'Câu hỏi có thể trả lời bằng Yes hoặc No',
+          example: 'Do you speak English? / Are you studying now?',
+          vietnamese: 'Câu hỏi ngắn (Yes/No)'
+        },
+        {
+          name: 'Wh-Questions',
+          structure: 'Wh-word + auxiliary + subject + verb?',
+          use: 'Câu hỏi bắt đầu bằng What, Where, When, Why, How',
+          example: 'What do you do? / Where are you from? / How long have you lived here?',
+          vietnamese: 'Câu hỏi mở (thông tin cụ thể)'
+        },
+        {
+          name: 'Question Tags',
+          structure: 'Positive statement + negative tag? / Negative statement + positive tag?',
+          use: 'Xác nhận thông tin hoặc thể hiện lịch sự',
+          example: 'You are from Vietnam, aren\'t you? / You don\'t smoke, do you?',
+          vietnamese: 'Câu hỏi đuôi (xác nhận)'
+        }
+      ]
+    },
+    'Time Expressions': {
+      introduction: `Sử dụng đúng các cụm từ chỉ thời gian với từng thì để diễn đạt chính xác thời điểm và khoảng thời gian trong IELTS.`,
+      types: [
+        {
+          name: 'Present Time Expressions',
+          structure: 'now, at the moment, today, this week/month/year, currently',
+          use: 'Dùng với Present Simple và Present Continuous',
+          example: 'I am working now. / This year, I study harder.',
+          vietnamese: 'Biểu thức thời gian hiện tại'
+        },
+        {
+          name: 'Past Time Expressions',
+          structure: 'yesterday, last week/month/year, ago, in 1990, when I was young',
+          use: 'Dùng với Past Simple và Past Continuous',
+          example: 'I visited London last year. / Two years ago, I lived in Tokyo.',
+          vietnamese: 'Biểu thức thời gian quá khứ'
+        },
+        {
+          name: 'Duration and Frequency',
+          structure: 'for + period, since + point, always, usually, often, sometimes, never',
+          use: 'Chỉ khoảng thời gian và tần suất',
+          example: 'I have lived here for 5 years. / I usually wake up at 7 AM.',
+          vietnamese: 'Khoảng thời gian và tần suất'
+        }
+      ]
+    },
+    'Will vs Going to': {
+      introduction: `Phân biệt và sử dụng đúng "will" và "going to" để diễn tả tương lai trong các tình huống khác nhau.`,
+      types: [
+        {
+          name: 'Will - Spontaneous Decisions',
+          structure: 'Subject + will + base verb',
+          use: 'Quyết định tức thời, lời hứa, dự đoán không có bằng chứng',
+          example: 'I will help you. / It will rain tomorrow. / I will call you later.',
+          vietnamese: 'Quyết định tức thời, lời hứa'
+        },
+        {
+          name: 'Going to - Planned Actions',
+          structure: 'Subject + am/is/are + going to + base verb',
+          use: 'Kế hoạch đã định, dự đoán có bằng chứng',
+          example: 'I am going to study abroad. / Look at those clouds! It\'s going to rain.',
+          vietnamese: 'Kế hoạch có sẵn, dự đoán có bằng chứng'
+        },
+        {
+          name: 'Future Usage Tips',
+          structure: 'Will: offers, promises, predictions / Going to: plans, intentions',
+          use: 'Chọn đúng thì tương lai theo ngữ cảnh',
+          example: 'Will you marry me? vs I\'m going to marry him next year.',
+          vietnamese: 'Mẹo sử dụng thì tương lai'
+        }
+      ]
+    },
+    'Present Continuous for Future': {
+      introduction: `Sử dụng Present Continuous để diễn tả kế hoạch tương lai đã được sắp xếp cụ thể.`,
+      types: [
+        {
+          name: 'Arranged Future Plans',
+          structure: 'Subject + am/is/are + verb-ing + time expression',
+          use: 'Kế hoạch đã sắp xếp với thời gian cụ thể',
+          example: 'I am meeting John at 3 PM. / We are flying to Paris next week.',
+          vietnamese: 'Kế hoạch đã sắp xếp cụ thể'
+        },
+        {
+          name: 'Fixed Appointments',
+          structure: 'Present Continuous + specific time/date',
+          use: 'Cuộc hẹn, lịch trình đã ấn định',
+          example: 'The doctor is seeing patients tomorrow. / I am having dinner with my family tonight.',
+          vietnamese: 'Cuộc hẹn đã ấn định'
+        },
+        {
+          name: 'vs Other Future Forms',
+          structure: 'Present Continuous (arranged) vs Going to (planned) vs Will (spontaneous)',
+          use: 'So sánh các cách diễn tả tương lai',
+          example: 'I am leaving at 5 PM (arranged) vs I am going to leave soon (planned) vs I will leave (spontaneous)',
+          vietnamese: 'So sánh các thì tương lai'
+        }
+      ]
+    },
+    'Can/Could/May/Might': {
+      introduction: `Thành thạo các động từ khuyết thiếu để diễn tả khả năng, sự cho phép và khả năng xảy ra trong IELTS.`,
+      types: [
+        {
+          name: 'Can/Could - Ability',
+          structure: 'Subject + can/could + base verb',
+          use: 'Can: khả năng hiện tại / Could: khả năng quá khứ hoặc lịch sự hơn',
+          example: 'I can speak English. / I could swim when I was 5. / Could you help me?',
+          vietnamese: 'Khả năng và yêu cầu lịch sự'
+        },
+        {
+          name: 'May/Might - Possibility',
+          structure: 'Subject + may/might + base verb',
+          use: 'May: có thể (50-50) / Might: có thể (ít chắc chắn hơn)',
+          example: 'It may rain today. / He might be late. / May I come in?',
+          vietnamese: 'Khả năng xảy ra và xin phép'
+        },
+        {
+          name: 'Permission Usage',
+          structure: 'Can/May I...? (informal/formal) / Could I...? (polite)',
+          use: 'Xin phép làm gì đó với mức độ lịch sự khác nhau',
+          example: 'Can I go? (casual) / May I leave? (formal) / Could I borrow your pen? (polite)',
+          vietnamese: 'Xin phép với mức độ lịch sự'
+        }
+      ]
+    },
+    'Permission & Possibility': {
+      introduction: `Sử dụng đúng các cấu trúc để xin phép và diễn tả khả năng xảy ra với mức độ chắc chắn khác nhau.`,
+      types: [
+        {
+          name: 'Asking Permission',
+          structure: 'Can I...? / May I...? / Could I...? / Would it be possible to...?',
+          use: 'Xin phép từ thân mật đến trang trọng',
+          example: 'Can I use your phone? / May I interrupt? / Could I possibly...?',
+          vietnamese: 'Xin phép theo mức độ trang trọng'
+        },
+        {
+          name: 'Giving Permission',
+          structure: 'You can... / You may... / Feel free to... / Go ahead',
+          use: 'Cho phép ai đó làm gì',
+          example: 'You can leave early. / You may start now. / Feel free to ask questions.',
+          vietnamese: 'Cho phép và đồng ý'
+        },
+        {
+          name: 'Degrees of Possibility',
+          structure: 'Must (90%), will probably (80%), may/might (50%), could (30%), can\'t (0%)',
+          use: 'Thể hiện mức độ chắc chắn khác nhau',
+          example: 'He must be tired. / It might rain. / That can\'t be true.',
+          vietnamese: 'Mức độ chắc chắn'
+        }
+      ]
+    },
+    'First Conditional': {
+      introduction: `Thành thạo câu điều kiện loại 1 để diễn tả tình huống có thể xảy ra trong tương lai.`,
+      types: [
+        {
+          name: 'Basic First Conditional',
+          structure: 'If + present simple, will + base verb',
+          use: 'Tình huống có thể xảy ra trong tương lai',
+          example: 'If it rains, I will stay home. / If you study hard, you will pass the exam.',
+          vietnamese: 'Điều kiện có thể xảy ra'
+        },
+        {
+          name: 'Variations with Modals',
+          structure: 'If + present, can/may/might/should + base verb',
+          use: 'Sử dụng modal verbs thay vì will',
+          example: 'If you finish early, you can go home. / If it\'s sunny, we might go to the beach.',
+          vietnamese: 'Biến thể với động từ khuyết thiếu'
+        },
+        {
+          name: 'Unless and Other Conditionals',
+          structure: 'Unless + positive = If + negative / When, As soon as, etc.',
+          use: 'Các từ nối khác trong câu điều kiện',
+          example: 'Unless you hurry, you will be late. / When I finish work, I will call you.',
+          vietnamese: 'Các từ nối điều kiện khác'
+        }
+      ]
+    },
+    'If vs When': {
+      introduction: `Phân biệt và sử dụng đúng "If" và "When" trong các tình huống và ngữ cảnh khác nhau.`,
+      types: [
+        {
+          name: 'If - Uncertain Condition',
+          structure: 'If + condition (may or may not happen)',
+          use: 'Tình huống không chắc chắn xảy ra',
+          example: 'If I win the lottery, I will buy a house. / If it rains, we will cancel the picnic.',
+          vietnamese: 'Điều kiện không chắc chắn'
+        },
+        {
+          name: 'When - Certain Future',
+          structure: 'When + certain future event',
+          use: 'Sự kiện chắc chắn sẽ xảy ra',
+          example: 'When I graduate, I will find a job. / When winter comes, it will be cold.',
+          vietnamese: 'Sự kiện chắc chắn xảy ra'
+        },
+        {
+          name: 'Context Guidelines',
+          structure: 'If (possibility 50-50) vs When (certainty 90%+)',
+          use: 'Chọn If hay When dựa vào mức độ chắc chắn',
+          example: 'If I have time vs When I have time / If I see him vs When I see him',
+          vietnamese: 'Hướng dẫn chọn If hay When'
+        }
+      ]
+    },
+    'A/An/The Usage': {
+      introduction: `Thành thạo cách sử dụng mạo từ a, an, the trong các tình huống khác nhau để đạt điểm cao IELTS.`,
+      types: [
+        {
+          name: 'Indefinite Articles (A/An)',
+          structure: 'A + consonant sound / An + vowel sound',
+          use: 'Giới thiệu danh từ lần đầu, danh từ chưa xác định',
+          example: 'A book, a university / An apple, an hour, an honest man',
+          vietnamese: 'Mạo từ không xác định'
+        },
+        {
+          name: 'Definite Article (The)',
+          structure: 'The + specific/known noun',
+          use: 'Danh từ đã xác định, duy nhất, được nhắc lần 2',
+          example: 'The sun, the book I bought, the tallest building',
+          vietnamese: 'Mạo từ xác định'
+        },
+        {
+          name: 'Zero Article',
+          structure: 'No article with plural/uncountable nouns (general)',
+          use: 'Danh từ số nhiều, không đếm được (nghĩa chung)',
+          example: 'Books are useful. / Water is essential. / I like music.',
+          vietnamese: 'Không dùng mạo từ'
+        }
+      ]
+    },
+    'Quantifiers': {
+      introduction: `Sử dụng đúng các từ chỉ số lượng với danh từ đếm được và không đếm được trong IELTS Writing và Speaking.`,
+      types: [
+        {
+          name: 'Countable Quantifiers',
+          structure: 'many, few, a few, several, both, either, neither + countable nouns',
+          use: 'Dùng với danh từ đếm được số nhiều',
+          example: 'Many students, a few books, several options, both choices',
+          vietnamese: 'Từ chỉ số lượng cho danh từ đếm được'
+        },
+        {
+          name: 'Uncountable Quantifiers',
+          structure: 'much, little, a little + uncountable nouns',
+          use: 'Dùng với danh từ không đếm được',
+          example: 'Much time, little money, a little water, less sugar',
+          vietnamese: 'Từ chỉ số lượng cho danh từ không đếm được'
+        },
+        {
+          name: 'Universal Quantifiers',
+          structure: 'some, any, all, most, enough + both types',
+          use: 'Dùng được với cả danh từ đếm được và không đếm được',
+          example: 'Some people/water, any questions/help, all students/information',
+          vietnamese: 'Từ chỉ số lượng đa năng'
+        }
+      ]
+    },
+    'Reported Speech': {
+      introduction: `Chuyển đổi lời nói trực tiếp thành gián tiếp với các thay đổi về thì, đại từ và trạng từ.`,
+      types: [
+        {
+          name: 'Reporting Statements',
+          structure: 'He said (that) + reported clause',
+          use: 'Tường thuật câu khẳng định với thay đổi thì',
+          example: '"I am tired" → He said he was tired. / "I will come" → She said she would come.',
+          vietnamese: 'Tường thuật câu khẳng định'
+        },
+        {
+          name: 'Reporting Questions',
+          structure: 'He asked + if/whether (Yes/No) or wh-word + statement order',
+          use: 'Tường thuật câu hỏi',
+          example: '"Are you ready?" → He asked if I was ready. / "Where do you live?" → She asked where I lived.',
+          vietnamese: 'Tường thuật câu hỏi'
+        },
+        {
+          name: 'Time and Place Changes',
+          structure: 'today→that day, here→there, this→that, now→then',
+          use: 'Thay đổi trạng từ chỉ thời gian và nơi chốn',
+          example: '"I will do it tomorrow" → He said he would do it the next day.',
+          vietnamese: 'Thay đổi thời gian và địa điểm'
+        }
+      ]
+    },
+    'Relative Clauses': {
+      introduction: `Sử dụng mệnh đề quan hệ để nối câu và cung cấp thông tin bổ sung một cách tự nhiên.`,
+      types: [
+        {
+          name: 'Defining Relative Clauses',
+          structure: 'who/that (people), which/that (things), where (places), when (time)',
+          use: 'Thông tin cần thiết để xác định danh từ',
+          example: 'The man who lives next door is a doctor. / The book that I bought is interesting.',
+          vietnamese: 'Mệnh đề quan hệ xác định'
+        },
+        {
+          name: 'Non-defining Relative Clauses',
+          structure: 'who, which (never "that"), where, when + commas',
+          use: 'Thông tin bổ sung, không cần thiết',
+          example: 'My brother, who is a teacher, lives in London. / This book, which is very old, costs $100.',
+          vietnamese: 'Mệnh đề quan hệ không xác định'
+        },
+        {
+          name: 'Relative Pronouns as Objects',
+          structure: 'whom (formal), which, that (can be omitted)',
+          use: 'Đại từ quan hệ làm tân ngữ',
+          example: 'The person (who/that) I met was nice. / The book (which/that) you gave me is great.',
+          vietnamese: 'Đại từ quan hệ làm tân ngữ'
+        }
+      ]
+    },
     'Future Forms': {
       introduction: `Nắm vững các dạng thì tương lai để diễn tả dự đoán, kế hoạch và quyết định tự phát.`,
       types: [
@@ -176,6 +540,58 @@ const generateDailyLessonContent = (topic: string, day: number): LessonContent =
           use: 'Số lượng không xác định',
           example: 'I have some money. / Do you have any questions?',
           vietnamese: 'Lượng từ không xác định'
+        }
+      ]
+    },
+    'Irregular Verbs': {
+      introduction: `Các động từ bất quy tắc có dạng quá khứ và quá khứ phân từ đặc biệt, không theo quy tắc thêm -ed. Đây là những động từ quan trọng nhất trong IELTS.`,
+      types: [
+        {
+          name: 'Common Irregular Verbs',
+          structure: 'V1 (present) → V2 (past) → V3 (past participle)',
+          use: 'Động từ thường gặp với dạng bất quy tắc',
+          example: 'go → went → gone, see → saw → seen, take → took → taken',
+          vietnamese: 'Các động từ bất quy tắc phổ biến'
+        },
+        {
+          name: 'Same Form Verbs',
+          structure: 'V1 = V2 = V3',
+          use: 'Động từ có cả 3 dạng giống nhau',
+          example: 'cut → cut → cut, put → put → put, hit → hit → hit',
+          vietnamese: 'Động từ ba dạng giống nhau'
+        },
+        {
+          name: 'Two Same Forms',
+          structure: 'V1 ≠ V2 = V3 hoặc V1 = V3 ≠ V2',
+          use: 'Động từ có hai dạng giống nhau',
+          example: 'buy → bought → bought, come → came → come',
+          vietnamese: 'Động từ hai dạng giống nhau'
+        }
+      ]
+    },
+    'Negative Sentences': {
+      introduction: `Tạo câu phủ định chính xác với các thì khác nhau và động từ khuyết thiếu.`,
+      types: [
+        {
+          name: 'Present Simple Negative',
+          structure: 'Subject + do/does + not + base verb',
+          use: 'Phủ định với thì hiện tại đơn',
+          example: 'I do not like coffee. / She does not work here.',
+          vietnamese: 'Câu phủ định hiện tại đơn'
+        },
+        {
+          name: 'Past Simple Negative',
+          structure: 'Subject + did + not + base verb',
+          use: 'Phủ định với thì quá khứ đơn',
+          example: 'We did not go to school yesterday.',
+          vietnamese: 'Câu phủ định quá khứ đơn'
+        },
+        {
+          name: 'Modal Negative',
+          structure: 'Subject + modal + not + base verb',
+          use: 'Phủ định với động từ khuyết thiếu',
+          example: 'You must not smoke here. / I cannot swim.',
+          vietnamese: 'Câu phủ định với modal verbs'
         }
       ]
     }
@@ -392,6 +808,536 @@ const generateDailyExercises = (topic: string, day: number): Exercise[] => {
         options: ['Zero Conditional', 'First Conditional', 'Second Conditional', 'Third Conditional'],
         correct: 2,
         explanation: 'Second Conditional diễn tả tình huống không có thật hoặc khó xảy ra ở hiện tại.'
+      }
+    ],
+    'Already/Yet/Just': [
+      {
+        question: 'I have _______ finished my lunch. (sớm hơn dự kiến)',
+        options: ['already', 'yet', 'just', 'still'],
+        correct: 0,
+        explanation: '"Already" dùng để diễn tả hành động đã hoàn thành sớm hơn dự kiến.'
+      },
+      {
+        question: 'Have you done your homework _______?',
+        options: ['already', 'yet', 'just', 'still'],
+        correct: 1,
+        explanation: '"Yet" dùng trong câu hỏi để hỏi về việc gì đó đã hoàn thành chưa.'
+      },
+      {
+        question: 'She has _______ arrived at the airport.',
+        options: ['already', 'yet', 'just', 'still'],
+        correct: 2,
+        explanation: '"Just" diễn tả hành động vừa mới hoàn thành, rất gần thời điểm hiện tại.'
+      },
+      {
+        question: 'I haven\'t eaten lunch _______.',
+        options: ['already', 'yet', 'just', 'still'],
+        correct: 1,
+        explanation: '"Yet" dùng trong câu phủ định để diễn tả việc gì đó chưa xảy ra.'
+      },
+      {
+        question: 'The train has _______ left the station.',
+        options: ['already', 'yet', 'just', 'still'],
+        correct: 2,
+        explanation: '"Just" diễn tả hành động vừa mới xảy ra trong khoảng thời gian rất ngắn trước đó.'
+      }
+    ],
+    'Experience vs Finished Actions': [
+      {
+        question: '_______ you ever _______ sushi?',
+        options: ['Did / eat', 'Have / eaten', 'Do / eat', 'Are / eating'],
+        correct: 1,
+        explanation: 'Present Perfect với "ever" diễn tả kinh nghiệm sống (không có thời gian cụ thể).'
+      },
+      {
+        question: 'I _______ to Japan last summer.',
+        options: ['have been', 'went', 'have gone', 'go'],
+        correct: 1,
+        explanation: 'Past Simple với "last summer" (thời gian cụ thể) diễn tả hành động đã kết thúc.'
+      },
+      {
+        question: 'She _______ three books this month.',
+        options: ['read', 'reads', 'has read', 'is reading'],
+        correct: 2,
+        explanation: 'Present Perfect với "this month" (thời gian chưa kết thúc) diễn tả kinh nghiệm.'
+      },
+      {
+        question: 'We _______ our project yesterday.',
+        options: ['have finished', 'finished', 'finish', 'are finishing'],
+        correct: 1,
+        explanation: 'Past Simple với "yesterday" (thời gian cụ thể) diễn tả hành động đã hoàn thành.'
+      },
+      {
+        question: 'Choose the correct sentence:',
+        options: ['I lived here for 5 years', 'I have lived here for 5 years', 'I am living here for 5 years', 'I live here for 5 years'],
+        correct: 1,
+        explanation: 'Present Perfect với "for + period" diễn tả thời gian kéo dài từ quá khứ đến hiện tại.'
+      },
+      {
+        question: '_______ you _______ your homework yesterday?',
+        options: ['Have / done', 'Did / do', 'Do / do', 'Are / doing'],
+        correct: 1,
+        explanation: 'Past Simple với "yesterday" (thời gian cụ thể) dùng để hỏi về hành động đã kết thúc.'
+      },
+      {
+        question: 'I _______ never _______ such a beautiful sunset.',
+        options: ['did / see', 'have / seen', 'do / see', 'am / seeing'],
+        correct: 1,
+        explanation: 'Present Perfect với "never" diễn tả kinh nghiệm sống (chưa từng).'
+      },
+      {
+        question: 'They _______ married in 2019.',
+        options: ['have got', 'got', 'get', 'are getting'],
+        correct: 1,
+        explanation: 'Past Simple với "in 2019" (thời gian cụ thể) diễn tả hành động đã hoàn thành.'
+      }
+    ],
+    'Question Formation': [
+      {
+        question: '_______ you speak English?',
+        options: ['Are', 'Do', 'Does', 'Can'],
+        correct: 1,
+        explanation: 'Present Simple questions với "you" dùng "Do" + base verb.'
+      },
+      {
+        question: '_______ is your name?',
+        options: ['How', 'What', 'Where', 'When'],
+        correct: 1,
+        explanation: '"What" dùng để hỏi tên hoặc thông tin cụ thể.'
+      },
+      {
+        question: '_______ does she live?',
+        options: ['What', 'Where', 'When', 'Why'],
+        correct: 1,
+        explanation: '"Where" dùng để hỏi địa điểm.'
+      },
+      {
+        question: 'You are from Vietnam, _______?',
+        options: ["aren't you", "don't you", "isn't you", "weren't you"],
+        correct: 0,
+        explanation: 'Question tag: câu khẳng định + tag phủ định.'
+      },
+      {
+        question: '_______ long have you lived here?',
+        options: ['What', 'Where', 'How', 'When'],
+        correct: 2,
+        explanation: '"How long" dùng để hỏi về khoảng thời gian.'
+      }
+    ],
+    'Time Expressions': [
+      {
+        question: 'I am working _______ the moment.',
+        options: ['in', 'at', 'on', 'for'],
+        correct: 1,
+        explanation: '"At the moment" là cụm từ cố định chỉ thời gian hiện tại.'
+      },
+      {
+        question: 'I visited London _______ year.',
+        options: ['this', 'last', 'next', 'every'],
+        correct: 1,
+        explanation: '"Last year" dùng với Past Simple.'
+      },
+      {
+        question: 'I have lived here _______ 5 years.',
+        options: ['since', 'for', 'during', 'in'],
+        correct: 1,
+        explanation: '"For" + khoảng thời gian dùng với Present Perfect.'
+      },
+      {
+        question: 'She has worked here _______ 2020.',
+        options: ['for', 'since', 'in', 'at'],
+        correct: 1,
+        explanation: '"Since" + thời điểm cụ thể dùng với Present Perfect.'
+      },
+      {
+        question: 'I _______ wake up at 7 AM.',
+        options: ['never', 'always', 'usually', 'sometimes'],
+        correct: 2,
+        explanation: '"Usually" diễn tả thói quen thường xuyên nhưng không phải luôn luôn.'
+      }
+    ],
+    'Will vs Going to': [
+      {
+        question: 'I _______ help you with that. (spontaneous decision)',
+        options: ['am going to', 'will', 'am', 'would'],
+        correct: 1,
+        explanation: '"Will" dùng cho quyết định tự phát tại thời điểm nói.'
+      },
+      {
+        question: 'Look at those clouds! It _______ rain.',
+        options: ['will', 'is going to', 'is', 'would'],
+        correct: 1,
+        explanation: '"Going to" dùng cho dự đoán có bằng chứng rõ ràng.'
+      },
+      {
+        question: 'We _______ visit Paris next summer. (plan)',
+        options: ['will', 'are going to', 'are', 'would'],
+        correct: 1,
+        explanation: '"Going to" dùng cho kế hoạch đã định trước.'
+      },
+      {
+        question: 'I think it _______ be sunny tomorrow.',
+        options: ['is going to', 'will', 'is', 'would'],
+        correct: 1,
+        explanation: '"Will" dùng cho dự đoán không có bằng chứng cụ thể.'
+      },
+      {
+        question: 'The phone is ringing. I _______ answer it.',
+        options: ['am going to', 'will', 'am', 'would'],
+        correct: 1,
+        explanation: '"Will" dùng cho quyết định tức thời khi có tình huống xảy ra.'
+      }
+    ],
+    'Present Continuous for Future': [
+      {
+        question: 'I _______ John at 3 PM tomorrow. (arranged)',
+        options: ['meet', 'am meeting', 'will meet', 'am going to meet'],
+        correct: 1,
+        explanation: 'Present Continuous dùng cho kế hoạch đã sắp xếp với thời gian cụ thể.'
+      },
+      {
+        question: 'We _______ to London next week. (flight booked)',
+        options: ['fly', 'are flying', 'will fly', 'are going to fly'],
+        correct: 1,
+        explanation: 'Present Continuous dùng cho cuộc hẹn/vé đã đặt.'
+      },
+      {
+        question: 'The doctor _______ patients at 9 AM.',
+        options: ['sees', 'is seeing', 'will see', 'is going to see'],
+        correct: 1,
+        explanation: 'Present Continuous dùng cho lịch trình công việc đã ấn định.'
+      },
+      {
+        question: 'What _______ you _______ this evening?',
+        options: ['do / do', 'are / doing', 'will / do', 'are / going to do'],
+        correct: 1,
+        explanation: 'Present Continuous hỏi về kế hoạch/sắp xếp cho tối nay.'
+      },
+      {
+        question: 'Choose the correct future form for arrangements:',
+        options: ['I will leave at 5 PM', 'I am leaving at 5 PM', 'I am going to leave at 5 PM', 'I leave at 5 PM'],
+        correct: 1,
+        explanation: 'Present Continuous thể hiện kế hoạch đã sắp xếp với thời gian cụ thể.'
+      }
+    ],
+    'Can/Could/May/Might': [
+      {
+        question: 'I _______ swim when I was a child.',
+        options: ['can', 'could', 'may', 'might'],
+        correct: 1,
+        explanation: '"Could" là dạng quá khứ của "can" - khả năng trong quá khứ.'
+      },
+      {
+        question: '_______ you help me, please?',
+        options: ['Can', 'Could', 'May', 'Might'],
+        correct: 1,
+        explanation: '"Could" lịch sự hơn "can" khi đưa ra yêu cầu.'
+      },
+      {
+        question: 'It _______ rain later. I\'m not sure.',
+        options: ['can', 'could', 'may', 'must'],
+        correct: 2,
+        explanation: '"May" diễn tả khả năng xảy ra 50-50.'
+      },
+      {
+        question: 'He _______ be at home. His car is there.',
+        options: ['can', 'could', 'may', 'might'],
+        correct: 2,
+        explanation: '"May" diễn tả khả năng dựa trên bằng chứng.'
+      },
+      {
+        question: '_______ I come in?',
+        options: ['Can', 'Could', 'May', 'All are correct'],
+        correct: 3,
+        explanation: 'Cả ba đều đúng nhưng mức độ lịch sự khác nhau: Can < Could < May.'
+      }
+    ],
+    'Permission & Possibility': [
+      {
+        question: '_______ I use your phone?',
+        options: ['Can', 'May', 'Could', 'All are correct'],
+        correct: 3,
+        explanation: 'Cả ba đều dùng để xin phép với mức độ trang trọng khác nhau.'
+      },
+      {
+        question: 'You _______ leave early today.',
+        options: ['can', 'may', 'could', 'Both A and B'],
+        correct: 3,
+        explanation: 'Cả "can" và "may" đều dùng để cho phép.'
+      },
+      {
+        question: 'That _______ be true. (90% certain)',
+        options: ['can', 'may', 'must', 'might'],
+        correct: 2,
+        explanation: '"Must" diễn tả sự chắc chắn cao (90%).'
+      },
+      {
+        question: 'She _______ be late. Traffic is heavy.',
+        options: ['can', 'may', 'must', 'can\'t'],
+        correct: 1,
+        explanation: '"May" diễn tả khả năng xảy ra với căn cứ.'
+      },
+      {
+        question: 'He _______ speak English. He\'s from Australia.',
+        options: ['can', 'may', 'must', 'might'],
+        correct: 2,
+        explanation: '"Must" diễn tả suy luận logic với độ chắc chắn cao.'
+      }
+    ],
+    'First Conditional': [
+      {
+        question: 'If it _______ tomorrow, we _______ inside.',
+        options: ['rains / will stay', 'will rain / stay', 'rain / will stay', 'rains / stay'],
+        correct: 0,
+        explanation: 'First Conditional: If + Present Simple, will + base verb.'
+      },
+      {
+        question: 'If you _______ hard, you _______ the exam.',
+        options: ['study / will pass', 'will study / pass', 'study / pass', 'studied / will pass'],
+        correct: 0,
+        explanation: 'Điều kiện có thể xảy ra trong tương lai dùng First Conditional.'
+      },
+      {
+        question: 'Unless you _______, you _______ late.',
+        options: ['hurry / will be', 'will hurry / are', 'hurry / are', 'will hurry / will be'],
+        correct: 0,
+        explanation: '"Unless" = "if not", theo sau là Present Simple trong First Conditional.'
+      },
+      {
+        question: 'If she _______ time, she _______ help us.',
+        options: ['has / can', 'will have / can', 'has / will', 'have / can'],
+        correct: 0,
+        explanation: 'Modal verbs (can, may, might) có thể thay thế will trong First Conditional.'
+      },
+      {
+        question: 'When I _______ home, I _______ you.',
+        options: ['get / will call', 'will get / call', 'get / call', 'will get / will call'],
+        correct: 0,
+        explanation: '"When" trong First Conditional cũng theo quy tắc: Present Simple, will + base verb.'
+      }
+    ],
+    'If vs When': [
+      {
+        question: '_______ I see him, I will tell him. (uncertain)',
+        options: ['If', 'When', 'Both', 'Neither'],
+        correct: 0,
+        explanation: '"If" dùng cho tình huống không chắc chắn xảy ra.'
+      },
+      {
+        question: '_______ winter comes, it will be cold. (certain)',
+        options: ['If', 'When', 'Both', 'Neither'],
+        correct: 1,
+        explanation: '"When" dùng cho sự kiện chắc chắn sẽ xảy ra.'
+      },
+      {
+        question: '_______ you finish work, call me.',
+        options: ['If', 'When', 'Both', 'Neither'],
+        correct: 2,
+        explanation: 'Cả hai đều đúng nhưng ý nghĩa khác nhau: If (không chắc) vs When (chắc chắn).'
+      },
+      {
+        question: '_______ I win the lottery, I will buy a house.',
+        options: ['If', 'When', 'Both', 'Neither'],
+        correct: 0,
+        explanation: '"If" vì thắng xổ số là điều không chắc chắn.'
+      },
+      {
+        question: '_______ I graduate, I will look for a job.',
+        options: ['If', 'When', 'Both', 'Neither'],
+        correct: 1,
+        explanation: '"When" vì tốt nghiệp là điều chắc chắn sẽ xảy ra.'
+      }
+    ],
+    'A/An/The Usage': [
+      {
+        question: 'I saw _______ cat. _______ cat was black.',
+        options: ['a / The', 'the / A', 'a / A', 'the / The'],
+        correct: 0,
+        explanation: 'Lần đầu nhắc đến dùng "a", lần sau dùng "the" vì đã xác định.'
+      },
+      {
+        question: 'She is _______ honest person.',
+        options: ['a', 'an', 'the', 'no article'],
+        correct: 1,
+        explanation: '"Honest" bắt đầu bằng âm nguyên âm /ɒ/ nên dùng "an".'
+      },
+      {
+        question: '_______ sun rises in _______ east.',
+        options: ['A / a', 'The / the', 'A / the', 'The / a'],
+        correct: 1,
+        explanation: 'Các thiên thể và hướng địa lý luôn dùng "the".'
+      },
+      {
+        question: 'I love _______ music.',
+        options: ['a', 'an', 'the', 'no article'],
+        correct: 3,
+        explanation: 'Danh từ không đếm được mang nghĩa chung không dùng mạo từ.'
+      },
+      {
+        question: 'He goes to _______ university in London.',
+        options: ['a', 'an', 'the', 'no article'],
+        correct: 0,
+        explanation: '"University" bắt đầu bằng phụ âm /j/ nên dùng "a".'
+      }
+    ],
+    'Quantifiers': [
+      {
+        question: 'There are _______ students in the class.',
+        options: ['much', 'many', 'a little', 'little'],
+        correct: 1,
+        explanation: '"Many" dùng với danh từ đếm được số nhiều.'
+      },
+      {
+        question: 'I don\'t have _______ time.',
+        options: ['many', 'much', 'few', 'a few'],
+        correct: 1,
+        explanation: '"Much" dùng với danh từ không đếm được trong câu phủ định.'
+      },
+      {
+        question: 'There are _______ books on the shelf.',
+        options: ['little', 'a little', 'few', 'a few'],
+        correct: 3,
+        explanation: '"A few" (một vài) dùng với danh từ đếm được, mang nghĩa tích cực.'
+      },
+      {
+        question: 'We have _______ sugar left.',
+        options: ['few', 'a few', 'little', 'a little'],
+        correct: 3,
+        explanation: '"A little" (một chút) dùng với danh từ không đếm được.'
+      },
+      {
+        question: '_______ people came to the party.',
+        options: ['Much', 'Many', 'Little', 'A little'],
+        correct: 1,
+        explanation: '"Many" dùng với danh từ đếm được trong câu khẳng định.'
+      }
+    ],
+    'Reported Speech': [
+      {
+        question: '"I am happy." → She said _______.',
+        options: ['she is happy', 'she was happy', 'I am happy', 'I was happy'],
+        correct: 1,
+        explanation: 'Present tense chuyển thành past tense trong reported speech.'
+      },
+      {
+        question: '"Where do you live?" → He asked _______.',
+        options: ['where do I live', 'where I lived', 'where I live', 'where did I live'],
+        correct: 1,
+        explanation: 'Reported questions dùng word order của statement và đổi thì.'
+      },
+      {
+        question: '"Don\'t go there!" → She told me _______.',
+        options: ['not go there', 'don\'t go there', 'not to go there', 'to not go there'],
+        correct: 2,
+        explanation: 'Negative commands: told + object + not to + infinitive.'
+      },
+      {
+        question: '"I will call you tomorrow." → He said _______.',
+        options: ['he will call me tomorrow', 'he would call me the next day', 'I will call you tomorrow', 'he calls me tomorrow'],
+        correct: 1,
+        explanation: '"Will" → "would", "tomorrow" → "the next day".'
+      },
+      {
+        question: '"Can you help me?" → She asked _______.',
+        options: ['can I help her', 'if I can help her', 'if I could help her', 'could I help her'],
+        correct: 2,
+        explanation: '"Can" → "could" trong reported questions với if/whether.'
+      }
+    ],
+    'Relative Clauses': [
+      {
+        question: 'The man _______ is talking is my father.',
+        options: ['who', 'which', 'whose', 'where'],
+        correct: 0,
+        explanation: '"Who" dùng cho người làm chủ ngữ trong mệnh đề quan hệ.'
+      },
+      {
+        question: 'This is the book _______ I bought yesterday.',
+        options: ['who', 'which', 'whose', 'where'],
+        correct: 1,
+        explanation: '"Which" dùng cho vật. "That" cũng đúng trong trường hợp này.'
+      },
+      {
+        question: 'The car _______ door is broken is mine.',
+        options: ['who', 'which', 'whose', 'that'],
+        correct: 2,
+        explanation: '"Whose" chỉ sở hữu - cánh cửa của chiếc xe.'
+      },
+      {
+        question: 'This is the place _______ we first met.',
+        options: ['which', 'that', 'where', 'when'],
+        correct: 2,
+        explanation: '"Where" dùng cho địa điểm trong mệnh đề quan hệ.'
+      },
+      {
+        question: 'My teacher, _______ is very kind, helps me a lot.',
+        options: ['who', 'which', 'that', 'whose'],
+        correct: 0,
+        explanation: 'Non-defining relative clause (có dấu phẩy) dùng "who" cho người.'
+      }
+    ],
+    'Irregular Verbs': [
+      {
+        question: 'What is the past tense of "go"?',
+        options: ['goed', 'went', 'gone', 'going'],
+        correct: 1,
+        explanation: '"Go" là động từ bất quy tắc: go → went → gone.'
+      },
+      {
+        question: 'I have _______ this book before.',
+        options: ['read', 'readed', 'red', 'reading'],
+        correct: 0,
+        explanation: 'Past participle của "read" là "read" (đọc là /red/).'
+      },
+      {
+        question: 'She _______ her keys yesterday.',
+        options: ['losed', 'lost', 'lose', 'losing'],
+        correct: 1,
+        explanation: 'Past tense của "lose" là "lost".'
+      },
+      {
+        question: 'Which verb has the same form in all three tenses?',
+        options: ['take', 'cut', 'speak', 'write'],
+        correct: 1,
+        explanation: '"Cut" có cả ba dạng giống nhau: cut → cut → cut.'
+      },
+      {
+        question: 'They have _______ in this house for 10 years.',
+        options: ['live', 'lived', 'living', 'lives'],
+        correct: 1,
+        explanation: '"Live" là động từ quy tắc: live → lived → lived.'
+      }
+    ],
+    'Negative Sentences': [
+      {
+        question: 'I _______ like coffee.',
+        options: ['am not', 'do not', 'does not', 'did not'],
+        correct: 1,
+        explanation: 'Present Simple negative với "I" dùng "do not".'
+      },
+      {
+        question: 'She _______ work yesterday.',
+        options: ['do not', 'does not', 'did not', 'was not'],
+        correct: 2,
+        explanation: 'Past Simple negative dùng "did not" + base verb.'
+      },
+      {
+        question: 'You _______ smoke in this building.',
+        options: ['must not', 'do not', 'are not', 'will not'],
+        correct: 0,
+        explanation: '"Must not" diễn tả lệnh cấm mạnh mẽ.'
+      },
+      {
+        question: 'They _______ playing football now.',
+        options: ['do not', 'does not', 'are not', 'did not'],
+        correct: 2,
+        explanation: 'Present Continuous negative dùng "am/is/are not" + V-ing.'
+      },
+      {
+        question: 'I _______ swim when I was young.',
+        options: ['could not', 'can not', 'do not', 'am not'],
+        correct: 0,
+        explanation: 'Past ability negative dùng "could not".'
       }
     ],
     'Articles & Determiners': [

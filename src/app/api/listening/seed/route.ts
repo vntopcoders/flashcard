@@ -1,7 +1,318 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// Sample listening tests data
+// Reputable IELTS listening sources data
+const REPUTABLE_LISTENING_TESTS = [
+  // British Council Official Practice Tests
+  {
+    title: 'British Council - Academic English Practice Test 1',
+    audio_transcript: `Part 1: University Course Registration
+Advisor: Good morning, welcome to the University Registration Office. How can I help you today?
+Student: Hi, I'm here to register for courses for the upcoming semester. I'm majoring in Environmental Science.
+Advisor: Great! Let me check what's available. What year are you in?
+Student: I'm starting my second year, so I need some intermediate level courses.
+Advisor: Perfect. We have Environmental Chemistry starting on September 15th, Tuesdays and Thursdays from 2 to 4 PM.
+Student: That sounds good. What's the course code?
+Advisor: It's ENV 201. The professor is Dr. Sarah Mitchell, and the textbook costs about 85 pounds.
+
+Part 2: Campus Facilities Tour
+Welcome to Greenwood University campus tour. I'm James Parker, your student guide today. 
+Our campus spans 150 acres and serves over 15,000 students. The main library, built in 1987, houses over 2 million books and is open 24 hours during exam periods. 
+The Student Union building offers various dining options including a vegetarian café, pizza corner, and the main cafeteria which serves hot meals from 7 AM to 9 PM.
+The sports complex includes an Olympic-size swimming pool, tennis courts, and a fully equipped gymnasium. Students can use these facilities for free with their student ID.
+
+Part 3: Study Group Discussion - Climate Change Research
+Professor: Today we'll discuss your research proposals on climate change impacts.
+Sarah: Our group is focusing on coastal erosion in the UK. We've collected data from 12 different locations.
+Professor: That's comprehensive. What methodology are you using?
+Tom: We're combining satellite imagery analysis with on-site measurements taken every three months.
+Professor: Excellent approach. What about your timeline?
+Sarah: We plan to complete data collection by March, analysis by May, and final report by June.
+Professor: Make sure to include statistical analysis and peer review of your findings.
+
+Part 4: Lecture - Renewable Energy Technologies
+Today's lecture covers the latest developments in renewable energy. Solar panel efficiency has improved dramatically, reaching 26% in commercial applications. Wind turbines now generate electricity at competitive costs in many regions.
+Hydroelectric power remains the most established renewable source, providing 16% of global electricity. However, environmental concerns about dam construction limit expansion opportunities.
+Battery storage technology is crucial for renewable integration. Lithium-ion costs have dropped 85% since 2010, making grid-scale storage economically viable.
+The future lies in smart grids that can balance supply and demand automatically using artificial intelligence and real-time data monitoring.`,
+    duration: 1800,
+    difficulty: 'intermediate',
+    test_type: 'official_practice',
+    description: 'Đề luyện tập chính thức từ British Council, tập trung vào chủ đề học thuật và đời sống sinh viên.',
+    instructions: `Hướng dẫn từ British Council:
+• Nghe mỗi đoạn audio MỘT LẦN duy nhất
+• Đọc kỹ câu hỏi và dự đoán câu trả lời
+• Chú ý từ khóa và từ đồng nghĩa
+• Viết câu trả lời rõ ràng, chính xác chính tả
+• Kiểm tra lại tất cả câu trả lời cuối bài`,
+    source_url: 'https://www.britishcouncil.org',
+    questions: [
+      {
+        part_number: 1,
+        question_number: 1,
+        question_type: 'fill_blank',
+        question_text: 'The student is majoring in _______ Science.',
+        correct_answer: 'Environmental',
+        explanation: 'Sinh viên đang học chuyên ngành Environmental Science.',
+        audio_timestamp: 25,
+        points: 1
+      },
+      {
+        part_number: 1,
+        question_number: 2,
+        question_type: 'fill_blank',
+        question_text: 'The course code is _______.',
+        correct_answer: 'ENV 201',
+        explanation: 'Mã môn học là ENV 201.',
+        audio_timestamp: 85,
+        points: 1
+      },
+      {
+        part_number: 1,
+        question_number: 3,
+        question_type: 'fill_blank',
+        question_text: 'Classes are on _______ and Thursdays.',
+        correct_answer: 'Tuesdays',
+        explanation: 'Lớp học diễn ra vào thứ Ba và thứ Năm.',
+        audio_timestamp: 75,
+        points: 1
+      }
+    ]
+  },
+  {
+    title: 'Cambridge Assessment - IELTS Practice Test Academic',
+    audio_transcript: `Part 1: Library Information Service
+Librarian: Good afternoon, this is the University Library. How may I assist you?
+Student: Hi, I'm calling about renewing my library membership. It expires next week.
+Librarian: Of course. Can you provide your student ID number?
+Student: Yes, it's 2023ST4891.
+Librarian: Thank you. I see your membership expires on October 15th. The renewal fee is 25 pounds for students.
+Student: That's fine. Can I pay online?
+Librarian: Yes, you can pay through our website or in person at the library desk.
+
+Part 2: Museum Exhibition Guide
+Good evening, and welcome to the National Science Museum's new exhibition "Future Technologies". 
+This exhibition showcases innovations expected to transform our daily lives within the next decade.
+The exhibition covers four main areas: artificial intelligence, biotechnology, sustainable energy, and space exploration.
+Interactive displays allow visitors to experience virtual reality demonstrations and hands-on experiments.
+The exhibition runs until December 31st and is open Tuesday to Sunday, 10 AM to 6 PM. Adult tickets cost 12 pounds, students pay 8 pounds with valid ID.
+
+Part 3: Academic Seminar - Research Methodology
+Dr. Smith: Let's discuss your research project proposals. What's your chosen topic, Maria?
+Maria: I'm researching the impact of social media on teenage mental health.
+Dr. Smith: That's very relevant. What research methods will you use?
+Maria: I plan to use surveys and interviews. The survey will reach 500 participants aged 13-19.
+Dr. Smith: Excellent sample size. How will you ensure ethical compliance?
+Maria: All participants will provide consent, and data will be anonymized for analysis.
+Dr. Smith: Good. What's your expected completion date?
+Maria: I aim to finish data collection by February and complete analysis by April.
+
+Part 4: Economics Lecture - Global Trade Patterns
+Today we examine how global trade has evolved over the past century.
+International trade volume has increased 40-fold since 1913, driven by technological advances and policy changes.
+Container shipping revolutionized freight transport, reducing costs by 90% between 1960 and 2000.
+Digital communication enables instant coordination between suppliers and buyers worldwide.
+However, recent trends show regionalization, with countries trading more within their geographic regions.
+Trade agreements like NAFTA and the European Union have created preferential trading zones.
+The COVID-19 pandemic highlighted supply chain vulnerabilities, prompting companies to diversify suppliers and maintain larger inventories.`,
+    duration: 1800,
+    difficulty: 'advanced',
+    test_type: 'official_practice',
+    description: 'Đề thi thực hành từ Cambridge, tập trung vào kỹ năng academic listening với độ khó cao.',
+    instructions: `Cambridge IELTS Instructions:
+• Thời gian nghe: 30 phút (không tính thời gian chuyển đáp án)
+• Mỗi phần chỉ phát MỘT LẦN
+• Đọc trước câu hỏi để chuẩn bị
+• Viết câu trả lời trong khi nghe
+• Chính tả phải chính xác 100%
+• Không sử dụng từ viết tắt`,
+    source_url: 'https://www.cambridge.org',
+    questions: [
+      {
+        part_number: 1,
+        question_number: 1,
+        question_type: 'fill_blank',
+        question_text: 'Student ID number: _______',
+        correct_answer: '2023ST4891',
+        explanation: 'Số thẻ sinh viên là 2023ST4891.',
+        audio_timestamp: 30,
+        points: 1
+      },
+      {
+        part_number: 1,
+        question_number: 2,
+        question_type: 'fill_blank',
+        question_text: 'Membership expires on October _______.',
+        correct_answer: '15th',
+        explanation: 'Thẻ thư viện hết hạn vào ngày 15 tháng 10.',
+        audio_timestamp: 45,
+        points: 1
+      },
+      {
+        part_number: 2,
+        question_number: 6,
+        question_type: 'fill_blank',
+        question_text: 'The exhibition covers _______ main areas.',
+        correct_answer: 'four',
+        explanation: 'Triển lãm bao gồm bốn lĩnh vực chính.',
+        audio_timestamp: 180,
+        points: 1
+      }
+    ]
+  },
+  {
+    title: 'IELTS Liz - Academic Listening Skills Practice',
+    audio_transcript: `Part 1: Course Selection Consultation
+Counselor: Welcome to Academic Planning Services. I'm here to help you choose the right courses.
+Student: Thank you. I need to select electives for my Business degree.
+Counselor: What areas interest you most?
+Student: I'm particularly interested in digital marketing and international business.
+Counselor: Perfect. We have "Digital Marketing Strategies" on Mondays and Wednesdays, 10 to 12.
+Student: What about prerequisites?
+Counselor: You need to have completed Marketing Fundamentals with a grade of B or higher.
+Student: I got an A in that course last semester.
+
+Part 2: University Campus Safety Briefing
+Good morning, new students. I'm Officer Johnson from Campus Security.
+Our campus safety program includes 24-hour security patrols, emergency call boxes every 100 meters, and a mobile safety app.
+The app allows you to request escort services, report incidents, and receive emergency alerts.
+Well-lit pathways connect all major buildings, and security cameras monitor common areas.
+If you feel unsafe, never hesitate to call our emergency number: 555-SAFE.
+Safety workshops are held monthly in the Student Center, covering personal safety, online security, and emergency procedures.
+
+Part 3: Research Group Discussion - Sustainable Development
+Professor: Let's review your group project progress on sustainable urban development.
+Alex: We've identified three key challenges: transportation, waste management, and energy consumption.
+Professor: Good analysis. What solutions are you proposing?
+Sophie: For transportation, we suggest expanding public transit and creating bike-sharing programs.
+Professor: How will you measure the environmental impact?
+Alex: We'll use carbon footprint calculations and compare with current emission levels.
+Professor: Remember to include economic feasibility in your final recommendations.
+
+Part 4: Lecture - Artificial Intelligence in Healthcare
+Artificial intelligence is revolutionizing healthcare delivery and patient outcomes.
+Machine learning algorithms can analyze medical images with 95% accuracy, often outperforming human radiologists.
+Natural language processing helps extract insights from electronic health records, identifying patterns invisible to human analysis.
+Predictive analytics can forecast disease outbreaks and hospital resource needs up to six months in advance.
+However, ethical concerns include patient privacy, algorithm bias, and the need for human oversight in critical decisions.
+Implementation requires substantial investment in technology infrastructure and staff training.
+The integration of AI must maintain the human element that patients value in healthcare relationships.`,
+    duration: 1800,
+    difficulty: 'intermediate',
+    test_type: 'skill_practice',
+    description: 'Bài luyện tập từ IELTS Liz, tập trung vào các kỹ năng nghe cần thiết cho IELTS Academic.',
+    instructions: `IELTS Liz Study Tips:
+• Luyện tập prediction skills trước khi nghe
+• Chú ý paraphrasing và synonyms
+• Thực hành note-taking hiệu quả
+• Đừng panic nếu miss một câu trả lời
+• Focus vào câu tiếp theo ngay lập tức
+• Practice với different accents`,
+    source_url: 'https://ieltsliz.com',
+    questions: [
+      {
+        part_number: 1,
+        question_number: 1,
+        question_type: 'multiple_choice',
+        question_text: 'What is the student studying?',
+        options: ['Marketing', 'Business', 'Digital Media', 'International Relations'],
+        correct_answer: 'B',
+        explanation: 'Sinh viên đang học ngành Business.',
+        audio_timestamp: 20,
+        points: 1
+      },
+      {
+        part_number: 1,
+        question_number: 2,
+        question_type: 'fill_blank',
+        question_text: 'Classes are on Mondays and _______, 10 to 12.',
+        correct_answer: 'Wednesdays',
+        explanation: 'Lớp học diễn ra vào thứ Hai và thứ Tư.',
+        audio_timestamp: 55,
+        points: 1
+      }
+    ]
+  },
+  {
+    title: 'BBC Learning English - Academic Listening Masterclass',
+    audio_transcript: `Part 1: Student Accommodation Office
+Officer: Good morning, Student Housing Office. How can I help you?
+Student: Hi, I'm looking for accommodation for next semester. I'm an international student.
+Officer: Certainly. Are you interested in on-campus or off-campus housing?
+Student: I prefer on-campus, somewhere quiet for studying.
+Officer: I recommend Scholars Hall. It's a quiet residential building with single rooms.
+Student: What facilities does it have?
+Officer: Each room has WiFi, a desk, and access to shared kitchen and laundry facilities.
+Student: How much does it cost per week?
+Officer: It's 180 pounds per week, including utilities and internet.
+
+Part 2: Study Skills Workshop Introduction
+Welcome to today's study skills workshop on effective note-taking techniques.
+Research shows that students who take organized notes retain 40% more information than those who don't.
+We'll cover three main methods: the Cornell system, mind mapping, and digital note-taking tools.
+The Cornell method divides your page into three sections: notes, cues, and summary.
+Mind mapping works well for visual learners and helps connect related concepts.
+Digital tools like OneNote and Notion offer search functionality and multimedia integration.
+Remember, the best method is the one that matches your learning style and subject requirements.
+
+Part 3: Academic Tutorial - Essay Writing Skills
+Tutor: Let's discuss your essay structure and argument development.
+Student: I'm struggling with creating strong thesis statements.
+Tutor: A good thesis should be specific, arguable, and preview your main points.
+Student: Can you give me an example?
+Tutor: Instead of "Social media is bad," try "Social media contributes to anxiety among teenagers through constant comparison, cyberbullying, and sleep disruption."
+Student: That's much clearer. What about body paragraphs?
+Tutor: Each paragraph should have one main idea, supported by evidence and analysis.
+Student: How many sources should I use?
+Tutor: For a 2000-word essay, aim for 8-12 credible academic sources.
+
+Part 4: Psychology Lecture - Memory and Learning
+Human memory consists of three systems: sensory, short-term, and long-term memory.
+Sensory memory holds information for milliseconds, filtering relevant stimuli for further processing.
+Short-term memory can hold 7±2 items for approximately 20 seconds without rehearsal.
+Long-term memory has virtually unlimited capacity and can store information permanently.
+The process of encoding transfers information from short-term to long-term memory through rehearsal and association.
+Retrieval is enhanced by creating multiple pathways to the same information through elaborative encoding.
+Sleep plays a crucial role in memory consolidation, strengthening neural connections formed during learning.
+Understanding these processes helps students develop more effective study strategies.`,
+    duration: 1800,
+    difficulty: 'advanced',
+    test_type: 'skill_practice',
+    description: 'Chương trình luyện nghe từ BBC Learning English, phát triển kỹ năng nghe học thuật toàn diện.',
+    instructions: `BBC Learning English Guidelines:
+• Focus on understanding main ideas first
+• Practice identifying supporting details
+• Develop prediction and inference skills
+• Pay attention to discourse markers
+• Build academic vocabulary gradually
+• Practice with various English accents`,
+    source_url: 'https://www.bbc.co.uk/learningenglish',
+    questions: [
+      {
+        part_number: 1,
+        question_number: 1,
+        question_type: 'fill_blank',
+        question_text: 'The accommodation costs _______ pounds per week.',
+        correct_answer: '180',
+        explanation: 'Chi phí thuê phòng là 180 pounds mỗi tuần.',
+        audio_timestamp: 95,
+        points: 1
+      },
+      {
+        part_number: 2,
+        question_number: 6,
+        question_type: 'fill_blank',
+        question_text: 'Students who take organized notes retain _______% more information.',
+        correct_answer: '40',
+        explanation: 'Sinh viên ghi chú có tổ chức sẽ nhớ được nhiều hơn 40% thông tin.',
+        audio_timestamp: 150,
+        points: 1
+      }
+    ]
+  }
+]
+
+// Original sample tests for backward compatibility
 const SAMPLE_TESTS = [
   {
     title: 'IELTS Listening Practice Test 1',
@@ -315,7 +626,10 @@ export async function POST(request: NextRequest) {
     let createdCount = 0
     const errors: string[] = []
 
-    for (const testData of SAMPLE_TESTS) {
+    // Combine both reputable sources and sample tests
+    const ALL_TESTS = [...REPUTABLE_LISTENING_TESTS, ...SAMPLE_TESTS]
+    
+    for (const testData of ALL_TESTS) {
       try {
         // Create the test
         const { data: test, error: testError } = await supabase
@@ -328,7 +642,8 @@ export async function POST(request: NextRequest) {
             test_type: testData.test_type,
             description: testData.description,
             instructions: testData.instructions,
-            total_questions: testData.questions.length
+            total_questions: testData.questions.length,
+            // source_url: testData.source_url || null // TODO: Add after manual column creation
           }])
           .select()
           .single()

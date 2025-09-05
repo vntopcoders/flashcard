@@ -85,7 +85,8 @@ export default function ListeningPlayer({
       audio.addEventListener('timeupdate', () => {
         const time = audio.currentTime
         setCurrentTime(time)
-        onTimeUpdate?.(time)
+        // Use setTimeout to avoid setState during render
+        setTimeout(() => onTimeUpdate?.(time), 0)
       })
 
       audio.addEventListener('ended', () => {
@@ -115,11 +116,12 @@ export default function ListeningPlayer({
     }
   }
 
-  const generateTTSAudio = async () => {
-    console.log('🎙️ generateTTSAudio called', { audioText: audioText?.substring(0, 100) + '...' })
+  const generateMultiVoiceTTSAudio = async () => {
+    console.log('🎙️ generateMultiVoiceTTSAudio called', { audioText: audioText?.substring(0, 100) + '...' })
     
     if (!audioText) {
       console.log('❌ No audioText provided')
+      setError('Không có nội dung audio để phát')
       return
     }
 
@@ -127,201 +129,381 @@ export default function ListeningPlayer({
       setLoading(true)
       setError(null)
       
-      // Use Web Speech API for immediate playback
-      if ('speechSynthesis' in window) {
-        console.log('✅ speechSynthesis is available')
-        // Stop any existing speech
-        speechSynthesis.cancel()
-        
-        // Wait for voices to load if not already loaded
-        let voices = speechSynthesis.getVoices()
-        if (voices.length === 0) {
-          await new Promise(resolve => {
-            speechSynthesis.onvoiceschanged = () => {
-              voices = speechSynthesis.getVoices()
-              resolve(voices)
-            }
-          })
-        }
+      // Check if speechSynthesis is available
+      if (!('speechSynthesis' in window)) {
+        setError('Trình duyệt không hỗ trợ Text-to-Speech. Vui lòng sử dụng Chrome, Firefox, Safari hoặc Edge.')
+        setLoading(false)
+        return
+      }
 
-        const utterance = new SpeechSynthesisUtterance(audioText)
-        utterance.rate = Math.max(0.1, Math.min(2.0, playbackRate))
-        utterance.volume = Math.max(0, Math.min(1, volume))
-        utterance.lang = 'en-US'
-        utterance.pitch = 1.0
-        
-        // Try to use the best available English voice
-        const preferredVoices = [
-          voices.find(voice => voice.name.includes('Google') && voice.lang.startsWith('en-US')),
-          voices.find(voice => voice.name.includes('Microsoft') && voice.lang.startsWith('en-US')),
-          voices.find(voice => voice.lang.startsWith('en-US')),
-          voices.find(voice => voice.lang.startsWith('en-GB')),
-          voices.find(voice => voice.lang.startsWith('en'))
-        ].find(voice => voice !== undefined)
-        
-        if (preferredVoices) {
-          utterance.voice = preferredVoices
-          console.log('Selected voice:', preferredVoices.name, preferredVoices.lang)
-        }
-
-        // Estimate duration (more accurate calculation)
-        const wordsPerMinute = 150 // Average English speaking rate
-        const words = audioText.split(/\s+/).length
-        const estimatedDuration = (words / wordsPerMinute) * 60 / playbackRate
-
-        utterance.onstart = () => {
-          setIsPlaying(true)
-          setLoading(false)
-          setDuration(estimatedDuration)
-          setCurrentTime(0)
+      console.log('✅ speechSynthesis is available')
+      
+      // Stop any existing speech
+      speechSynthesis.cancel()
+      
+      // Wait a bit for speechSynthesis to be ready
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // Wait for voices to load if not already loaded
+      let voices = speechSynthesis.getVoices()
+      if (voices.length === 0) {
+        console.log('⏳ Waiting for voices to load...')
+        await new Promise(resolve => {
+          const timeout = setTimeout(() => {
+            console.log('⚠️ Voice loading timeout, proceeding with default')
+            resolve(speechSynthesis.getVoices())
+          }, 3000)
           
-          // Start timer for current time
-          intervalRef.current = setInterval(() => {
-            setCurrentTime(prev => {
-              const newTime = prev + 0.1
-              onTimeUpdate?.(newTime)
-              return newTime > estimatedDuration ? estimatedDuration : newTime
-            })
-          }, 100)
-        }
+          speechSynthesis.onvoiceschanged = () => {
+            clearTimeout(timeout)
+            voices = speechSynthesis.getVoices()
+            console.log(`📢 Loaded ${voices.length} voices`)
+            resolve(voices)
+          }
+        })
+      }
 
-        utterance.onend = () => {
+      // Refresh voices
+      voices = speechSynthesis.getVoices()
+      
+      // Select different voices for different speakers
+      const maleVoice = voices.find(voice => 
+        (voice.name.toLowerCase().includes('male') || 
+         voice.name.toLowerCase().includes('david') ||
+         voice.name.toLowerCase().includes('mark') ||
+         voice.name.toLowerCase().includes('daniel')) && 
+        voice.lang.startsWith('en')
+      ) || voices.find(voice => voice.lang.startsWith('en-US'))
+      
+      const femaleVoice = voices.find(voice => 
+        (voice.name.toLowerCase().includes('female') || 
+         voice.name.toLowerCase().includes('susan') ||
+         voice.name.toLowerCase().includes('samantha') ||
+         voice.name.toLowerCase().includes('karen') ||
+         voice.name.toLowerCase().includes('zira')) && 
+        voice.lang.startsWith('en')
+      ) || voices.find(voice => voice.lang.startsWith('en-GB'))
+
+      console.log('Selected voices:', {
+        male: maleVoice?.name,
+        female: femaleVoice?.name
+      })
+
+      // Parse the transcript to identify speakers and their lines
+      const parseTranscriptWithSpeakers = (text: string) => {
+        const segments: Array<{text: string, speaker: 'male' | 'female' | 'narrator'}> = []
+        
+        // First, split by "Part" to handle structured content
+        const parts = text.split(/(?=Part \d+:)/).filter(part => part.trim())
+        
+        for (const part of parts) {
+          const partText = part.trim()
+          if (!partText) continue
+          
+          // Extract part title
+          const partTitleMatch = partText.match(/^(Part \d+:[^.]*?)(?=\s[A-Z]|\s*$)/)
+          if (partTitleMatch) {
+            segments.push({ text: partTitleMatch[1], speaker: 'narrator' })
+          }
+          
+          // Remove part title and process the rest
+          const contentAfterTitle = partText.replace(/^Part \d+:[^.]*?(?=\s[A-Z]|\s*$)/, '').trim()
+          
+          // Split by speaker patterns - more comprehensive regex
+          const speakerPattern = /\b(Receptionist|Sarah|Student A?|Student B?|Professor|Dr\.|Officer|Advisor|Counselor|Tutor|David Thompson|I'm [A-Z][a-z]+):\s*/gi
+          
+          const segments_in_part = contentAfterTitle.split(speakerPattern)
+          
+          let currentSpeaker = 'narrator'
+          
+          for (let i = 0; i < segments_in_part.length; i++) {
+            const segment = segments_in_part[i]?.trim()
+            if (!segment) continue
+            
+            // Check if this segment is a speaker label
+            if (segment.match(/^(Receptionist|Sarah|Student A?|Student B?|Professor|Dr\.|Officer|Advisor|Counselor|Tutor|David Thompson|I'm [A-Z][a-z]+)$/i)) {
+              // Determine voice based on speaker
+              const speakerLower = segment.toLowerCase()
+              if (speakerLower.includes('sarah') || 
+                  speakerLower.includes('student')) {
+                currentSpeaker = 'female'
+              } else if (speakerLower.includes('receptionist') || 
+                        speakerLower.includes('professor') || 
+                        speakerLower.includes('officer') ||
+                        speakerLower.includes('advisor') ||
+                        speakerLower.includes('counselor') ||
+                        speakerLower.includes('tutor') ||
+                        speakerLower.includes('david') ||
+                        speakerLower.includes('dr.')) {
+                currentSpeaker = 'male'
+              } else {
+                currentSpeaker = 'narrator'
+              }
+              continue
+            }
+            
+            // This is actual content to speak
+            if (segment.length > 0) {
+              // Split long segments by sentences for better pacing
+              const sentences = segment.split(/(?<=[.!?])\s+/)
+              
+              for (const sentence of sentences) {
+                if (sentence.trim().length > 0) {
+                  segments.push({ 
+                    text: sentence.trim(), 
+                    speaker: currentSpeaker as 'male' | 'female' | 'narrator'
+                  })
+                }
+              }
+            }
+          }
+          
+          // Handle any remaining text that doesn't have speaker labels
+          if (!contentAfterTitle.match(speakerPattern)) {
+            // This is narrative text
+            const sentences = contentAfterTitle.split(/(?<=[.!?])\s+/)
+            for (const sentence of sentences) {
+              if (sentence.trim().length > 0) {
+                segments.push({ text: sentence.trim(), speaker: 'narrator' })
+              }
+            }
+          }
+        }
+        
+        return segments.filter(seg => seg.text.length > 0)
+      }
+
+      const segments = parseTranscriptWithSpeakers(audioText)
+      console.log(`📝 Parsed ${segments.length} segments:`, segments.slice(0, 3))
+
+      // Estimate total duration
+      const totalWords = segments.reduce((sum, seg) => sum + seg.text.split(/\s+/).length, 0)
+      const wordsPerMinute = 150
+      const estimatedDuration = (totalWords / wordsPerMinute) * 60 / playbackRate
+      
+      console.log(`📊 Estimated duration: ${estimatedDuration}s for ${totalWords} words`)
+
+      // Set initial state
+      setDuration(estimatedDuration)
+      setCurrentTime(0)
+      setIsPlaying(true)
+      setLoading(false)
+
+      // Start timer for progress tracking
+      let currentSegmentIndex = 0
+      let segmentStartTime = 0
+      const startTime = Date.now()
+      
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+      
+      intervalRef.current = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000
+        setCurrentTime(elapsed)
+        setTimeout(() => onTimeUpdate?.(elapsed), 0)
+        
+        if (elapsed >= estimatedDuration) {
+          clearInterval(intervalRef.current!)
+          intervalRef.current = null
           setIsPlaying(false)
-          onEnded?.()
+          setTimeout(() => onEnded?.(), 0)
+        }
+      }, 100)
+
+      // Function to play segments sequentially with different voices
+      const playSegments = (index: number) => {
+        if (index >= segments.length) {
+          console.log('🏁 All segments completed')
+          setIsPlaying(false)
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
+            intervalRef.current = null
           }
-          setCurrentTime(estimatedDuration) // Set to end
+          setTimeout(() => onEnded?.(), 0)
+          return
+        }
+
+        const segment = segments[index]
+        const utterance = new SpeechSynthesisUtterance(segment.text)
+        
+        // Configure utterance
+        utterance.rate = Math.max(0.5, Math.min(2.0, playbackRate))
+        utterance.volume = Math.max(0, Math.min(1, isMuted ? 0 : volume))
+        utterance.lang = 'en-US'
+        
+        // Select voice based on speaker
+        if (segment.speaker === 'female' && femaleVoice) {
+          utterance.voice = femaleVoice
+          utterance.pitch = 1.1 // Slightly higher pitch for female
+        } else if (segment.speaker === 'male' && maleVoice) {
+          utterance.voice = maleVoice
+          utterance.pitch = 0.9 // Slightly lower pitch for male
+        } else {
+          // Narrator or default
+          utterance.voice = maleVoice || voices.find(v => v.lang.startsWith('en')) || null
+          utterance.pitch = 1.0
+        }
+
+        console.log(`🎭 Playing segment ${index + 1}/${segments.length} (${segment.speaker}): "${segment.text.substring(0, 50)}..."`)
+
+        utterance.onend = () => {
+          // Add a small pause between speakers
+          setTimeout(() => {
+            playSegments(index + 1)
+          }, 300) // 300ms pause between segments
         }
 
         utterance.onerror = (event) => {
-          console.error('Speech synthesis error:', event)
-          setError('Lỗi tạo giọng nói. Vui lòng thử lại.')
-          setIsPlaying(false)
-          setLoading(false)
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current)
-          }
+          console.error(`❌ Error in segment ${index}:`, event)
+          // Continue with next segment on error
+          setTimeout(() => playSegments(index + 1), 100)
         }
 
-        utterance.onpause = () => {
-          setIsPlaying(false)
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current)
-          }
-        }
-
-        utterance.onresume = () => {
-          setIsPlaying(true)
-          // Resume timer
-          intervalRef.current = setInterval(() => {
-            setCurrentTime(prev => {
-              const newTime = prev + 0.1
-              onTimeUpdate?.(newTime)
-              return newTime > estimatedDuration ? estimatedDuration : newTime
-            })
-          }, 100)
-        }
-
-        // Store utterance reference for control
-        audioRef.current = { 
-          utterance,
-          play: () => {
-            speechSynthesis.cancel() // Clear any existing speech
-            speechSynthesis.speak(utterance)
-          },
-          pause: () => speechSynthesis.pause(),
-          resume: () => speechSynthesis.resume(),
-          stop: () => {
-            speechSynthesis.cancel()
-            setIsPlaying(false)
-            if (intervalRef.current) {
-              clearInterval(intervalRef.current)
-            }
-          },
-          currentTime: currentTime,
-          duration: estimatedDuration
-        } as unknown as HTMLAudioElement
-
-        // IMPORTANT: Actually start the speech synthesis
-        console.log('🚀 Calling speechSynthesis.speak(utterance)')
         speechSynthesis.speak(utterance)
-
-        setLoading(false)
-      } else {
-        setError('Trình duyệt không hỗ trợ Text-to-Speech. Vui lòng sử dụng Chrome, Firefox, Safari hoặc Edge.')
-        setLoading(false)
       }
+
+      // Store control functions
+      audioRef.current = {
+        currentSegmentIndex: 0,
+        segments,
+        isMultiVoice: true,
+        play: () => {
+          console.log('🎮 Multi-voice TTS play() called')
+          speechSynthesis.cancel()
+          playSegments(0)
+        },
+        pause: () => {
+          console.log('🎮 Multi-voice TTS pause() called')
+          speechSynthesis.pause()
+          setIsPlaying(false)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
+        },
+        resume: () => {
+          console.log('🎮 Multi-voice TTS resume() called')
+          speechSynthesis.resume()
+          setIsPlaying(true)
+        },
+        stop: () => {
+          console.log('🎮 Multi-voice TTS stop() called')
+          speechSynthesis.cancel()
+          setIsPlaying(false)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
+        },
+        currentTime: 0,
+        duration: estimatedDuration,
+        paused: false,
+        ended: false
+      } as unknown as HTMLAudioElement
+
+      // Start playing the first segment
+      playSegments(0)
+
     } catch (error) {
-      setError('Lỗi tạo audio từ văn bản: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+      console.error('❌ Multi-voice TTS generation error:', error)
+      setError('Lỗi tạo audio đa giọng nói: ' + errorMsg)
       setLoading(false)
-      console.error('TTS generation error:', error)
     }
   }
 
+  // Keep the original single-voice function as fallback
+  const generateTTSAudio = generateMultiVoiceTTSAudio
+
   const togglePlayPause = async () => {
-    console.log('🎵 togglePlayPause called', { audioUrl, audioText: audioText?.substring(0, 50) + '...', isPlaying })
+    console.log('🎵 togglePlayPause called', { 
+      audioUrl, 
+      hasAudioText: !!audioText, 
+      isPlaying, 
+      hasAudioRef: !!audioRef.current,
+      speechSynthesisState: speechSynthesis.paused ? 'paused' : speechSynthesis.speaking ? 'speaking' : 'idle'
+    })
     
     if (!audioUrl && !audioText) {
-      setError('Không có audio để phát')
+      setError('Không có audio hoặc văn bản để phát')
       return
     }
+
+    setError(null) // Clear any existing errors
 
     // Handle TTS playback
     if (!audioUrl && audioText) {
-      console.log('🗣️ Using TTS mode', { hasAudioRef: !!audioRef.current, isPlaying })
+      console.log('🗣️ Using TTS mode')
       
-      if (!audioRef.current) {
-        console.log('🔄 Generating new TTS audio...')
-        await generateTTSAudio()
-        return
-      }
-      
-      if (isPlaying) {
-        console.log('⏸️ Pausing TTS')
-        speechSynthesis.pause()
-        setIsPlaying(false)
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current)
-        }
-      } else {
-        console.log('▶️ Resuming/Starting TTS')
-        if (speechSynthesis.paused) {
-          speechSynthesis.resume()
+      try {
+        if (isPlaying) {
+          console.log('⏸️ Pausing TTS')
+          speechSynthesis.pause()
+          setIsPlaying(false)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
         } else {
-          await generateTTSAudio()
+          // Check if we have a paused speech
+          if (speechSynthesis.paused && speechSynthesis.speaking) {
+            console.log('▶️ Resuming paused TTS')
+            speechSynthesis.resume()
+            setIsPlaying(true)
+            // Resume timer
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current)
+            }
+            intervalRef.current = setInterval(() => {
+              setCurrentTime(prev => {
+                const newTime = prev + 0.1
+                onTimeUpdate?.(newTime)
+                return newTime > duration ? duration : newTime
+              })
+            }, 100)
+          } else {
+            console.log('▶️ Starting new TTS')
+            await generateTTSAudio()
+          }
         }
+      } catch (error) {
+        console.error('❌ TTS playback error:', error)
+        setError('Lỗi phát audio TTS: ' + (error instanceof Error ? error.message : 'Unknown error'))
       }
       return
     }
 
-    setLoading(true)
-    setError(null)
+    // Handle regular audio file
+    if (audioUrl) {
+      setLoading(true)
+      
+      try {
+        if (!audioRef.current) {
+          await initializeAudio()
+          return
+        }
 
-    try {
-      // Handle regular audio file
-      if (audioUrl && audioRef.current) {
         if (isPlaying) {
+          console.log('⏸️ Pausing regular audio')
           audioRef.current.pause()
           setIsPlaying(false)
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
+            intervalRef.current = null
           }
         } else {
+          console.log('▶️ Playing regular audio')
           await audioRef.current.play()
           setIsPlaying(true)
           startTimeTracking()
         }
+      } catch (error) {
+        console.error('❌ Regular audio playback error:', error)
+        setError('Lỗi phát audio: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      } finally {
         setLoading(false)
-        return
       }
-
-      // Handle TTS - already handled above in the TTS section
-      setLoading(false)
-    } catch (error) {
-      setError('Lỗi khi phát audio: ' + (error instanceof Error ? error.message : 'Unknown error'))
-      console.error('Play error:', error)
-      setLoading(false)
     }
   }
 
@@ -334,7 +516,8 @@ export default function ListeningPlayer({
       if (audioRef.current && !audioRef.current.paused) {
         const time = audioRef.current.currentTime
         setCurrentTime(time)
-        onTimeUpdate?.(time)
+        // Use setTimeout to avoid setState during render
+        setTimeout(() => onTimeUpdate?.(time), 0)
       }
     }, 100)
   }
@@ -348,12 +531,13 @@ export default function ListeningPlayer({
     const interval = setInterval(() => {
       const elapsed = (Date.now() - startTime) / 1000
       setCurrentTime(elapsed)
-      onTimeUpdate?.(elapsed)
+      // Use setTimeout to avoid setState during render
+      setTimeout(() => onTimeUpdate?.(elapsed), 0)
       
       if (elapsed >= estimatedDuration) {
         clearInterval(interval)
         setIsPlaying(false)
-        onEnded?.()
+        setTimeout(() => onEnded?.(), 0)
       }
     }, 100)
   }
@@ -417,18 +601,35 @@ export default function ListeningPlayer({
       {/* TTS Info */}
       {!audioUrl && audioText && !error && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
-          <div className="flex items-center gap-2">
-            <Volume2 className="w-4 h-4" />
-            <div>
-              <div className="font-medium">🎙️ Text-to-Speech Audio</div>
-              <div className="text-xs mt-1">
-                Sử dụng giọng nói tự động từ trình duyệt. Nhấn ▶️ để nghe audio IELTS.
-                {typeof window !== 'undefined' && 'speechSynthesis' in window ? 
-                  ' ✅ Trình duyệt hỗ trợ TTS' : 
-                  ' ❌ Trình duyệt không hỗ trợ'
-                }
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4" />
+              <div>
+                <div className="font-medium">🎙️ Multi-Voice TTS Audio</div>
+                <div className="text-xs mt-1">
+                  🎭 Multi-voice: Nữ (Sarah/Students) - Nam (Receptionist/Professor/Staff) - Narrator
+                  {typeof window !== 'undefined' && 'speechSynthesis' in window ? 
+                    ' ✅ Trình duyệt hỗ trợ TTS' : 
+                    ' ❌ Trình duyệt không hỗ trợ'
+                  }
+                </div>
               </div>
             </div>
+            
+            {/* Test TTS Button */}
+            <button
+              onClick={async () => {
+                speechSynthesis.cancel()
+                const testUtterance = new SpeechSynthesisUtterance('Hello, this is a test of the text to speech system.')
+                testUtterance.lang = 'en-US'
+                testUtterance.rate = 1
+                testUtterance.volume = 1
+                speechSynthesis.speak(testUtterance)
+              }}
+              className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+            >
+              Test TTS
+            </button>
           </div>
         </div>
       )}

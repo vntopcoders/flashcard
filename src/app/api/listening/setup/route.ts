@@ -120,23 +120,26 @@ export async function POST(request: NextRequest) {
 // Get database schema info
 export async function GET() {
   try {
-    // Check if tables exist
-    const { data: tables, error } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .in('table_name', ['listening_tests', 'listening_questions', 'listening_progress'])
-      .eq('table_schema', 'public')
+    // Check if tables exist by trying to query them
+    const tableChecks = await Promise.allSettled([
+      supabase.from('listening_tests').select('id').limit(1),
+      supabase.from('listening_questions').select('id').limit(1), 
+      supabase.from('listening_progress').select('id').limit(1)
+    ])
 
-    if (error) {
-      return NextResponse.json({ error: 'Failed to check tables', details: error }, { status: 500 })
-    }
-
-    const existingTables = tables?.map(t => t.table_name) || []
+    const existingTables: string[] = []
+    const tableNames = ['listening_tests', 'listening_questions', 'listening_progress']
+    
+    tableChecks.forEach((result, index) => {
+      if (result.status === 'fulfilled' && !result.value.error) {
+        existingTables.push(tableNames[index])
+      }
+    })
 
     return NextResponse.json({
       success: true,
       existingTables,
-      requiredTables: ['listening_tests', 'listening_questions', 'listening_progress'],
+      requiredTables: tableNames,
       isSetupComplete: existingTables.length === 3
     })
 

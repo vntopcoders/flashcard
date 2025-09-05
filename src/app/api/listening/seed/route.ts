@@ -5,7 +5,26 @@ import { supabase } from '@/lib/supabase'
 const SAMPLE_TESTS = [
   {
     title: 'IELTS Listening Practice Test 1',
-    audio_transcript: 'This is a sample conversation between two people discussing weekend plans and activities.',
+    audio_transcript: `Part 1: Conversation - Photography Course Enrollment
+Receptionist: Good morning, Community Learning Center. How can I help you?
+Sarah: Hello, I'm calling about the photography classes. I saw your advertisement in the local newspaper.
+Receptionist: Oh yes, our photography course. Are you a complete beginner?
+Sarah: Well, I have a basic camera, but I really don't know how to use it properly. I'd like to learn the fundamentals.
+Receptionist: Perfect. Our beginner's course starts next Monday. It runs for six weeks, every Monday from 7 to 9 PM.
+Sarah: That sounds ideal. How much does it cost?
+Receptionist: The course fee is 150 pounds, and that includes all materials and handouts.
+
+Part 2: Monologue - National Botanical Gardens Tour
+Good morning, and welcome to the National Botanical Gardens. I'm David Thompson, and I'll be your guide today. The National Botanical Gardens covers 85 hectares and houses over 12,000 different plant species from around the world. We're open every day from 9 AM to 6 PM, except on Christmas Day.
+
+Part 3: Academic Discussion - Research Methods
+Student A: I'm really struggling with choosing the right research method for our project.
+Professor: Well, let's think about what you're trying to investigate. Are you looking at quantitative or qualitative data?
+Student B: We want to understand student attitudes toward social media, so I think qualitative would be better.
+Professor: That's a good start. You could use surveys for quantitative data and interviews for deeper insights.
+
+Part 4: Academic Lecture - Archaeological Dating Methods  
+Today we'll examine various dating techniques used in archaeology. Carbon dating can measure objects up to 50,000 years old. For more recent artifacts, dendrochronology is often the most accurate method. The advantage of mass spectrometry is that it works on very small samples.`,
     duration: 1800, // 30 minutes
     difficulty: 'intermediate',
     test_type: 'practice',

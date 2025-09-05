@@ -58,11 +58,23 @@ export default function ListeningPlayer({
     }
   }, [audioUrl])
 
-  const initializeAudio = () => {
-    if (!audioUrl) return
+  const initializeAudio = async () => {
+    setLoading(true)
+    setError(null)
 
     try {
-      setError(null)
+      // If no audioUrl but we have text, generate TTS audio
+      if (!audioUrl && audioText) {
+        await generateTTSAudio()
+        return
+      }
+
+      if (!audioUrl) {
+        setError('Không có audio để phát. Vui lòng thử tính năng Text-to-Speech.')
+        setLoading(false)
+        return
+      }
+
       const audio = new Audio(audioUrl)
       audioRef.current = audio
 
@@ -95,9 +107,86 @@ export default function ListeningPlayer({
       audio.playbackRate = playbackRate
       audio.muted = isMuted
 
+      setLoading(false)
     } catch (error) {
       setError('Lỗi khởi tạo audio player')
+      setLoading(false)
       console.error('Audio initialization error:', error)
+    }
+  }
+
+  const generateTTSAudio = async () => {
+    if (!audioText) return
+
+    try {
+      setLoading(true)
+      
+      // Use Web Speech API for immediate playback
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(audioText)
+        utterance.rate = playbackRate
+        utterance.volume = volume
+        utterance.lang = 'en-US'
+        
+        // Try to use a good English voice
+        const voices = speechSynthesis.getVoices()
+        const englishVoice = voices.find(voice => 
+          voice.lang.startsWith('en') && voice.name.includes('Google')
+        ) || voices.find(voice => voice.lang.startsWith('en'))
+        
+        if (englishVoice) {
+          utterance.voice = englishVoice
+        }
+
+        utterance.onstart = () => {
+          setIsPlaying(true)
+          setLoading(false)
+          // Simulate duration (estimate based on text length)
+          const estimatedDuration = audioText.length * 0.08 // ~80ms per character
+          setDuration(estimatedDuration)
+          
+          // Start timer for current time
+          intervalRef.current = setInterval(() => {
+            setCurrentTime(prev => {
+              const newTime = prev + 0.1
+              onTimeUpdate?.(newTime)
+              return newTime > estimatedDuration ? estimatedDuration : newTime
+            })
+          }, 100)
+        }
+
+        utterance.onend = () => {
+          setIsPlaying(false)
+          onEnded?.()
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+          }
+        }
+
+        utterance.onerror = () => {
+          setError('Lỗi tạo giọng nói. Vui lòng thử lại.')
+          setIsPlaying(false)
+          setLoading(false)
+        }
+
+        // Store utterance reference for control
+        audioRef.current = { 
+          utterance,
+          play: () => speechSynthesis.speak(utterance),
+          pause: () => speechSynthesis.pause(),
+          resume: () => speechSynthesis.resume(),
+          stop: () => speechSynthesis.cancel()
+        } as unknown as HTMLAudioElement
+
+        setLoading(false)
+      } else {
+        setError('Trình duyệt không hỗ trợ Text-to-Speech')
+        setLoading(false)
+      }
+    } catch (error) {
+      setError('Lỗi tạo audio từ văn bản')
+      setLoading(false)
+      console.error('TTS generation error:', error)
     }
   }
 
@@ -240,6 +329,16 @@ export default function ListeningPlayer({
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
           {error}
+        </div>
+      )}
+
+      {/* TTS Info */}
+      {!audioUrl && audioText && !error && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+          <div className="flex items-center gap-2">
+            <Volume2 className="w-4 h-4" />
+            <span>Sử dụng Text-to-Speech để nghe audio. Nhấn nút play để bắt đầu.</span>
+          </div>
         </div>
       )}
 

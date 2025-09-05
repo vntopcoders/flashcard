@@ -116,7 +116,12 @@ export default function ListeningPlayer({
   }
 
   const generateTTSAudio = async () => {
-    if (!audioText) return
+    console.log('🎙️ generateTTSAudio called', { audioText: audioText?.substring(0, 100) + '...' })
+    
+    if (!audioText) {
+      console.log('❌ No audioText provided')
+      return
+    }
 
     try {
       setLoading(true)
@@ -124,6 +129,7 @@ export default function ListeningPlayer({
       
       // Use Web Speech API for immediate playback
       if ('speechSynthesis' in window) {
+        console.log('✅ speechSynthesis is available')
         // Stop any existing speech
         speechSynthesis.cancel()
         
@@ -250,6 +256,8 @@ export default function ListeningPlayer({
   }
 
   const togglePlayPause = async () => {
+    console.log('🎵 togglePlayPause called', { audioUrl, audioText: audioText?.substring(0, 50) + '...', isPlaying })
+    
     if (!audioUrl && !audioText) {
       setError('Không có audio để phát')
       return
@@ -257,18 +265,23 @@ export default function ListeningPlayer({
 
     // Handle TTS playback
     if (!audioUrl && audioText) {
+      console.log('🗣️ Using TTS mode', { hasAudioRef: !!audioRef.current, isPlaying })
+      
       if (!audioRef.current) {
+        console.log('🔄 Generating new TTS audio...')
         await generateTTSAudio()
         return
       }
       
       if (isPlaying) {
+        console.log('⏸️ Pausing TTS')
         speechSynthesis.pause()
         setIsPlaying(false)
         if (intervalRef.current) {
           clearInterval(intervalRef.current)
         }
       } else {
+        console.log('▶️ Resuming/Starting TTS')
         if (speechSynthesis.paused) {
           speechSynthesis.resume()
         } else {
@@ -282,8 +295,8 @@ export default function ListeningPlayer({
     setError(null)
 
     try {
+      // Handle regular audio file
       if (audioUrl && audioRef.current) {
-        // Use direct audio file
         if (isPlaying) {
           audioRef.current.pause()
           setIsPlaying(false)
@@ -295,32 +308,15 @@ export default function ListeningPlayer({
           setIsPlaying(true)
           startTimeTracking()
         }
-      } else if (audioText) {
-        // Use TTS
-        if (isPlaying) {
-          // Stop TTS playback (if possible)
-          setIsPlaying(false)
-        } else {
-          const result = await HybridAudioService.playAudio({
-            word: audioText,
-            type: 'sentence',
-            volume,
-            playbackRate
-          })
-          
-          if (result.success) {
-            setIsPlaying(true)
-            // TTS doesn't provide progress updates, so simulate
-            simulateTTSProgress()
-          } else {
-            setError(result.error || 'Không thể phát audio')
-          }
-        }
+        setLoading(false)
+        return
       }
+
+      // Handle TTS - already handled above in the TTS section
+      setLoading(false)
     } catch (error) {
-      setError('Lỗi khi phát audio')
+      setError('Lỗi khi phát audio: ' + (error instanceof Error ? error.message : 'Unknown error'))
       console.error('Play error:', error)
-    } finally {
       setLoading(false)
     }
   }

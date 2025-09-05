@@ -290,8 +290,6 @@ export default function ListeningPlayer({
       setLoading(false)
 
       // Start timer for progress tracking
-      let currentSegmentIndex = 0
-      let segmentStartTime = 0
       const startTime = Date.now()
       
       if (intervalRef.current) {
@@ -522,25 +520,6 @@ export default function ListeningPlayer({
     }, 100)
   }
 
-  const simulateTTSProgress = () => {
-    // Estimate duration for TTS (rough calculation)
-    const estimatedDuration = audioText ? audioText.length * 0.05 : 5
-    setDuration(estimatedDuration)
-    
-    const startTime = Date.now()
-    const interval = setInterval(() => {
-      const elapsed = (Date.now() - startTime) / 1000
-      setCurrentTime(elapsed)
-      // Use setTimeout to avoid setState during render
-      setTimeout(() => onTimeUpdate?.(elapsed), 0)
-      
-      if (elapsed >= estimatedDuration) {
-        clearInterval(interval)
-        setIsPlaying(false)
-        setTimeout(() => onEnded?.(), 0)
-      }
-    }, 100)
-  }
 
   const seekTo = (time: number) => {
     if (audioRef.current) {

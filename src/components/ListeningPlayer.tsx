@@ -243,6 +243,10 @@ export default function ListeningPlayer({
           duration: estimatedDuration
         } as unknown as HTMLAudioElement
 
+        // IMPORTANT: Actually start the speech synthesis
+        console.log('🚀 Calling speechSynthesis.speak(utterance)')
+        speechSynthesis.speak(utterance)
+
         setLoading(false)
       } else {
         setError('Trình duyệt không hỗ trợ Text-to-Speech. Vui lòng sử dụng Chrome, Firefox, Safari hoặc Edge.')

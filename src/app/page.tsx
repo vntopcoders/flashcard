@@ -324,8 +324,19 @@ function FlashcardApp() {
         ipa: ipaTranscriptions[safeWordIndex] || '/unknown/',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        // Enhanced learning fields
-        examples: null,
+        // Enhanced learning fields with generated examples
+        examples: JSON.stringify([
+          {
+            sentence: `The ${baseWords[safeWordIndex]} demonstrates important principles in modern academic context.`,
+            translation: `Từ "${baseWords[safeWordIndex]}" (${meanings[safeWordIndex]}) thể hiện các nguyên tắc quan trọng trong bối cảnh học thuật hiện đại.`,
+            context: phase === 'foundation' ? 'Foundation learning' : phase === 'development' ? 'Development phase' : phase === 'mastery' ? 'Mastery phase' : 'Expert phase'
+          },
+          {
+            sentence: `Understanding ${baseWords[safeWordIndex]} is essential for IELTS success and academic communication.`,
+            translation: `Hiểu được từ "${baseWords[safeWordIndex]}" (${meanings[safeWordIndex]}) là rất quan trọng cho thành công trong IELTS và giao tiếp học thuật.`,
+            context: 'IELTS preparation'
+          }
+        ]),
         collocations: null,
         synonyms: null,
         antonyms: null,

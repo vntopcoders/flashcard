@@ -19,7 +19,7 @@ export default function TestExamplesPage() {
         console.log('All flashcards:', flashcards)
         
         // Find a flashcard with examples
-        const cardWithExamples = flashcards.find((card: any) => 
+        const cardWithExamples = flashcards.find((card: Record<string, unknown>) => 
           card.examples && card.examples !== 'null' && card.examples !== null
         )
         

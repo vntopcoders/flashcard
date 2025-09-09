@@ -27,11 +27,11 @@ export interface Flashcard {
   difficulty: number
   category: string
   
-  // Enhanced learning features
-  examples?: ExampleSentence[] | null
-  collocations?: Collocation[] | null
-  synonyms?: string[] | null
-  antonyms?: string[] | null
+  // Enhanced learning features (stored as JSON strings in database)
+  examples?: ExampleSentence[] | string | null
+  collocations?: Collocation[] | string | null
+  synonyms?: string[] | string | null
+  antonyms?: string[] | string | null
   etymology?: string | null
   memory_tips?: string | null
   

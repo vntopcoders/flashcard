@@ -280,8 +280,7 @@ export default function EnhancedFlashcardComponent({
                       <div className="bg-green-50 p-4 rounded-lg border">
                         <div className="flex items-start gap-3 mb-3">
                           <p className="text-gray-800 flex-1">
-                            <span className="font-medium text-green-600">{flashcard.english}</span>
-                            {examples[currentExampleIndex].sentence.replace(new RegExp(flashcard.english, 'gi'), `**${flashcard.english}**`)}
+                            {examples[currentExampleIndex].sentence}
                           </p>
                           <AudioButton
                             word={examples[currentExampleIndex].sentence}

@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
           const response = await fetch(`${request.nextUrl.origin}/api/flashcards`)
           const flashcards = await response.json()
           
-          const flashcard = flashcards.find((f: any) => 
+          const flashcard = flashcards.find((f: { english: string; id: string }) => 
             f.english.toLowerCase() === english.toLowerCase()
           )
           
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
           const response = await fetch(`${request.nextUrl.origin}/api/flashcards`)
           const flashcards = await response.json()
           
-          const flashcard = flashcards.find((f: any) => 
+          const flashcard = flashcards.find((f: { english: string; id: string }) => 
             f.english.toLowerCase() === english.toLowerCase()
           )
           
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Return available sample examples
     const availableWords = Object.keys(SAMPLE_EXAMPLES)
@@ -262,7 +262,7 @@ export async function GET(request: NextRequest) {
       totalWords: availableWords.length,
       sampleData: SAMPLE_EXAMPLES
     })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to get sample examples' },
       { status: 500 }

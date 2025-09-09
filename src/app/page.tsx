@@ -114,6 +114,183 @@ function FlashcardApp() {
     }
   }
 
+  // Generate contextual examples for each word
+  const generateContextualExamples = (word: string, meaning: string, phase: string) => {
+    // Word-specific example templates
+    const specificExamples: { [key: string]: string[] } = {
+      'achieve': [
+        'Students must work hard to achieve their academic goals.',
+        'The company achieved record profits this quarter.'
+      ],
+      'administration': [
+        'The school administration decided to implement new policies.',
+        'Government administration requires careful planning and coordination.'
+      ],
+      'affect': [
+        'Climate change will significantly affect future generations.',
+        'The new law may affect how businesses operate.'
+      ],
+      'analysis': [
+        'The data analysis revealed surprising trends in consumer behavior.',
+        'Critical analysis is essential for academic writing.'
+      ],
+      'approach': [
+        'We need a different approach to solve this complex problem.',
+        'The teacher used an innovative approach to engage students.'
+      ],
+      'appropriate': [
+        'Please choose appropriate clothing for the formal meeting.',
+        'It is appropriate to thank your host after dinner.'
+      ],
+      'area': [
+        'This area of the city has many historical buildings.',
+        'Research in this area has made significant progress.'
+      ],
+      'aspects': [
+        'All aspects of the project need careful consideration.',
+        'The study examined various aspects of student motivation.'
+      ],
+      'evidence': [
+        'The detective collected evidence to solve the case.',
+        'There is strong evidence that exercise improves mental health.'
+      ],
+      'environment': [
+        'We must protect the environment for future generations.',
+        'A positive work environment increases productivity.'
+      ],
+      'significant': [
+        'The discovery represents a significant breakthrough in medicine.',
+        'There has been a significant increase in online learning.'
+      ],
+      'develop': [
+        'Children develop language skills at different rates.',
+        'The team will develop a new marketing strategy.'
+      ]
+    }
+
+    // Generic high-quality templates by word type/category
+    const genericTemplates = [
+      // Academic/formal contexts
+      `Research shows that ${word} plays a crucial role in academic success.`,
+      `The concept of ${word} is fundamental to understanding this subject.`,
+      `Experts recommend focusing on ${word} to improve your skills.`,
+      `Modern studies highlight the importance of ${word} in daily life.`,
+      
+      // Practical/real-world contexts  
+      `Many people struggle to understand ${word} in practical situations.`,
+      `Learning about ${word} can help you make better decisions.`,
+      `The government's policy on ${word} has sparked public debate.`,
+      `Companies invest heavily in ${word} to stay competitive.`,
+      
+      // IELTS/Educational contexts
+      `IELTS candidates should be familiar with the term ${word}.`,
+      `University students often encounter ${word} in their coursework.`,
+      `Teachers emphasize the importance of ${word} in education.`,
+      `Understanding ${word} is essential for academic writing.`
+    ]
+
+    // Get specific examples or use generic templates
+    let englishSentences: string[]
+    if (specificExamples[word]) {
+      englishSentences = specificExamples[word]
+    } else {
+      // Use 2 random generic templates
+      const shuffled = [...genericTemplates].sort(() => 0.5 - Math.random())
+      englishSentences = shuffled.slice(0, 2)
+    }
+
+    // Create Vietnamese translations
+    const examples = englishSentences.map((sentence, index) => {
+      // More natural Vietnamese translations
+      let translation = ''
+      if (specificExamples[word]) {
+        // Hand-crafted translations for specific words
+        const specificTranslations: { [key: string]: string[] } = {
+          'achieve': [
+            'Học sinh phải học tập chăm chỉ để đạt được mục tiêu học tập của mình.',
+            'Công ty đã đạt được lợi nhuận kỷ lục trong quý này.'
+          ],
+          'administration': [
+            'Ban giám hiệu trường quyết định thực hiện các chính sách mới.',
+            'Quản lý chính phủ đòi hỏi sự lập kế hoạch và phối hợp cẩn thận.'
+          ],
+          'affect': [
+            'Biến đổi khí hậu sẽ ảnh hưởng đáng kể đến các thế hệ tương lai.',
+            'Luật mới có thể ảnh hưởng đến cách thức hoạt động của doanh nghiệp.'
+          ],
+          'analysis': [
+            'Phân tích dữ liệu tiết lộ những xu hướng đáng ngạc nhiên trong hành vi người tiêu dùng.',
+            'Phân tích phê bình là rất cần thiết cho việc viết học thuật.'
+          ],
+          'approach': [
+            'Chúng ta cần cách tiếp cận khác để giải quyết vấn đề phức tạp này.',
+            'Giáo viên đã sử dụng cách tiếp cận sáng tạo để thu hút học sinh.'
+          ],
+          'appropriate': [
+            'Vui lòng chọn trang phục phù hợp cho cuộc họp trang trọng.',
+            'Thật phù hợp khi cảm ơn chủ nhà sau bữa tối.'
+          ],
+          'area': [
+            'Khu vực này của thành phố có nhiều tòa nhà lịch sử.',
+            'Nghiên cứu trong lĩnh vực này đã có tiến bộ đáng kể.'
+          ],
+          'aspects': [
+            'Tất cả các khía cạnh của dự án cần được xem xét cẩn thận.',
+            'Nghiên cứu này xem xét các khía cạnh khác nhau của động lực học sinh.'
+          ],
+          'evidence': [
+            'Thám tử đã thu thập bằng chứng để giải quyết vụ án.',
+            'Có bằng chứng mạnh mẽ rằng tập thể dục cải thiện sức khỏe tinh thần.'
+          ],
+          'environment': [
+            'Chúng ta phải bảo vệ môi trường cho các thế hệ tương lai.',
+            'Môi trường làm việc tích cực làm tăng năng suất.'
+          ],
+          'significant': [
+            'Khám phá này đại diện cho một bước đột phá quan trọng trong y học.',
+            'Đã có sự gia tăng đáng kể trong việc học trực tuyến.'
+          ],
+          'develop': [
+            'Trẻ em phát triển kỹ năng ngôn ngữ với tốc độ khác nhau.',
+            'Nhóm sẽ phát triển một chiến lược marketing mới.'
+          ]
+        }
+        translation = specificTranslations[word]?.[index] || `Câu ví dụ cho từ "${word}" (${meaning}).`
+      } else {
+        // Generic translation pattern for template sentences
+        translation = sentence
+          .replace(new RegExp(`\\b${word}\\b`, 'gi'), `"${word}" (${meaning})`)
+          .replace(/Research shows that/, 'Nghiên cứu cho thấy rằng')
+          .replace(/The concept of/, 'Khái niệm về')
+          .replace(/is fundamental to understanding/, 'là cơ bản để hiểu')
+          .replace(/Experts recommend focusing on/, 'Các chuyên gia khuyên nên tập trung vào')
+          .replace(/Modern studies highlight the importance of/, 'Các nghiên cứu hiện đại nhấn mạnh tầm quan trọng của')
+          .replace(/Many people struggle to understand/, 'Nhiều người gặp khó khăn trong việc hiểu')
+          .replace(/Learning about/, 'Học về')
+          .replace(/can help you make better decisions/, 'có thể giúp bạn đưa ra quyết định tốt hơn')
+          .replace(/The government's policy on/, 'Chính sách của chính phủ về')
+          .replace(/has sparked public debate/, 'đã gây ra cuộc tranh luận công khai')
+          .replace(/Companies invest heavily in/, 'Các công ty đầu tư mạnh vào')
+          .replace(/to stay competitive/, 'để duy trì khả năng cạnh tranh')
+          .replace(/IELTS candidates should be familiar with the term/, 'Thí sinh IELTS nên quen thuộc với thuật ngữ')
+          .replace(/University students often encounter/, 'Sinh viên đại học thường gặp')
+          .replace(/in their coursework/, 'trong khóa học của họ')
+          .replace(/Teachers emphasize the importance of/, 'Giáo viên nhấn mạnh tầm quan trọng của')
+          .replace(/in education/, 'trong giáo dục')
+          .replace(/Understanding/, 'Hiểu')
+          .replace(/is essential for academic writing/, 'là cần thiết cho việc viết học thuật')
+      }
+
+      return {
+        sentence: sentence,
+        translation: translation,
+        context: index === 0 ? (phase.charAt(0).toUpperCase() + phase.slice(1) + ' Phase') : 'IELTS Academic'
+      }
+    })
+
+    return examples
+  }
+
   // Generate mock daily lesson flashcards
   const generateDailyLessonFlashcards = (dayNumber: number, phase: string): Flashcard[] => {
     // Expanded vocabulary list with more IELTS academic words
@@ -324,19 +501,8 @@ function FlashcardApp() {
         ipa: ipaTranscriptions[safeWordIndex] || '/unknown/',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        // Enhanced learning fields with generated examples
-        examples: JSON.stringify([
-          {
-            sentence: `The ${baseWords[safeWordIndex]} demonstrates important principles in modern academic context.`,
-            translation: `Từ "${baseWords[safeWordIndex]}" (${meanings[safeWordIndex]}) thể hiện các nguyên tắc quan trọng trong bối cảnh học thuật hiện đại.`,
-            context: phase === 'foundation' ? 'Foundation learning' : phase === 'development' ? 'Development phase' : phase === 'mastery' ? 'Mastery phase' : 'Expert phase'
-          },
-          {
-            sentence: `Understanding ${baseWords[safeWordIndex]} is essential for IELTS success and academic communication.`,
-            translation: `Hiểu được từ "${baseWords[safeWordIndex]}" (${meanings[safeWordIndex]}) là rất quan trọng cho thành công trong IELTS và giao tiếp học thuật.`,
-            context: 'IELTS preparation'
-          }
-        ]),
+        // Enhanced learning fields with contextual examples
+        examples: JSON.stringify(generateContextualExamples(baseWords[safeWordIndex], meanings[safeWordIndex], phase)),
         collocations: null,
         synonyms: null,
         antonyms: null,

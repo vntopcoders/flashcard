@@ -5,7 +5,7 @@ import { Plus, Check, X, RefreshCw } from 'lucide-react'
 
 export default function AdminExamplesPage() {
   const [isLoading, setIsLoading] = useState(false)
-  const [results, setResults] = useState<any[]>([])
+  const [results, setResults] = useState<Array<{word: string, status: string, exampleCount?: number, error?: string}>>([])
   const [availableWords, setAvailableWords] = useState<string[]>([])
 
   const loadAvailableWords = async () => {
@@ -221,8 +221,8 @@ export default function AdminExamplesPage() {
                 📝 Manual Instructions
               </h3>
               <div className="text-sm text-blue-700 space-y-2">
-                <p><strong>Cách 1:</strong> Sử dụng nút "Add Sample Examples" để tự động thêm ví dụ có sẵn</p>
-                <p><strong>Cách 2:</strong> Vào từng flashcard và thêm examples thủ công qua form "Thêm từ mới"</p>
+                <p><strong>Cách 1:</strong> Sử dụng nút &ldquo;Add Sample Examples&rdquo; để tự động thêm ví dụ có sẵn</p>
+                <p><strong>Cách 2:</strong> Vào từng flashcard và thêm examples thủ công qua form &ldquo;Thêm từ mới&rdquo;</p>
                 <p><strong>Cách 3:</strong> Sử dụng API endpoint trực tiếp:</p>
                 <code className="block bg-white p-2 rounded mt-2 text-xs">
                   POST /api/flashcards/bulk-update-examples<br/>

@@ -39,7 +39,7 @@ export async function PUT(
     const body = await request.json()
     const { english, vietnamese, ipa, category, difficulty, lesson_id, examples, collocations, synonyms, antonyms, etymology, memory_tips } = body
 
-    const updates: any = {}
+    const updates: Record<string, unknown> = {}
     
     if (english !== undefined) updates.english = english
     if (vietnamese !== undefined) updates.vietnamese = vietnamese

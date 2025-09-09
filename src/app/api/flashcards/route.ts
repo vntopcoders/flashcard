@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { english, vietnamese, ipa, category, difficulty, lesson_id } = body
+    const { english, vietnamese, ipa, category, difficulty, lesson_id, examples } = body
 
     if (!english || !vietnamese) {
       return NextResponse.json(
@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
       ipa: ipa || null,
       category: category || 'general',
       difficulty: difficulty || 1,
-      lesson_id: lesson_id || null
+      lesson_id: lesson_id || null,
+      examples: examples ? JSON.stringify(examples) : null
     })
 
     return NextResponse.json(flashcard, { status: 201 })

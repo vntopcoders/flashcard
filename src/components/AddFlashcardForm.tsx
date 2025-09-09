@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, X } from 'lucide-react'
-import { Lesson } from '@/types/flashcard'
+import { Plus, X, Trash2 } from 'lucide-react'
+import { Lesson, ExampleSentence } from '@/types/flashcard'
 import AudioButton from '@/components/AudioButton'
 import WordImage from '@/components/WordImage'
 
@@ -14,6 +14,7 @@ interface AddFlashcardFormProps {
     category: string
     difficulty: number
     lesson_id: string | null
+    examples?: ExampleSentence[]
   }) => void
   onClose: () => void
   selectedLessonId?: string | null
@@ -28,6 +29,9 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
   const [lessonId, setLessonId] = useState<string | null>(selectedLessonId || null)
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [examples, setExamples] = useState<ExampleSentence[]>([
+    { sentence: '', translation: '', context: '' }
+  ])
 
   useEffect(() => {
     fetchLessons()
@@ -60,13 +64,17 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
     setIsSubmitting(true)
 
     try {
+      // Filter out empty examples
+      const validExamples = examples.filter(ex => ex.sentence.trim() && ex.translation.trim())
+      
       await onAdd({
         english: english.trim(),
         vietnamese: vietnamese.trim(),
         ipa: ipa.trim() || undefined,
         category,
         difficulty,
-        lesson_id: lessonId
+        lesson_id: lessonId,
+        examples: validExamples.length > 0 ? validExamples : undefined
       })
 
       // Reset form
@@ -76,6 +84,7 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
       setCategory('general')
       setDifficulty(1)
       setLessonId(selectedLessonId || null)
+      setExamples([{ sentence: '', translation: '', context: '' }])
       onClose()
     } catch (error) {
       console.error('Error adding flashcard:', error)
@@ -83,6 +92,22 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const addExample = () => {
+    setExamples([...examples, { sentence: '', translation: '', context: '' }])
+  }
+
+  const removeExample = (index: number) => {
+    if (examples.length > 1) {
+      setExamples(examples.filter((_, i) => i !== index))
+    }
+  }
+
+  const updateExample = (index: number, field: keyof ExampleSentence, value: string) => {
+    const updated = [...examples]
+    updated[index] = { ...updated[index], [field]: value }
+    setExamples(updated)
   }
 
   const categories = [
@@ -239,6 +264,80 @@ export default function AddFlashcardForm({ onAdd, onClose, selectedLessonId }: A
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Examples Section */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Ví dụ câu
+              </label>
+              <button
+                type="button"
+                onClick={addExample}
+                className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+              >
+                + Thêm ví dụ
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {examples.map((example, index) => (
+                <div key={index} className="p-3 border border-gray-200 rounded-lg bg-gray-50">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-medium text-gray-600">Ví dụ {index + 1}</span>
+                    {examples.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeExample(index)}
+                        className="p-1 text-red-500 hover:bg-red-100 rounded transition-colors"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={example.sentence}
+                        onChange={(e) => updateExample(index, 'sentence', e.target.value)}
+                        placeholder="Câu ví dụ tiếng Anh..."
+                        className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                      />
+                      {example.sentence && (
+                        <AudioButton
+                          word={example.sentence}
+                          size="sm"
+                          className="flex-shrink-0"
+                        />
+                      )}
+                    </div>
+                    
+                    <input
+                      type="text"
+                      value={example.translation}
+                      onChange={(e) => updateExample(index, 'translation', e.target.value)}
+                      placeholder="Nghĩa tiếng Việt..."
+                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                    />
+                    
+                    <input
+                      type="text"
+                      value={example.context || ''}
+                      onChange={(e) => updateExample(index, 'context', e.target.value)}
+                      placeholder="Ngữ cảnh sử dụng (tùy chọn)..."
+                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-900"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <p className="text-xs text-gray-500 mt-1">
+              Thêm ví dụ câu để học từ hiệu quả hơn
+            </p>
           </div>
 
           <div className="flex gap-3 pt-4">

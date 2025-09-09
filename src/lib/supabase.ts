@@ -22,6 +22,7 @@ export interface Flashcard {
   difficulty: number
   category: string
   lesson_id: string | null
+  examples?: string | null
   created_at: string
   updated_at: string
 }
@@ -126,16 +127,32 @@ export const lessonDb = {
 export const flashcardDb = {
   // Get all flashcards with lesson info
   async getAll() {
-    const { data, error } = await supabase
-      .from('flashcards')
-      .select(`
-        *,
-        lesson:lessons(*)
-      `)
-      .order('created_at', { ascending: false })
+    let allData: FlashcardWithLesson[] = []
+    let from = 0
+    const batchSize = 1000
+    
+    while (true) {
+      const { data, error } = await supabase
+        .from('flashcards')
+        .select(`
+          *,
+          lesson:lessons(*)
+        `)
+        .order('created_at', { ascending: false })
+        .range(from, from + batchSize - 1)
 
-    if (error) throw error
-    return data as FlashcardWithLesson[]
+      if (error) throw error
+      
+      if (!data || data.length === 0) break
+      
+      allData = [...allData, ...data]
+      
+      if (data.length < batchSize) break
+      
+      from += batchSize
+    }
+
+    return allData as FlashcardWithLesson[]
   },
 
   // Get flashcards by lesson ID
@@ -176,6 +193,7 @@ export const flashcardDb = {
     category: string
     difficulty: number
     lesson_id?: string
+    examples?: string | null
   }) {
     const { data, error } = await supabase
       .from('flashcards')
@@ -198,6 +216,12 @@ export const flashcardDb = {
     category?: string
     difficulty?: number
     lesson_id?: string
+    examples?: string | null
+    collocations?: string | null
+    synonyms?: string | null
+    antonyms?: string | null
+    etymology?: string | null
+    memory_tips?: string | null
   }) {
     const { data, error } = await supabase
       .from('flashcards')

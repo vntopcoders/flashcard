@@ -3,14 +3,14 @@
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 import { Plus, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react'
-import FlashcardComponent from '@/components/FlashcardComponent'
+import EnhancedFlashcardComponent from '@/components/EnhancedFlashcardComponent'
 import AddFlashcardForm from '@/components/AddFlashcardForm'
 import WelcomeDashboard from '@/components/WelcomeDashboard'
 import LessonChunksSelector from '@/components/LessonChunksSelector'
 import DailyLessonCompletion from '@/components/DailyLessonCompletion'
 import UserInfo from '@/components/UserInfo'
 import HomeDashboard from '@/components/HomeDashboard'
-import { Flashcard, Lesson } from '@/types/flashcard'
+import { Flashcard, Lesson, ExampleSentence } from '@/types/flashcard'
 import { useSearchParams } from 'next/navigation'
 import { getCurrentUserId } from '@/lib/user-utils'
 
@@ -427,6 +427,7 @@ function FlashcardApp() {
     category: string
     difficulty: number
     lesson_id: string | null
+    examples?: ExampleSentence[]
   }) => {
     try {
       const response = await fetch('/api/flashcards', {
@@ -710,7 +711,7 @@ function FlashcardApp() {
 
             {/* Flashcard */}
             <div className="mb-8">
-              <FlashcardComponent flashcard={currentCard} />
+              <EnhancedFlashcardComponent flashcard={currentCard} />
             </div>
 
             {/* Navigation */}

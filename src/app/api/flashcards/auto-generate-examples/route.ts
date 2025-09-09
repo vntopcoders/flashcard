@@ -56,7 +56,13 @@ const VIETNAMESE_PATTERNS = {
   General: "tổng quát"
 }
 
-function generateExamplesForWord(english: string, vietnamese: string, category: string): any[] {
+interface ExampleSentence {
+  sentence: string
+  translation: string
+  context: string
+}
+
+function generateExamplesForWord(english: string, vietnamese: string, category: string): ExampleSentence[] {
   const templates = EXAMPLE_TEMPLATES[category as keyof typeof EXAMPLE_TEMPLATES] || EXAMPLE_TEMPLATES.General
   const contextVN = VIETNAMESE_PATTERNS[category as keyof typeof VIETNAMESE_PATTERNS] || "tổng quát"
   
@@ -103,7 +109,7 @@ export async function POST(request: NextRequest) {
     // Filter by categories if specified
     let targetFlashcards = flashcards
     if (categories.length > 0) {
-      targetFlashcards = flashcards.filter((f: any) => 
+      targetFlashcards = flashcards.filter((f: { category: string }) => 
         categories.includes(f.category)
       )
     }
@@ -232,7 +238,7 @@ export async function GET(request: NextRequest) {
     // Group by category
     const categories: { [key: string]: { total: number, withExamples: number } } = {}
     
-    flashcards.forEach((f: any) => {
+    flashcards.forEach((f: { category: string, examples: string | null }) => {
       const cat = f.category
       if (!categories[cat]) {
         categories[cat] = { total: 0, withExamples: 0 }

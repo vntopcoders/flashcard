@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { flashcardDb } from '@/lib/supabase'
 
 // Sample examples data for common words
 const SAMPLE_EXAMPLES = {
